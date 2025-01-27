@@ -81,6 +81,16 @@ public class RoleSeeder implements CommandLineRunner {
             roleRepository.save(adminSPVRole);
         }
 
+        Roles userRole;
+        if (roleRepository.findByName("USER").isPresent()) {
+            userRole = roleRepository.findByName("USER")
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+        } else {
+            userRole = new Roles();
+            userRole.setName("USER");
+            roleRepository.save(userRole);
+        }
+
         // assign
         adminRole.setPermissions(allPermissions);
         roleRepository.save(adminRole);

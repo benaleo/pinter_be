@@ -1,9 +1,11 @@
 package com.kopibery.pos.service.impl;
 
+import com.kopibery.pos.entity.Roles;
 import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
+import com.kopibery.pos.repository.RoleRepository;
 import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
@@ -12,11 +14,12 @@ import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,9 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
@@ -58,16 +64,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveData(UserModel.CreateRequest item) {
+        Roles role = TreeGetEntity.parsingRoleByProjection(item.getRoleId(), roleRepository);
 
+        Users newUser = new Users();
+        newUser.setName(item.getName());
+        newUser.setEmail(item.getEmail());
+        newUser.setPassword(passwordEncoder.encode(item.getPassword()));
+        if (role != null) {
+            newUser.setRoles(Collections.singleton(role));
+        }
+        userRepository.save(newUser);
     }
 
     @Override
     public void updateData(String id, UserModel.UpdateRequest item) {
+        Roles role = TreeGetEntity.parsingRoleByProjection(item.getRoleId(), roleRepository);
 
+        Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
+        user.setName(item.getName() != null ? item.getName() : user.getName());
+        user.setPassword(item.getPassword() != null ? passwordEncoder.encode(item.getPassword()) : user.getPassword());
+        if (role != null) {
+            user.setRoles(Collections.singleton(role));
+        }
+        userRepository.save(user);
     }
 
     @Override
     public void deleteData(String id) {
-
+        Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
+        userRepository.delete(user);
     }
 }
