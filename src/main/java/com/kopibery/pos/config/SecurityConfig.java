@@ -19,9 +19,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
 
     @Bean
@@ -33,7 +35,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())  // Using Basic Authentication
-                .userDetailsService(customUserDetailsService);  // Use the custom UserDetailsService
+                .userDetailsService(customUserDetailsService)  // Use the custom UserDetailsService
+                .formLogin(form -> form
+                        .successHandler(customAuthenticationSuccessHandler))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)  // Stateless session
+                        .invalidSessionUrl("/login")  // Redirect to login if the session is invalid
+                );
+
 
         return http.build();
     }
