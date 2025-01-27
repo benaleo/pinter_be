@@ -10,6 +10,7 @@ public class UserModel {
 
         private String name;
         private String email;
+        private String avatar;
 
     }
 
@@ -19,6 +20,8 @@ public class UserModel {
 
         private String name;
         private String email;
+        private String avatar;
+        private String avatarName;
 
     }
 

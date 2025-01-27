@@ -14,6 +14,7 @@ import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ContentDisposition;
@@ -39,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.base.url}")
+    private String baseUrl;
+
     @Override
     public ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
@@ -51,6 +55,7 @@ public class UserServiceImpl implements UserService {
             UserModel.IndexResponse dto = new UserModel.IndexResponse();
             dto.setName(c.getName());
             dto.setEmail(c.getEmail());
+            dto.setAvatar(baseUrl + "/cms/v1/user/" + c.getSecureId() + "/avatar");
 
             GlobalConverter.CmsIDTimeStampResponseAndId(dto, c, userRepository);
             return dto;
@@ -64,7 +69,9 @@ public class UserServiceImpl implements UserService {
         Users data = TreeGetEntity.parsingUserByProjection(id, userRepository);
         return new UserModel.DetailResponse(
                 data.getName(),
-                data.getEmail()
+                data.getEmail(),
+                baseUrl + "/cms/v1/user/" + data.getSecureId() + "/avatar",
+                data.getAvatarName()
         );
     }
 
