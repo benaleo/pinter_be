@@ -9,6 +9,7 @@ import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.UserService;
 import com.kopibery.pos.util.TreeGetEntity;
 import com.kopibery.pos.util.UploadStreamHelper;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ import java.net.URI;
 @RequestMapping(UserController.urlRoute)
 @Tag(name = "Users API")
 @Slf4j
+@SecurityRequirement(name = "Authorization")
 public class UserController {
 
     static final String urlRoute = "/cms/v1/user";
@@ -43,8 +45,14 @@ public class UserController {
             @RequestParam(name = "keyword", required = false) String keyword) {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
-        ResultPageResponseDTO<UserModel.IndexResponse> response = service.findDataIndex(pages, limit, sortBy, direction, keyword);
-        return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list user", response));
+
+        try {
+            ResultPageResponseDTO<UserModel.IndexResponse> response = service.findDataIndex(pages, limit, sortBy, direction, keyword);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list user", response));
+        } catch (Exception e) {
+            log.error("Error : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
     }
 
     @GetMapping("{id}")

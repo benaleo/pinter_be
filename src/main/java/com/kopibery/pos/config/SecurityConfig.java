@@ -1,7 +1,8 @@
 package com.kopibery.pos.config;
 
-
+import com.kopibery.pos.security.JwtAuthenticationFilter;
 import com.kopibery.pos.service.util.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,9 +11,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +20,11 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter; // Inject JwtAuthenticationFilter as a field
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
+                          CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
@@ -30,19 +33,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(withDefaults())  // Using Basic Authentication
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui/index.html",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/api/auth/**"
+                        ).permitAll()
+                        .anyRequest().authenticated())
                 .userDetailsService(customUserDetailsService)  // Use the custom UserDetailsService
                 .formLogin(form -> form
                         .successHandler(customAuthenticationSuccessHandler))
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)  // Stateless session
-                        .invalidSessionUrl("/login")  // Redirect to login if the session is invalid
-                );
+                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)) // Stateless session
 
+                // Register the JwtAuthenticationFilter before the UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

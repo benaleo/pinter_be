@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         for (Roles role : userEntity.getRoles()) {
             // Add the role as an authority
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName())); // Prefixed with "ROLE_" for Spring Security convention
+            authorities.add(new SimpleGrantedAuthority(role.getName())); // Prefixed with "ROLE_" for Spring Security convention
 
             // Add permissions associated with this role as authorities
             for (Permissions permission : role.getPermissions()) {

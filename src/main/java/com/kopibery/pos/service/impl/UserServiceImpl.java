@@ -47,10 +47,16 @@ public class UserServiceImpl implements UserService {
     public ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
-        Page<Users> firstResult = userRepository.findDataByKeyword(set.keyword(), set.pageable());
-        Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
 
+        log.info("Set pages : {}", pages);
+        // First page result (get total count)
+        Page<Users> firstResult = userRepository.findDataByKeyword(set.keyword(), set.pageable());
+
+        // Use a correct Pageable for fetching the next page
+        Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
         Page<Users> pageResult = userRepository.findDataByKeyword(set.keyword(), pageable);
+
+        // Map the data to the DTOs
         List<UserModel.IndexResponse> dtos = pageResult.stream().map((c) -> {
             UserModel.IndexResponse dto = new UserModel.IndexResponse();
             dto.setName(c.getName());
@@ -61,8 +67,12 @@ public class UserServiceImpl implements UserService {
             return dto;
         }).collect(Collectors.toList());
 
-        return PageCreateReturn.create(pageResult, dtos);
+        return PageCreateReturn.create(
+                pageResult,
+                dtos
+        );
     }
+
 
     @Override
     public UserModel.DetailResponse findDataById(String id) {
