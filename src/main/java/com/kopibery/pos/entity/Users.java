@@ -1,7 +1,9 @@
 package com.kopibery.pos.entity;
 
+import com.kopibery.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,14 +12,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
 @Data
-public class Users implements UserDetails {
+public class Users extends AbstractEntity implements UserDetails, SecureIdentifiable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    public String getSecureId() {
+        return super.getSecureId();
+    }
+
+    @Override
+    public Boolean getIsActive() {
+        return super.getIsActive();
+    }
 
     @Column(name = "name")
     private String name;
@@ -27,8 +41,6 @@ public class Users implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String email;
-
-    private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.EAGER)  // EAGER to load roles immediately
     @JoinTable(
@@ -72,7 +84,7 @@ public class Users implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return this.getIsActive();
     }
 
     // Add getters and setters for id, email, and enabled

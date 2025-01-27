@@ -6,14 +6,10 @@ import lombok.Data;
 public class UserModel {
 
     @Data
-    @AllArgsConstructor
-    public static class IndexResponse {
+    public static class IndexResponse extends AdminModelBaseDTOResponse {
 
-        private String id;
         private String name;
         private String email;
-        private String createdAt;
-        private String updatedAt;
 
     }
 
