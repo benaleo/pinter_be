@@ -18,4 +18,5 @@ public interface UserService {
     void updateAvatar(String id, MultipartFile avatar) throws IOException;
 
     void deleteData(String id);
+
 }

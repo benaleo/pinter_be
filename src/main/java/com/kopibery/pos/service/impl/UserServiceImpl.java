@@ -16,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,6 +100,7 @@ public class UserServiceImpl implements UserService {
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
         byte[] fileBytes = avatar.getBytes();
         user.setAvatar(fileBytes);
+        user.setAvatarName(avatar.getOriginalFilename());
         userRepository.save(user);
     }
 
@@ -104,4 +109,5 @@ public class UserServiceImpl implements UserService {
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
         userRepository.delete(user);
     }
+
 }

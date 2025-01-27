@@ -36,6 +36,9 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     @Column(name = "avatar", columnDefinition = "bytea")
     private byte[] avatar;
 
+    @Column(name = "avatar_name")
+    private String avatarName;
+
     @Column(name = "name")
     private String name;
 
