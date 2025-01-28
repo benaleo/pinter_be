@@ -1,8 +1,10 @@
 package com.kopibery.pos.util;
 
+import com.kopibery.pos.entity.Company;
 import com.kopibery.pos.entity.Permissions;
 import com.kopibery.pos.entity.Roles;
 import com.kopibery.pos.entity.Users;
+import com.kopibery.pos.repository.CompanyRepository;
 import com.kopibery.pos.repository.PermissionsRepository;
 import com.kopibery.pos.repository.RoleRepository;
 import com.kopibery.pos.repository.UserRepository;
@@ -13,7 +15,7 @@ import java.util.function.Function;
 
 public class TreeGetEntity {
 
-    private static <T, U> U getIdBySecureId(
+    public static <T, U> U getIdBySecureId(
             String secureId,
             Function<String, Optional<T>> findBySecureIdFunction,
             Function<T, Optional<U>> findByIdFunction,
@@ -42,6 +44,16 @@ public class TreeGetEntity {
                 "Role not found"
         );
     }
+
+      public static Company parsingCompanyByProjection(String secureId, CompanyRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Company not found"
+        );
+    }
+
 
 
 

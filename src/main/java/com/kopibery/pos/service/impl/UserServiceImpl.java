@@ -17,17 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,6 +58,9 @@ public class UserServiceImpl implements UserService {
             dto.setEmail(c.getEmail());
             dto.setAvatar(baseUrl + "/cms/v1/user/" + c.getSecureId() + "/avatar");
 
+            dto.setRoleName(c.getRole().getName());
+            dto.setCompanyName(c.getCompany() != null ? c.getCompany().getName() : null);
+
             GlobalConverter.CmsIDTimeStampResponseAndId(dto, c, userRepository);
             return dto;
         }).collect(Collectors.toList());
@@ -81,7 +79,11 @@ public class UserServiceImpl implements UserService {
                 data.getName(),
                 data.getEmail(),
                 baseUrl + "/cms/v1/user/" + data.getSecureId() + "/avatar",
-                data.getAvatarName()
+                data.getAvatarName(),
+                data.getRole().getSecureId(),
+                data.getRole().getName(),
+                data.getCompany() != null ? data.getCompany().getSecureId() : null,
+                data.getCompany() != null ? data.getCompany().getName() : null
         );
     }
 

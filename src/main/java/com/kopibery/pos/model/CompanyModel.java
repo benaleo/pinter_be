@@ -4,53 +4,46 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-public class UserModel {
+import java.util.List;
+
+public class CompanyModel {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
     public static class IndexResponse extends AdminModelBaseDTOResponse {
-
         private String name;
-        private String email;
-        private String avatar;
-        private String roleName;
-        private String companyName;
-
+        private String address;
+        private String city;
+        private String phone;
+        private List<String> companyNames;
     }
 
     @Data
     @AllArgsConstructor
     public static class DetailResponse {
-
         private String name;
-        private String email;
-        private String avatar;
-        private String avatarName;
-        private String roleId;
-        private String roleName;
-        private String companyId;
-        private String companyName;
-
+        private String address;
+        private String city;
+        private String phone;
+        private List<String> companyNames;
     }
 
     @Data
     public static class CreateRequest {
-
         private String name;
-        private String email;
-        private String password;
-
-        private String roleId;
-
+        private String address;
+        private String city;
+        private String phone;
+        private List<String> companyNames;
     }
 
     @Data
     public static class UpdateRequest {
-
         private String name;
-        private String password;
-
-        private String roleId;
-
+        private String address;
+        private String city;
+        private String phone;
     }
+
+
 }

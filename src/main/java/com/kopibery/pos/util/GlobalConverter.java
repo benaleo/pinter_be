@@ -48,6 +48,18 @@ public class GlobalConverter {
         dto.setUpdatedBy(data.getUpdatedBy() != null ? userRepository.findById(data.getUpdatedBy()).orElseThrow().getName() : null);
     }
 
+    public static <T extends AdminModelBaseDTOResponse> void CmsIDTimeStampResponseAndIdProjection(
+            T dto, String dataId, LocalDateTime createdAt, LocalDateTime updatedAt, String createdBy, String updatedBy
+    ) {
+        dto.setId(dataId);
+        dto.setCreatedAt(createdAt != null ? Formatter.formatLocalDateTime(createdAt) : null);
+        dto.setUpdatedAt(updatedAt != null ? Formatter.formatLocalDateTime(updatedAt) : null);
+        dto.setCreatedBy(createdBy);
+        dto.setUpdatedBy(updatedBy);
+    }
+
+
+
     public static String getParseImage(
             String imageUrl,
             String baseUrl

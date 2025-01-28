@@ -40,8 +40,13 @@ public class RoleController {
             @RequestParam(name = "direction", required = false, defaultValue = "asc") String direction,
             @RequestParam(name = "keyword", required = false) String keyword) {
         // response true
-        ResultPageResponseDTO<RoleModel.IndexResponse> response = service.listData(pages, limit, sortBy, direction, keyword);
-        return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list role", response));
+        try {
+            ResultPageResponseDTO<RoleModel.IndexResponse> response = service.listData(pages, limit, sortBy, direction, keyword);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list role", response));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
     }
 
     @PreAuthorize("hasAuthority('role.read')")
@@ -53,6 +58,7 @@ public class RoleController {
             RoleModel.DetailResponse item = service.findDataBySecureId(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully found role", item));
         } catch (Exception e) {
+            log.error("Error get detail : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
@@ -67,6 +73,7 @@ public class RoleController {
             return ResponseEntity.created(URI.create("/cms/v1/am/role/"))
                     .body(new ApiResponse(true, "Successfully created role", response));
         } catch (Exception e) {
+            log.error("Error create role : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
@@ -80,6 +87,7 @@ public class RoleController {
             RoleModel.DetailResponse response = service.updateData(id, item);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully updated role", response));
         } catch (Exception e) {
+            log.error("Error update role : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
@@ -93,6 +101,7 @@ public class RoleController {
             service.deleteData(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully deleted role", null));
         } catch (Exception e) {
+            log.error("Error delete role : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
