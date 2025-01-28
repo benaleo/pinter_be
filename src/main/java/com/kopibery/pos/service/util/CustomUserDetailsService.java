@@ -28,24 +28,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         Users userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        // Create a set of authorities from roles and permissions
-        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-
-        for (Roles role : userEntity.getRoles()) {
-            // Add the role as an authority
-            authorities.add(new SimpleGrantedAuthority(role.getName())); // Prefixed with "ROLE_" for Spring Security convention
-
-            // Add permissions associated with this role as authorities
-            for (Permissions permission : role.getPermissions()) {
-                authorities.add(new SimpleGrantedAuthority(permission.getName())); // Add permission name directly as authority
-            }
-        }
-
         // Return a UserDetails object with email, password, and authorities (roles and permissions)
         return User.builder()
                 .username(userEntity.getEmail())
                 .password(userEntity.getPassword())
-                .authorities(authorities)
+                .authorities(userEntity.getAuthorities())
                 .build();
     }
 }

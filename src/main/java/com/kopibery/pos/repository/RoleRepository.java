@@ -2,6 +2,8 @@ package com.kopibery.pos.repository;
 
 import com.kopibery.pos.entity.Roles;
 import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,4 +22,6 @@ public interface RoleRepository extends JpaRepository<Roles, Long> {
             WHERE r.secureId = :secureId
             """)
     Optional<CastIdSecureIdProjection> findIdBySecureId(String secureId);
+
+    Page<Roles> findByNameLikeIgnoreCase(String keyword, Pageable pageable);
 }

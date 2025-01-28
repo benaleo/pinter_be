@@ -4,8 +4,11 @@ import com.kopibery.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -37,5 +40,14 @@ public class Roles extends AbstractEntity implements SecureIdentifiable {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permissions> permissions;
+
+    @OneToMany(mappedBy = "role",  fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RolePermission> listPermissions;
+
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        var authorities = listPermissions.stream().map(permission -> new SimpleGrantedAuthority(permission.getPermission().getName())).collect(Collectors.toList());
+        authorities.add(new SimpleGrantedAuthority(name));
+        return authorities;
+    }
 
 }

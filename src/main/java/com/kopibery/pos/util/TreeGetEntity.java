@@ -1,7 +1,9 @@
 package com.kopibery.pos.util;
 
+import com.kopibery.pos.entity.Permissions;
 import com.kopibery.pos.entity.Roles;
 import com.kopibery.pos.entity.Users;
+import com.kopibery.pos.repository.PermissionsRepository;
 import com.kopibery.pos.repository.RoleRepository;
 import com.kopibery.pos.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,5 +42,7 @@ public class TreeGetEntity {
                 "Role not found"
         );
     }
+
+
 
 }

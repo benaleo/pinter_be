@@ -31,7 +31,7 @@ import java.net.URI;
 @SecurityRequirement(name = "Authorization")
 public class UserController {
 
-    static final String urlRoute = "/cms/v1/user";
+    static final String urlRoute = "/cms/v1/am/user";
     private UserService service;
 
     private UserRepository userRepository;

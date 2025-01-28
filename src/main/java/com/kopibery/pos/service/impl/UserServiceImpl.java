@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         newUser.setEmail(item.getEmail());
         newUser.setPassword(passwordEncoder.encode(item.getPassword()));
         if (role != null) {
-            newUser.setRoles(Collections.singleton(role));
+            newUser.setRole(role);
         }
         userRepository.save(newUser);
     }
@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
         user.setName(item.getName() != null ? item.getName() : user.getName());
         user.setPassword(item.getPassword() != null ? passwordEncoder.encode(item.getPassword()) : user.getPassword());
         if (role != null) {
-            user.setRoles(Collections.singleton(role));
+            user.setRole(role);
         }
         userRepository.save(user);
     }

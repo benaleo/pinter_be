@@ -48,19 +48,16 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     @Column(nullable = false, unique = true)
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)  // EAGER to load roles immediately
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Roles> roles;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    @EqualsAndHashCode.Exclude
+    private Roles role;
 
     // Getters and setters
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        return role.getAuthorities();
     }
 
     @Override
