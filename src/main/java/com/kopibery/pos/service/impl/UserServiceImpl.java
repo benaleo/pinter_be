@@ -1,10 +1,12 @@
 package com.kopibery.pos.service.impl;
 
+import com.kopibery.pos.entity.Company;
 import com.kopibery.pos.entity.Roles;
 import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
+import com.kopibery.pos.repository.CompanyRepository;
 import com.kopibery.pos.repository.RoleRepository;
 import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.PageCreateReturn;
@@ -14,6 +16,7 @@ import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.tree.Tree;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    private final CompanyRepository companyRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.base.url}")
@@ -43,7 +48,6 @@ public class UserServiceImpl implements UserService {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
-        log.info("Set pages : {}", pages);
         // First page result (get total count)
         Page<Users> firstResult = userRepository.findDataByKeyword(set.keyword(), set.pageable());
 
@@ -60,6 +64,8 @@ public class UserServiceImpl implements UserService {
 
             dto.setRoleName(c.getRole().getName());
             dto.setCompanyName(c.getCompany() != null ? c.getCompany().getName() : null);
+
+            dto.setIsActive(c.getIsActive());
 
             GlobalConverter.CmsIDTimeStampResponseAndId(dto, c, userRepository);
             return dto;
@@ -83,7 +89,8 @@ public class UserServiceImpl implements UserService {
                 data.getRole().getSecureId(),
                 data.getRole().getName(),
                 data.getCompany() != null ? data.getCompany().getSecureId() : null,
-                data.getCompany() != null ? data.getCompany().getName() : null
+                data.getCompany() != null ? data.getCompany().getName() : null,
+                data.getIsActive()
         );
     }
 
@@ -95,6 +102,11 @@ public class UserServiceImpl implements UserService {
         newUser.setName(item.getName());
         newUser.setEmail(item.getEmail());
         newUser.setPassword(passwordEncoder.encode(item.getPassword()));
+        newUser.setIsActive(item.getIsActive());
+
+        Company company = TreeGetEntity.parsingCompanyByProjection(item.getCompanyId(), companyRepository);
+        newUser.setCompany(company);
+
         if (role != null) {
             newUser.setRole(role);
         }
@@ -108,6 +120,11 @@ public class UserServiceImpl implements UserService {
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
         user.setName(item.getName() != null ? item.getName() : user.getName());
         user.setPassword(item.getPassword() != null ? passwordEncoder.encode(item.getPassword()) : user.getPassword());
+        user.setIsActive(item.getIsActive() != null ? item.getIsActive() : user.getIsActive());
+
+        Company company = TreeGetEntity.parsingCompanyByProjection(item.getCompanyId(), companyRepository);
+        user.setCompany(company);
+
         if (role != null) {
             user.setRole(role);
         }

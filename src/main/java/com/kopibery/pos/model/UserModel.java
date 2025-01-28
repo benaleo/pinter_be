@@ -15,6 +15,7 @@ public class UserModel {
         private String avatar;
         private String roleName;
         private String companyName;
+        private Boolean isActive;
 
     }
 
@@ -30,6 +31,7 @@ public class UserModel {
         private String roleName;
         private String companyId;
         private String companyName;
+        private Boolean isActive;
 
     }
 
@@ -39,8 +41,10 @@ public class UserModel {
         private String name;
         private String email;
         private String password;
+        private Boolean isActive;
 
         private String roleId;
+        private String companyId;
 
     }
 
@@ -49,8 +53,10 @@ public class UserModel {
 
         private String name;
         private String password;
+        private Boolean isActive;
 
         private String roleId;
+        private String companyId;
 
     }
 }
