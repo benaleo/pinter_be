@@ -10,7 +10,12 @@ public class ContextPrincipal {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
-        return ((Users) principal).getId();
+        // Since Users implements UserDetails, we can cast it directly
+        if (principal instanceof Users) {
+            return ((Users) principal).getId();  // Get the ID from the Users entity
+        } else {
+            throw new SecurityException("Principal is not of expected type Users");
+        }
     }
 
     public static String getSecureUserId() {

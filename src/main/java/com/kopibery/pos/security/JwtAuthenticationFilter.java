@@ -1,5 +1,6 @@
 package com.kopibery.pos.security;
 
+import com.kopibery.pos.entity.Users;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

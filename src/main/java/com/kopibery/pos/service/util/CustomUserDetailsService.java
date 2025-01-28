@@ -29,10 +29,11 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         // Return a UserDetails object with email, password, and authorities (roles and permissions)
-        return User.builder()
-                .username(userEntity.getEmail())
-                .password(userEntity.getPassword())
-                .authorities(userEntity.getAuthorities())
-                .build();
+//        return User.builder()
+//                .username(userEntity.getEmail())
+//                .password(userEntity.getPassword())
+//                .authorities(userEntity.getAuthorities())
+//                .build();
+        return userEntity;
     }
 }
