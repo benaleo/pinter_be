@@ -1,13 +1,7 @@
 package com.kopibery.pos.util;
 
-import com.kopibery.pos.entity.Company;
-import com.kopibery.pos.entity.Permissions;
-import com.kopibery.pos.entity.Roles;
-import com.kopibery.pos.entity.Users;
-import com.kopibery.pos.repository.CompanyRepository;
-import com.kopibery.pos.repository.PermissionsRepository;
-import com.kopibery.pos.repository.RoleRepository;
-import com.kopibery.pos.repository.UserRepository;
+import com.kopibery.pos.entity.*;
+import com.kopibery.pos.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.Optional;
@@ -45,7 +39,7 @@ public class TreeGetEntity {
         );
     }
 
-      public static Company parsingCompanyByProjection(String secureId, CompanyRepository repository) {
+    public static Company parsingCompanyByProjection(String secureId, CompanyRepository repository) {
         return getIdBySecureId(
                 secureId,
                 repository::findIdBySecureId,
@@ -54,7 +48,23 @@ public class TreeGetEntity {
         );
     }
 
+    public static Product parsingProductByProjection(String secureId, ProductRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Product not found"
+        );
+    }
 
+    public static ProductCategory parsingProductCategoryByProjection(String secureId, ProductCategoryRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Product not found"
+        );
+    }
 
 
 }

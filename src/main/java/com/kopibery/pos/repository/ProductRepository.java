@@ -1,0 +1,48 @@
+package com.kopibery.pos.repository;
+
+import com.kopibery.pos.entity.Product;
+import com.kopibery.pos.entity.ProductCategory;
+import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
+import com.kopibery.pos.model.projection.ProductIndexProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    @Query("""
+            SELECT new com.kopibery.pos.model.projection.CastIdSecureIdProjection(d.id, d.secureId)
+            FROM Product d
+            WHERE d.secureId = :secureId
+            """)
+    Optional<CastIdSecureIdProjection> findIdBySecureId(String secureId);
+
+    @Query("""
+            SELECT new com.kopibery.pos.model.projection.ProductIndexProjection(
+                p.secureId, p.name, p.price, p.hppPrice, p.stock, p.isUnlimited, p.isUpSale, p.isActive, pc.name, p.image,
+                p.createdAt, p.updatedAt, uc.name, uu.name
+            )
+            FROM Product p
+            LEFT JOIN ProductCategory pc ON pc.secureId = p.category.secureId
+            LEFT JOIN Users uc ON uc.id = p.createdBy
+            LEFT JOIN Users uu ON uu.id = p.updatedBy
+            WHERE
+                (LOWER(p.name) LIKE LOWER(:keyword) OR
+                LOWER(p.secureId) LIKE LOWER(:keyword))
+            """)
+    Page<ProductIndexProjection> findDataByKeyword(String keyword, Pageable pageable);
+
+    @Transactional
+    @Query("""
+            UPDATE Product p
+            SET p.category = NULL
+            WHERE p.category = :data
+            """)
+    void updateProductCategoryToNull(ProductCategory data);
+}
