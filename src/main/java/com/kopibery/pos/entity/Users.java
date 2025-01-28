@@ -54,7 +54,7 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     private Roles role;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id", referencedColumnName = "secure_id")
     @EqualsAndHashCode.Exclude
     private Company company;
 

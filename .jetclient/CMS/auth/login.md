@@ -21,8 +21,14 @@ type = 'NO_AUTH'
 [body]
 type = 'JSON'
 raw = '''
+//{
+//  email: "admin@pinter.id",
+//  password: "adminberi"
+//}
+
 {
-  email: "admin@pinter.id",
+  email: "ari@pinter.id",
   password: "adminberi"
-}'''
+}
+'''
 ```

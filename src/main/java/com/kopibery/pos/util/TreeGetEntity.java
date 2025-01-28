@@ -66,5 +66,14 @@ public class TreeGetEntity {
         );
     }
 
+    public static Transaction parsingTransactionByProjection(String secureId, TransactionRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Product not found"
+        );
+    }
+
 
 }

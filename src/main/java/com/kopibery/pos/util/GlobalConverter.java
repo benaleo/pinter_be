@@ -13,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -208,4 +205,13 @@ public class GlobalConverter {
         return new SavedKeywordAndPageable(keyword, pageable);
     }
 
+    public static String generateRandomString(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            char randomChar = (char) ('A' + random.nextInt(26));
+            sb.append(randomChar);
+        }
+        return sb.toString();
+    }
 }
