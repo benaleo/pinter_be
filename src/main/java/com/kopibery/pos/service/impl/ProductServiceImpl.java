@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     private String baseUrl;
 
     @Override
-    public ResultPageResponseDTO<ProductModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    public ResultPageResponseDTO<ProductModel.ProductIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductIndexProjection> pageResult = productRepository.findDataByKeyword(set.keyword(), pageable);
 
         // Map the data to the DTOs
-        List<ProductModel.IndexResponse> dtos = pageResult.stream().map(this::convertToBackResponse).collect(Collectors.toList());
+        List<ProductModel.ProductIndexResponse> dtos = pageResult.stream().map(this::convertToBackResponse).collect(Collectors.toList());
 
         return PageCreateReturn.create(
                 pageResult,
@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductModel.IndexResponse saveData(ProductModel.CreateRequest item) throws IOException {
+    public ProductModel.ProductIndexResponse saveData(ProductModel.CreateRequest item) throws IOException {
         Long userId = ContextPrincipal.getId();
 
         Product newData = new Product();
@@ -92,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductModel.IndexResponse updateData(String id, ProductModel.UpdateRequest item) throws IOException {
+    public ProductModel.ProductIndexResponse updateData(String id, ProductModel.UpdateRequest item) throws IOException {
         Long userId = ContextPrincipal.getId();
 
         Product data = TreeGetEntity.parsingProductByProjection(id, productRepository);
@@ -122,8 +122,8 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(data);
     }
 
-    private ProductModel.IndexResponse convertToBackResponse(ProductIndexProjection data){
-        ProductModel.IndexResponse dto = new ProductModel.IndexResponse();
+    private ProductModel.ProductIndexResponse convertToBackResponse(ProductIndexProjection data){
+        ProductModel.ProductIndexResponse dto = new ProductModel.ProductIndexResponse();
         dto.setName(data.getName());                   // name
         dto.setPrice(data.getPrice());                 // price
         dto.setHppPrice(data.getHppPrice());           // hpp price

@@ -2,6 +2,7 @@ package com.kopibery.pos.repository;
 
 import com.kopibery.pos.entity.Product;
 import com.kopibery.pos.entity.ProductCategory;
+import com.kopibery.pos.model.projection.AppMenuProjection;
 import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
 import com.kopibery.pos.model.projection.ProductIndexProjection;
 import org.springframework.data.domain.Page;
@@ -45,4 +46,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             WHERE p.category = :data
             """)
     void updateProductCategoryToNull(ProductCategory data);
+
+    @Query("""
+            SELECT new com.kopibery.pos.model.projection.AppMenuProjection(
+                p.secureId, p.name, p.imageUrl, p.price, c.secureId, c.name, p.stock
+            )
+            FROM Product p
+            LEFT JOIN p.category c
+            WHERE
+                (LOWER(p.name) LIKE LOWER(:keyword)) AND
+                (:category IS NULL OR c.name = :category)
+            """)
+    Page<AppMenuProjection> findMenuByKeyword(String keyword, Pageable pageable, String category);
 }

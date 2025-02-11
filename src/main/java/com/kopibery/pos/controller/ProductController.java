@@ -8,7 +8,6 @@ import com.kopibery.pos.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -44,7 +43,7 @@ public class ProductController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<ProductModel.IndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<ProductModel.ProductIndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list product", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -84,7 +83,7 @@ public class ProductController {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
             ProductModel.CreateRequest request = new ProductModel.CreateRequest(name, price, hppPrice, stock, isUnlimited, isUpSale, isActive, categoryId, image);
-            ProductModel.IndexResponse response = service.saveData(request);
+            ProductModel.ProductIndexResponse response = service.saveData(request);
             return ResponseEntity.created(URI.create("/cms/v1/product/"))
                     .body(new ApiResponse(true, "Successfully created product", response));
         } catch (Exception e) {
@@ -111,7 +110,7 @@ public class ProductController {
         log.info("PUT " + urlRoute + "/{id} endpoint hit");
         try {
             ProductModel.UpdateRequest request = new ProductModel.UpdateRequest(name, price, hppPrice, stock, isUnlimited, isUpSale, isActive, categoryId, image);
-            ProductModel.IndexResponse response = service.updateData(id, request);
+            ProductModel.ProductIndexResponse response = service.updateData(id, request);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully updated product", response));
         } catch (Exception e) {
             log.error("Error update product : {}", e.getMessage(), e);

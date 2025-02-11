@@ -9,7 +9,7 @@ public class ProductModel {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
-    public static class IndexResponse extends AdminModelBaseDTOResponse {
+    public static class ProductIndexResponse extends AdminModelBaseDTOResponse {
         private String name;
         private Integer price;
         private Integer hppPrice;

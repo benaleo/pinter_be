@@ -32,6 +32,9 @@ public class Product extends AbstractEntity implements SecureIdentifiable {
     @Column(name = "image_name", columnDefinition = "text")
     private String imageName;
 
+    @Column(name = "image_url", columnDefinition = "text")
+    private String imageUrl;
+
     @Column(name = "is_upsale")
     private Boolean isUpSale = false;
 
@@ -42,7 +45,7 @@ public class Product extends AbstractEntity implements SecureIdentifiable {
     private Boolean isUnlimited = false;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "secure_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "secure_id", nullable = false)
     private ProductCategory category;
 
     @Override
