@@ -1,8 +1,10 @@
 package com.kopibery.pos.controller;
 
 import com.kopibery.pos.entity.Users;
+import com.kopibery.pos.exception.BadRequestException;
 import com.kopibery.pos.model.AuthModel;
 import com.kopibery.pos.repository.UserRepository;
+import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.security.JwtUtil;
 import com.kopibery.pos.service.util.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -33,7 +38,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody AuthModel.loginRequest request) {
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthModel.loginRequest request) {
         try {
             Users user = userRepository.findByEmail(request.getEmail()).orElse(null);
             log.info("User email in: {}", (user != null ? user.getEmail() : "unknown"));
@@ -46,12 +51,16 @@ public class AuthController {
             log.info("user details username: {}", userDetails.getUsername());
             final String token = jwtUtil.generateToken(userDetails.getUsername());
             log.info("token: {}", token);
+            Map<String,String> newMap = new HashMap<>();
+            newMap.put("token", token);
 
             // Generate JWT token after successful authentication
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok().body(new ApiResponse(true, "Auth login successfully", newMap));
+        } catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage(), null));
         } catch (Exception e) {
             log.error("Error : {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Auth failed", null));
         }
     }
 
