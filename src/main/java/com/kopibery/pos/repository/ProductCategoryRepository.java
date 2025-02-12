@@ -45,4 +45,6 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
             GROUP BY pc.secureId
             """)
     List<SavedStringAndLongValue> countProductByCategoryIds(List<String> idsList);
+
+    List<ProductCategory> findAllByIsActive(boolean isActive);
 }

@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(PosMenuController.urlRoute)
@@ -45,6 +48,20 @@ public class PosMenuController {
         log.info("GET " + urlRoute + " endpoint hit");
         try {
             ResultPageResponseDTO<MenuModel.MenuIndexResponse> response = service.listMenuIndex(pages, limit, sortBy, direction, keyword, category);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false,"Error get list menu", null));
+        }
+    }
+    // category menu
+    @Operation(summary = "Get List Menu", description = "Get List Menu")
+    @GetMapping("/menu/category")
+    public ResponseEntity<?> listMenuCategoryIndex() {
+        // response true
+        log.info("GET " + urlRoute + " endpoint hit");
+        try {
+            List<Map<String, String>> response = service.listMenuCategoryIndex();
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
