@@ -3,6 +3,7 @@ package com.kopibery.pos.repository;
 import com.kopibery.pos.entity.Product;
 import com.kopibery.pos.entity.ProductCategory;
 import com.kopibery.pos.model.projection.AppMenuProjection;
+import com.kopibery.pos.model.projection.AppOrderProjection;
 import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
 import com.kopibery.pos.model.projection.ProductIndexProjection;
 import org.springframework.data.domain.Page;
@@ -58,4 +59,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 (:category IS NULL OR c.name = :category)
             """)
     Page<AppMenuProjection> findMenuByKeyword(String keyword, Pageable pageable, String category);
+
 }

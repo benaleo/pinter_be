@@ -41,6 +41,17 @@ public class Transaction extends AbstractEntity implements SecureIdentifiable {
     @Column(name = "store_name")
     private String storeName;
 
+    @Column(name = "customer_name")
+    private String customerName;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", referencedColumnName = "secure_id")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "tier_id", referencedColumnName = "secure_id")
+    private Tier tier;
+
     @ManyToOne
     @JoinColumn(name = "cashier_id", referencedColumnName = "secure_id")
     private Users cashier;
