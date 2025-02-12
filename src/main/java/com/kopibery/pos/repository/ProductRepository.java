@@ -18,6 +18,8 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    Optional<Product> findBySecureId(String fileId);
+
     @Query("""
             SELECT new com.kopibery.pos.model.projection.CastIdSecureIdProjection(d.id, d.secureId)
             FROM Product d

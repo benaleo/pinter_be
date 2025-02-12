@@ -86,6 +86,9 @@ public class ProductServiceImpl implements ProductService {
         GlobalConverter.CmsAdminCreateAtBy(newData, userId);
         Product savedData = productRepository.save(newData);
 
+        savedData.setImageUrl(item.getImage() != null ? "/get/file/product/" + savedData.getSecureId() : null);
+        productRepository.save(savedData);
+
         ProductIndexProjection projection = productRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged()).getContent().getFirst();
         return convertToBackResponse(projection);
     }
@@ -112,6 +115,9 @@ public class ProductServiceImpl implements ProductService {
         GlobalConverter.CmsAdminUpdateAtBy(data, userId);
         Product savedData = productRepository.save(data);
 
+        savedData.setImageUrl(item.getImage() != null ? "/get/file/product/" + savedData.getSecureId() : null);
+        productRepository.save(savedData);
+
         ProductIndexProjection projection = productRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged()).getContent().getFirst();
         return convertToBackResponse(projection);
     }
@@ -122,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(data);
     }
 
-    private ProductModel.ProductIndexResponse convertToBackResponse(ProductIndexProjection data){
+    private ProductModel.ProductIndexResponse convertToBackResponse(ProductIndexProjection data) {
         ProductModel.ProductIndexResponse dto = new ProductModel.ProductIndexResponse();
         dto.setName(data.getName());                   // name
         dto.setPrice(data.getPrice());                 // price
@@ -133,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
         dto.setIsUnlimited(data.getIsUnlimited());     // unlimited
         dto.setIsUpSale(data.getIsUpSale());           // up sale
         dto.setImage(
-                data.getImage() != null ? baseUrl + "/api/v1/image/product/" + data.getId() : null
+                data.getImage() != null ? baseUrl + "/get/file/product/" + data.getId() : null
         );                                          // image
 
         GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, data.getId(), data.getCreatedAt(), data.getUpdatedAt(), data.getCreatedBy(), data.getUpdatedBy());
@@ -151,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
                 data.getStock(),
                 data.getIsUnlimited(),
                 data.getIsUpSale(),
-                data.getImage() != null ? baseUrl + "/api/v1/image/product/" + data.getSecureId() : null
+                data.getImage() != null ? baseUrl + "/get/file/product/" + data.getSecureId() : null
         );
     }
 }

@@ -54,6 +54,15 @@ public class SwaggerConfig {
                 .build();
     }
 
+  // Define OpenAPI documentation group for the other API
+    @Bean
+    public GroupedOpenApi otherApi() {
+        return GroupedOpenApi.builder()
+                .group("other-api")
+                .pathsToMatch("/get/**") // Only include APIs under '/api'
+                .build();
+    }
+
 
 
     // Optionally, you can add more groups or customize API information

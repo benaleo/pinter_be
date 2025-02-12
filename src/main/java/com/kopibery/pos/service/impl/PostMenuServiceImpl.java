@@ -18,6 +18,7 @@ import com.kopibery.pos.service.PostMenuService;
 import com.kopibery.pos.util.GlobalConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class PostMenuServiceImpl implements PostMenuService {
     private final ProductRepository productRepository;
     private final TransactionRepository transactionRepository;
     private final ProductCategoryRepository productCategoryRepository;
+
+    @Value("${app.base.url}")
+    private String baseUrl;
 
     @Override
     public ResultPageResponseDTO<MenuModel.MenuIndexResponse> listMenuIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, String category) {
@@ -103,7 +107,7 @@ public class PostMenuServiceImpl implements PostMenuService {
         return new MenuModel.MenuIndexResponse(
                 data.getProductId(),
                 data.getName(),
-                data.getImage(),
+                baseUrl + data.getImage(),
                 data.getPrice(),
                 data.getCategoryId(),
                 data.getCategoryName(),
@@ -117,7 +121,7 @@ public class PostMenuServiceImpl implements PostMenuService {
                 new MenuModel.DetailsMenuOrder(
                         detail.getId(),
                         detail.getName(),
-                        detail.getImage(),
+                        baseUrl + detail.getImage(),
                         detail.getPrice(),
                         detail.getQuantity()
         )).collect(Collectors.toList());
