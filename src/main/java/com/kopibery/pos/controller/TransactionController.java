@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -28,6 +29,7 @@ public class TransactionController {
 
     private final TransactionService service;
 
+    @PreAuthorize("hasAuthority('transaction.view')")
     @Operation(summary = "GET List Transaction", description = "API for get list transaction index with pagination")
     @GetMapping
     public ResponseEntity<?> listDataTransactionIndex(
@@ -48,6 +50,7 @@ public class TransactionController {
         }
     }
 
+    @PreAuthorize("hasAuthority('transaction.read')")
     @Operation(summary = "GET Detail Transaction", description = "API for get detail transaction")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -61,6 +64,7 @@ public class TransactionController {
         }
     }
 
+    @PreAuthorize("hasAuthority('transaction.create')")
     @Operation(summary = "POST Create Transaction", description = "API for create data transaction")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.CreateUpdateRequest item) {
@@ -75,6 +79,7 @@ public class TransactionController {
         }
     }
 
+    @PreAuthorize("hasAuthority('transaction.update')")
     @Operation(summary = "PUT Update Transaction", description = "API for update data transaction")
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody TransactionModel.CreateUpdateRequest item) {
@@ -88,6 +93,7 @@ public class TransactionController {
         }
     }
 
+    @PreAuthorize("hasAuthority('transaction.delete')")
     @Operation(summary = "DELETE Data Transaction", description = "API for delete data transaction")
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {

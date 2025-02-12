@@ -3,21 +3,22 @@ package com.kopibery.pos.controller.api;
 import com.kopibery.pos.enums.TransactionStatus;
 import com.kopibery.pos.enums.TransactionType;
 import com.kopibery.pos.model.MenuModel;
+import com.kopibery.pos.model.TransactionModel;
 import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.response.PaginationCmsResponse;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.PostMenuService;
+import com.kopibery.pos.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,8 @@ public class PosMenuController {
 
     static final String urlRoute = "/api/v1/pos";
 
-    private final PostMenuService service;
+    private final PostMenuService postMenuService;
+    private final TransactionService transactionService;
 
     // index menu
     @Operation(summary = "Get List Menu", description = "Get List Menu")
@@ -47,7 +49,7 @@ public class PosMenuController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<MenuModel.MenuIndexResponse> response = service.listMenuIndex(pages, limit, sortBy, direction, keyword, category);
+            ResultPageResponseDTO<MenuModel.MenuIndexResponse> response = postMenuService.listMenuIndex(pages, limit, sortBy, direction, keyword, category);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -61,11 +63,26 @@ public class PosMenuController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            List<Map<String, String>> response = service.listMenuCategoryIndex();
+            List<Map<String, String>> response = postMenuService.listMenuCategoryIndex();
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false,"Error get list menu", null));
+        }
+    }
+
+    // make transaction order
+    @Operation(summary = "POST Create Transaction", description = "API for create data transaction")
+    @PostMapping("/transaction")
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.CreateUpdateRequest item) {
+        log.info("POST " + urlRoute + " endpoint hit");
+        try {
+            TransactionModel.IndexResponse response = transactionService.saveData(item);
+            return ResponseEntity.created(URI.create(urlRoute))
+                    .body(new ApiResponse(true, "Successfully created transaction", response));
+        } catch (Exception e) {
+            log.error("Error create transaction : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
 
@@ -84,7 +101,7 @@ public class PosMenuController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<MenuModel.OrderIndexResponse> response = service.listOrderIndex(pages, limit, sortBy, direction, keyword, paymentMethod, paymentStatus);
+            ResultPageResponseDTO<MenuModel.OrderIndexResponse> response = postMenuService.listOrderIndex(pages, limit, sortBy, direction, keyword, paymentMethod, paymentStatus);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list order transaction", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);

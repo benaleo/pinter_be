@@ -75,5 +75,14 @@ public class TreeGetEntity {
         );
     }
 
+    public static Member parsingMemberByProjection(String secureId, MemberRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Product not found"
+        );
+    }
+
 
 }

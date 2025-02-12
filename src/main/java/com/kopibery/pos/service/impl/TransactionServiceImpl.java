@@ -5,10 +5,7 @@ import com.kopibery.pos.enums.TransactionStatus;
 import com.kopibery.pos.model.TransactionModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
-import com.kopibery.pos.repository.ProductRepository;
-import com.kopibery.pos.repository.TransactionProductRepository;
-import com.kopibery.pos.repository.TransactionRepository;
-import com.kopibery.pos.repository.UserRepository;
+import com.kopibery.pos.repository.*;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.TransactionService;
@@ -26,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final ProductRepository productRepository;
     private final TransactionRepository transactionRepository;
     private final TransactionProductRepository transactionProductRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public ResultPageResponseDTO<TransactionModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
@@ -105,6 +104,11 @@ public class TransactionServiceImpl implements TransactionService {
         newData.setCashier(user);
         newData.setCompany(user.getCompany());
         newData.setStatus(dto.getStatus());
+
+        // set member
+        Optional<Member> optionalMember = memberRepository.findByPhone(dto.getCustomerName());
+        newData.setMember(optionalMember.orElse(null));
+        newData.setCustomerName(optionalMember.orElse(null) != null ? dto.getCustomerName() : null);
 
         GlobalConverter.CmsAdminCreateAtBy(newData, userId);
         Transaction savedData = transactionRepository.save(newData);

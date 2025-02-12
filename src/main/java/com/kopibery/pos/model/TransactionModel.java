@@ -38,6 +38,7 @@ public class TransactionModel {
 
     @Data
     public static class CreateUpdateRequest {
+        private String customerName;
         private Integer amountPayment;
         private TransactionType typePayment;
         private TransactionStatus status;
