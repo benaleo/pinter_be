@@ -42,7 +42,7 @@ public class CompanyController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<CompanyModel.IndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword, isParent);
+            ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword, isParent);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list company", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -56,7 +56,7 @@ public class CompanyController {
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
         log.info("GET " + urlRoute + "/{id} endpoint hit");
         try {
-            CompanyModel.DetailResponse item = service.findDataBySecureId(id);
+            CompanyModel.CompanyDetailResponse item = service.findDataBySecureId(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully found company", item));
         } catch (Exception e) {
             log.error("Error get detail : {}", e.getMessage(), e);
@@ -67,10 +67,10 @@ public class CompanyController {
     @PreAuthorize("hasAuthority('company.create')")
     @Operation(summary = "Create Company", description = "Create Company")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@Valid @RequestBody CompanyModel.CreateRequest item) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody CompanyModel.CompanyCreateRequest item) {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
-            CompanyModel.DetailResponse response = service.saveData(item);
+            CompanyModel.CompanyDetailResponse response = service.saveData(item);
             return ResponseEntity.created(URI.create("/cms/v1/am/company/"))
                     .body(new ApiResponse(true, "Successfully created company", response));
         } catch (Exception e) {
@@ -82,10 +82,10 @@ public class CompanyController {
     @PreAuthorize("hasAuthority('company.update')")
     @Operation(summary = "Update Company", description = "Update Company")
     @PutMapping("{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody CompanyModel.UpdateRequest item) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody CompanyModel.CompanyUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{id} endpoint hit");
         try {
-            CompanyModel.DetailResponse response = service.updateData(id, item);
+            CompanyModel.CompanyDetailResponse response = service.updateData(id, item);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully updated company", response));
         } catch (Exception e) {
             log.error("Error update company : {}", e.getMessage(), e);

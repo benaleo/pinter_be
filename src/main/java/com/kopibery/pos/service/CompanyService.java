@@ -4,13 +4,13 @@ import com.kopibery.pos.model.CompanyModel;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 
 public interface CompanyService {
-    ResultPageResponseDTO<CompanyModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, Boolean isParent);
+    ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, Boolean isParent);
 
-    CompanyModel.DetailResponse findDataBySecureId(String id);
+    CompanyModel.CompanyDetailResponse findDataBySecureId(String id);
 
-    CompanyModel.DetailResponse saveData(CompanyModel.CreateRequest item);
+    CompanyModel.CompanyDetailResponse saveData(CompanyModel.CompanyCreateRequest item);
 
-    CompanyModel.DetailResponse updateData(String id, CompanyModel.UpdateRequest item);
+    CompanyModel.CompanyDetailResponse updateData(String id, CompanyModel.CompanyUpdateRequest item);
 
     void deleteData(String id);
 }

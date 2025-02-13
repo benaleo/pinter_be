@@ -32,7 +32,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
 
     @Override
-    public ResultPageResponseDTO<CompanyModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, Boolean isParent) {
+    public ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, Boolean isParent) {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
@@ -44,8 +44,8 @@ public class CompanyServiceImpl implements CompanyService {
         Page<CompanyIndexProjection> pageResult = companyRepository.findDataByKeyword(set.keyword(), pageable, isParent);
 
         // Map the data to the DTOs
-        List<CompanyModel.IndexResponse> dtos = pageResult.stream().map((c) -> {
-            CompanyModel.IndexResponse dto = new CompanyModel.IndexResponse();
+        List<CompanyModel.CompanyIndexResponse> dtos = pageResult.stream().map((c) -> {
+            CompanyModel.CompanyIndexResponse dto = new CompanyModel.CompanyIndexResponse();
             dto.setName(c.getName());
             dto.setAddress(c.getAddress());
             dto.setCity(c.getCity());
@@ -65,14 +65,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyModel.DetailResponse findDataBySecureId(String id) {
+    public CompanyModel.CompanyDetailResponse findDataBySecureId(String id) {
         Company data = TreeGetEntity.parsingCompanyByProjection(id, companyRepository);
 
         return convertToDetailResponse(data);
     }
 
     @Override
-    public CompanyModel.DetailResponse saveData(CompanyModel.CreateRequest item) {
+    public CompanyModel.CompanyDetailResponse saveData(CompanyModel.CompanyCreateRequest item) {
         Company newData = new Company();
         newData.setName(StringUtils.capitalize(item.getName()));
         newData.setAddress(item.getAddress());
@@ -97,7 +97,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyModel.DetailResponse updateData(String id, CompanyModel.UpdateRequest item) {
+    public CompanyModel.CompanyDetailResponse updateData(String id, CompanyModel.CompanyUpdateRequest item) {
         Company data = TreeGetEntity.parsingCompanyByProjection(id, companyRepository);
         data.setName(StringUtils.capitalize(item.getName()));
         data.setAddress(item.getAddress() != null ? item.getAddress() : data.getAddress());
@@ -114,9 +114,9 @@ public class CompanyServiceImpl implements CompanyService {
         companyRepository.delete(data);
     }
 
-    private CompanyModel.DetailResponse convertToDetailResponse(Company data) {
+    private CompanyModel.CompanyDetailResponse convertToDetailResponse(Company data) {
         List<String> companyNames = companyRepository.findAllByParentId(data.getSecureId());
-        return new CompanyModel.DetailResponse(
+        return new CompanyModel.CompanyDetailResponse(
                 data.getName(),
                 data.getAddress(),
                 data.getCity(),
