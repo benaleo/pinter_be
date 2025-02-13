@@ -11,15 +11,28 @@ public class PageCreateReturn {
         int currentPage = pageResult.getNumber();
         int totalPages = pageResult.getTotalPages();
 
+        // Explicitly box primitive types to their wrapper equivalents
+        Long totalElements = pageResult.getTotalElements(); // Autoboxing should work here
+        Integer currentPageBoxed = currentPage;
+        Integer prevPage = currentPage >= 1 ? currentPage - 1 : null;
+        Integer nextPage = currentPage < totalPages - 1 ? currentPage + 1 : null;
+        Integer firstPage = 0;
+        Integer lastPage = totalPages - 1 == 0 ? null : totalPages - 1;
+        Integer pageSize = pageResult.getSize();
+
+        // Resolve the generic type for the list
+        @SuppressWarnings("unchecked")
+        List<Object> resolvedDtos = (List<Object>) dtos;
+
         return PaginationUtil.createResultPageDTO(
-                pageResult.getTotalElements(), // total items
-                dtos,
-                currentPage, // current page
-                currentPage >= 1 ? currentPage - 1 : null, // prev page
-                currentPage < totalPages - 1 ? currentPage + 1 : null, // next page
-                0, // first page
-                totalPages - 1 == 0 ? null : totalPages - 1, // last page
-                pageResult.getSize() // per page
+                totalElements,
+                resolvedDtos,
+                currentPageBoxed,
+                prevPage,
+                nextPage,
+                firstPage,
+                lastPage,
+                pageSize
         );
     }
 }
