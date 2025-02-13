@@ -106,9 +106,9 @@ public class TransactionServiceImpl implements TransactionService {
         newData.setStatus(dto.getStatus());
 
         // set member
-        Optional<Member> optionalMember = memberRepository.findByPhone(dto.getCustomerName());
-        newData.setMember(optionalMember.orElse(null));
-        newData.setCustomerName(optionalMember.orElse(null) != null ? dto.getCustomerName() : null);
+        Member optionalMember = memberRepository.findByPhone(dto.getCustomerName()).orElse(null);
+        newData.setMember(optionalMember);
+        newData.setCustomerName(optionalMember != null ? optionalMember.getName() : dto.getCustomerName());
 
         GlobalConverter.CmsAdminCreateAtBy(newData, userId);
         Transaction savedData = transactionRepository.save(newData);
