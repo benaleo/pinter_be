@@ -4,6 +4,7 @@ import com.kopibery.pos.entity.ProductCategory;
 import com.kopibery.pos.enums.TransactionStatus;
 import com.kopibery.pos.enums.TransactionType;
 import com.kopibery.pos.model.MenuModel;
+import com.kopibery.pos.model.TransactionModel;
 import com.kopibery.pos.model.projection.AppDetailMenuOrderProjection;
 import com.kopibery.pos.model.projection.AppMenuProjection;
 import com.kopibery.pos.model.projection.AppOrderProjection;
@@ -101,6 +102,11 @@ public class PostMenuServiceImpl implements PostMenuService {
         }
 
         return responses;
+    }
+
+    @Override
+    public void updateTransaction(TransactionModel.CreateUpdateRequest item) {
+
     }
 
     private MenuModel.MenuIndexResponse convertSingleMenuResponse(AppMenuProjection data){

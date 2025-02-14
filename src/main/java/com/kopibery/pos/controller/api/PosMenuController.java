@@ -86,6 +86,20 @@ public class PosMenuController {
         }
     }
 
+    // update transaction order
+    @Operation(summary = "PUT Update Transaction", description = "API for updating data transaction")
+    @PutMapping("/transaction/{transactionId}")
+    public ResponseEntity<ApiResponse> update(@Valid @RequestBody TransactionModel.CreateUpdateRequest item, @PathVariable String transactionId) {
+        log.info("PUT " + urlRoute + " endpoint hit");
+        try {
+            TransactionModel.IndexResponse response = transactionService.updateData(transactionId, item);
+            return ResponseEntity.ok().body(new ApiResponse(true, "Successfully updated transaction", response));
+        } catch (Exception e) {
+            log.error("Error update transaction : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
     // index menu
     @Operation(summary = "Get List Menu", description = "Get List Menu")
     @GetMapping("/transaction")

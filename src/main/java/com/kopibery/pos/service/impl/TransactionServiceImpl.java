@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,7 +116,7 @@ public class TransactionServiceImpl implements TransactionService {
         convertTransactionProduct(dto, savedData);
 
         // decrease the stock product
-        convertToDecreaseStockInPaid(savedData.getSecureId());
+        convertToDecreaseStockInPaid(savedData);
 
         // return
         return convertToBackResponse(savedData);
@@ -149,7 +148,7 @@ public class TransactionServiceImpl implements TransactionService {
         convertTransactionProduct(dto, savedData);
 
         // decrease the stock product
-        convertToDecreaseStockInPaid(savedData.getSecureId());
+        convertToDecreaseStockInPaid(savedData);
 
         // return
         return convertToBackResponse(savedData);
@@ -177,13 +176,14 @@ public class TransactionServiceImpl implements TransactionService {
         return dto;
     }
 
-    private void convertToDecreaseStockInPaid(String secureId) {
-        Transaction data = TreeGetEntity.parsingTransactionByProjection(secureId, transactionRepository);
+    private void convertToDecreaseStockInPaid(Transaction data) {
         // if paid transaction
-        if (data.getStatus().equals(TransactionStatus.PAID) && data.getListTransaction() != null) {
-            for (TransactionProduct item : data.getListTransaction()) {
+        List<TransactionProduct> products = transactionProductRepository.findAllByTransaction(data);
+        log.info("products count = {}", products.size());
+        if (data.getStatus().equals(TransactionStatus.PAID) && !products.isEmpty()) {
+            for (TransactionProduct item : products) {
                 Product product = item.getProduct();
-                product.setStock(product.getStock() - item.getQuantity());
+                product.setStock(product.getIsUnlimited() ? product.getStock() : product.getStock() - item.getQuantity());
                 productRepository.save(product);
             }
         }
