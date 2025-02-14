@@ -53,9 +53,10 @@ public class PosMenuController {
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"Error get list menu", null));
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get list menu", null));
         }
     }
+
     // category menu
     @Operation(summary = "Get List Menu", description = "Get List Menu")
     @GetMapping("/menu/category")
@@ -67,7 +68,7 @@ public class PosMenuController {
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"Error get list menu", null));
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get list menu", null));
         }
     }
 
@@ -86,6 +87,7 @@ public class PosMenuController {
         }
     }
 
+
     // update transaction order
     @Operation(summary = "PUT Update Transaction", description = "API for updating data transaction")
     @PutMapping("/transaction/{transactionId}")
@@ -99,6 +101,21 @@ public class PosMenuController {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
+
+    // update transaction order to cancelled
+    @Operation(summary = "PUT Update Transaction", description = "API for updating data transaction")
+    @PutMapping("/transaction/{transactionId}/cancel")
+    public ResponseEntity<ApiResponse> updateStatus(@PathVariable String transactionId) {
+        log.info("PUT " + urlRoute + " endpoint hit");
+        try {
+            transactionService.updateStatusToCancel(transactionId);
+            return ResponseEntity.ok().body(new ApiResponse(true, "Successfully cancelled the transaction", null));
+        } catch (Exception e) {
+            log.error("Error update transaction : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
 
     // index menu
     @Operation(summary = "Get List Menu", description = "Get List Menu")
@@ -119,7 +136,7 @@ public class PosMenuController {
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list order transaction", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new ApiResponse(false,"Error get list order transaction", null));
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get list order transaction", null));
         }
     }
 

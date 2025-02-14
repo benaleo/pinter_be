@@ -4,14 +4,15 @@ import com.kopibery.pos.entity.Transaction;
 import com.kopibery.pos.enums.TransactionStatus;
 import com.kopibery.pos.enums.TransactionType;
 import com.kopibery.pos.model.projection.AppDetailMenuOrderProjection;
-import com.kopibery.pos.model.projection.AppMenuProjection;
 import com.kopibery.pos.model.projection.AppOrderProjection;
 import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,4 +57,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 t.secureId = :transactionId
             """)
     List<AppDetailMenuOrderProjection> findOrderDetailByTransactionId(String transactionId);
+
+    @Transactional
+    @Modifying
+    @Query("""
+            UPDATE Transaction d
+            SET d.status = :status
+            WHERE d = :data
+            """)
+    void updateStatusTransaction(Transaction data, TransactionStatus status);
 }

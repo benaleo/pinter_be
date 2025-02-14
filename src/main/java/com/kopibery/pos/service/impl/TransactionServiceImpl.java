@@ -161,6 +161,13 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.delete(data);
     }
 
+    @Override
+    @Transactional
+    public void updateStatusToCancel(String id) {
+        Transaction data = TreeGetEntity.parsingTransactionByProjection(id, transactionRepository);
+        transactionRepository.updateStatusTransaction(data, TransactionStatus.CANCELLED);
+    }
+
     private TransactionModel.IndexResponse convertToBackResponse(Transaction c) {
         TransactionModel.IndexResponse dto = new TransactionModel.IndexResponse();
         dto.setInvoice(c.getInvoice());
