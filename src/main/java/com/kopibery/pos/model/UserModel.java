@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+import java.util.Map;
+
 public class UserModel {
 
     @EqualsAndHashCode(callSuper = true)
@@ -58,5 +61,17 @@ public class UserModel {
         private String roleId;
         private String companyId;
 
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class UserInfo {
+        private String userId;
+        private String name;
+        private String email;
+        private String role;
+        private String companyId;
+        private String companyName;
+        private List<Map<String, String>> permissions;
     }
 }

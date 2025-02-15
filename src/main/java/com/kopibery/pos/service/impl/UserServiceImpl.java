@@ -1,17 +1,17 @@
 package com.kopibery.pos.service.impl;
 
-import com.kopibery.pos.entity.Company;
-import com.kopibery.pos.entity.Roles;
-import com.kopibery.pos.entity.Users;
+import com.kopibery.pos.entity.*;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
 import com.kopibery.pos.repository.CompanyRepository;
+import com.kopibery.pos.repository.RolePermissionRepository;
 import com.kopibery.pos.repository.RoleRepository;
 import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.UserService;
+import com.kopibery.pos.util.ContextPrincipal;
 import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RolePermissionRepository rolePermissionRepository;
 
     private final CompanyRepository companyRepository;
 
@@ -144,6 +148,25 @@ public class UserServiceImpl implements UserService {
     public void deleteData(String id) {
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
         userRepository.delete(user);
+    }
+
+    @Override
+    public UserModel.UserInfo getUserInfo() {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
+        return new UserModel.UserInfo(
+                user.getSecureId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().getName(),
+                user.getCompany() != null ? user.getCompany().getSecureId() : null,
+                user.getCompany() != null ? user.getCompany().getName() : null,
+                rolePermissionRepository.findByRole(user.getRole()).stream()
+                        .map(RolePermission::getPermission)
+                        .map(Permissions::getName)
+                        .map(permission -> Map.of("name", permission))
+                        .collect(Collectors.toList())
+        );
     }
 
 }

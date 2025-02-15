@@ -5,6 +5,8 @@ import com.kopibery.pos.response.ResultPageResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
@@ -19,4 +21,5 @@ public interface UserService {
 
     void deleteData(String id);
 
+    UserModel.UserInfo getUserInfo();
 }
