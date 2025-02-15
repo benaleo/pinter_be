@@ -59,7 +59,6 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     private Company company;
 
 
-
     // Getters and setters
 
     @Override
