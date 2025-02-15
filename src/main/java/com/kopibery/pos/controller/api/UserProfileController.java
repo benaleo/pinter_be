@@ -34,10 +34,10 @@ public class UserProfileController {
         log.info("GET " + urlRoute + "/info endpoint hit");
         try {
             UserModel.UserInfo response = userService.getUserInfo();
-            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get user info", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get list menu", null));
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get user info", null));
         }
     }
 }
