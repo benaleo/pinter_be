@@ -33,6 +33,7 @@ public class MenuModel {
         private Integer payment_amount;
         private TransactionStatus payment_status;
         private TransactionType payment_method;
+        private String created_at;
         private List<DetailsMenuOrder> details;
     }
 

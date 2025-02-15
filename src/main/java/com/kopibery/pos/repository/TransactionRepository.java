@@ -38,7 +38,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("""
             SELECT new com.kopibery.pos.model.projection.AppOrderProjection(
-                t.secureId, t.invoice, t.customerName, t.cashierName, t.amountPayment, t.status, t.typePayment)
+                t.secureId, t.invoice, t.customerName, t.cashierName, t.amountPayment, t.status, t.typePayment, t.createdAt)
             FROM Transaction t
             WHERE
                 (LOWER(t.invoice) LIKE LOWER(:keyword)) AND

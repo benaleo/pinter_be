@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,6 +143,7 @@ public class PostMenuServiceImpl implements PostMenuService {
                 data.getPayment_amount(),
                 data.getPayment_status(),
                 data.getPayment_method(),
+                data.getCreated_at().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 detailList
         );
     }

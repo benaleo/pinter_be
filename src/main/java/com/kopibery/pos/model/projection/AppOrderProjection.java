@@ -5,6 +5,8 @@ import com.kopibery.pos.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 public class AppOrderProjection {
@@ -15,4 +17,5 @@ public class AppOrderProjection {
     private Integer payment_amount;
     private TransactionStatus payment_status;
     private TransactionType payment_method;
+    private LocalDateTime created_at;
 }
