@@ -78,7 +78,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             LEFT JOIN p.category c
             WHERE
                 (LOWER(p.name) LIKE LOWER(:keyword)) AND
-                (:category IS NULL OR c.name = :category)
+                (:category IS NULL OR c.name = :category) AND
+                p.isActive = true AND p.isDeleted = false
             """)
     Page<AppMenuProjection> findMenuByKeyword(String keyword, Pageable pageable, String category);
 
