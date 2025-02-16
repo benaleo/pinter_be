@@ -1,6 +1,7 @@
 package com.kopibery.pos.entity;
 
 import com.kopibery.pos.entity.impl.SecureIdentifiable;
+import com.kopibery.pos.enums.ProductCategoryType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,6 +32,10 @@ public class ProductCategory extends AbstractEntity implements SecureIdentifiabl
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private ProductCategoryType type = ProductCategoryType.MENU;
 
     public int getTotalProduct() {
         return listProduct.size();

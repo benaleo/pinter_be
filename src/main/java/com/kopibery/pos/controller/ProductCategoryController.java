@@ -99,8 +99,8 @@ public class ProductCategoryController {
     public ResponseEntity<ApiResponse> updateSoftDelete(@PathVariable("id") String id) {
         log.info("PUT " + urlRoute + "/{}/delete endpoint hit", id);
         try {
-            ProductCategoryModel.IndexResponse response = service.updateSoftDelete(id);
-            return ResponseEntity.ok(new ApiResponse(true, "Successfully deleted product_category", response));
+            service.updateSoftDelete(id);
+            return ResponseEntity.ok(new ApiResponse(true, "Successfully deleted product_category", null));
         } catch (Exception e) {
             log.error("Error delete product_category : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));

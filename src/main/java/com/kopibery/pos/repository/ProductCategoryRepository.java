@@ -29,7 +29,7 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
 
     @Query("""
             SELECT new com.kopibery.pos.model.projection.ProductCategoryIndexProjection(
-                pc.secureId, pc.name, pc.isActive,
+                pc.secureId, pc.name, pc.isActive, pc.type,
                 pc.createdAt, pc.updatedAt, uc.name, uu.name
             )
             FROM ProductCategory pc
@@ -63,7 +63,7 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
 
     @Query("""
             SELECT new com.kopibery.pos.model.projection.ProductCategoryIndexProjection(
-                pc.secureId, pc.name, pc.isActive,
+                pc.secureId, pc.name, pc.isActive, pc.type,
                 pc.createdAt, pc.updatedAt, uc.name, uu.name
             )
             FROM ProductCategory pc
@@ -76,10 +76,10 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
                 (:companyId IS NULL OR pcc.secureId = :companyId OR pcc.parent.secureId = :companyId) AND
                 pc.isDeleted = false
             """)
-    Page<ProductCategoryIndexProjection> findDataByKeywordInApp(String keyword, Pageable pageable, String secureId);
+    Page<ProductCategoryIndexProjection> findDataByKeywordInApp(String keyword, Pageable pageable, String companyId);
 
     @Modifying
     @Transactional
     @Query("UPDATE ProductCategory pc SET pc.isActive = false, pc.isDeleted = true WHERE pc = :data")
-    ProductCategoryModel.IndexResponse updateIsActiveFalseAndIsDeleteTrue(ProductCategory data);
+    void updateIsActiveFalseAndIsDeleteTrue(ProductCategory data);
 }

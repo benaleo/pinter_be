@@ -19,7 +19,7 @@ public class AbstractEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "secure_id", nullable = false, unique = true, columnDefinition = "char(36) default gen_random_uuid()")
+    @Column(name = "secure_id", nullable = false, unique = true, columnDefinition = "char(36)")
     private String secureId = UUID.randomUUID().toString();
 
     @Column(name = "is_active", columnDefinition = "boolean default true")

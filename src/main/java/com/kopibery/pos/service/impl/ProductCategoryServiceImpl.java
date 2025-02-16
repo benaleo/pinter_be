@@ -2,6 +2,7 @@ package com.kopibery.pos.service.impl;
 
 import com.kopibery.pos.entity.ProductCategory;
 import com.kopibery.pos.entity.Users;
+import com.kopibery.pos.enums.ProductCategoryType;
 import com.kopibery.pos.model.ProductCategoryModel;
 import com.kopibery.pos.model.projection.CastKeyValueProjection;
 import com.kopibery.pos.model.projection.ProductCategoryIndexProjection;
@@ -85,6 +86,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         newData.setName(item.getName());
         newData.setIsActive(item.getIsActive());
         newData.setCompany(user.getCompany());
+        newData.setType(item.getType() != null ? item.getType() : ProductCategoryType.MENU);
 
         GlobalConverter.CmsAdminCreateAtBy(newData, userId);
         ProductCategory savedData = productCategoryRepository.save(newData);
@@ -101,8 +103,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
-        data.setName(item.getName());
-        data.setIsActive(item.getIsActive());
+        data.setName(item.getName() != null ? item.getName() : data.getName());
+        data.setIsActive(item.getIsActive() != null ? item.getIsActive() : data.getIsActive());
+        data.setType(item.getType() != null ? item.getType() : data.getType());
 
         GlobalConverter.CmsAdminUpdateAtBy(data, userId);
         ProductCategory savedData = productCategoryRepository.save(data);
@@ -114,18 +117,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategoryModel.IndexResponse updateSoftDelete(String id) {
+    public void updateSoftDelete(String id) {
         ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
-
-        return productCategoryRepository.updateIsActiveFalseAndIsDeleteTrue(data);
+        productCategoryRepository.updateIsActiveFalseAndIsDeleteTrue(data);
     }
 
     @Override
     @Transactional
     public void deleteData(String id) {
         ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
-
-        productRepository.updateProductCategoryToNull(data);
         productCategoryRepository.delete(data);
     }
 
@@ -184,6 +184,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         ProductCategoryModel.IndexResponse dto = new ProductCategoryModel.IndexResponse();
         dto.setName(data.getName());                   // name
         dto.setTotalProducts(total != null ? total : 0L);
+        dto.setType(data.getType());
         dto.setIsActive(data.getIsActive());           // status active
 
         GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, data.getId(), data.getCreatedAt(), data.getUpdatedAt(), data.getCreatedBy(), data.getUpdatedBy());
@@ -193,6 +194,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private ProductCategoryModel.DetailResponse convertToDetail(ProductCategory data) {
         return new ProductCategoryModel.DetailResponse(
                 data.getName(),
+                data.getType(),
                 data.getIsActive()
         );
     }

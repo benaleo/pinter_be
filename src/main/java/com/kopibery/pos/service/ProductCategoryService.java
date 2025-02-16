@@ -15,7 +15,7 @@ public interface ProductCategoryService {
 
     ProductCategoryModel.IndexResponse updateData(String id, ProductCategoryModel.UpdateRequest item);
 
-    ProductCategoryModel.IndexResponse updateSoftDelete(String id);
+    void updateSoftDelete(String id);
 
     void deleteData(String id);
 
