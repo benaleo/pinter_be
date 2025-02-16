@@ -120,7 +120,7 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('product.delete')")
     @Operation(summary = "Delete Product", description = "Delete Product")
-    @DeleteMapping("{id}")
+    @PutMapping("{id}/delete")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {
         log.info("DELETE " + urlRoute + "/{id} endpoint hit");
         try {

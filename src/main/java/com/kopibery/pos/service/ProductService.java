@@ -15,4 +15,6 @@ public interface ProductService {
     ProductModel.ProductIndexResponse updateData(String id, ProductModel.UpdateRequest item) throws IOException;
 
     void deleteData(String id);
+
+    ResultPageResponseDTO<ProductModel.ProductIndexResponse> listIndexApp(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 }

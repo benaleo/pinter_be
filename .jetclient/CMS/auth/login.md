@@ -27,7 +27,7 @@ raw = '''
 //}
 
 {
-  email: "ari@pinter.id",
+  email: "admin@pinter.id",
   password: "adminberi"
 }
 '''

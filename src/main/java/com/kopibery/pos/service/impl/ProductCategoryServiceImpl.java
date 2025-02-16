@@ -1,12 +1,15 @@
 package com.kopibery.pos.service.impl;
 
 import com.kopibery.pos.entity.ProductCategory;
+import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.model.ProductCategoryModel;
+import com.kopibery.pos.model.projection.CastKeyValueProjection;
 import com.kopibery.pos.model.projection.ProductCategoryIndexProjection;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
 import com.kopibery.pos.repository.ProductCategoryRepository;
 import com.kopibery.pos.repository.ProductRepository;
+import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.DataProjectionService;
@@ -31,21 +34,24 @@ import java.util.stream.Collectors;
 public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     private final DataProjectionService dataProjectionService;
+    private final UserRepository userRepository;
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
     @Override
     public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
         // First page result (get total count)
-        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeyword(set.keyword(), set.pageable());
+        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeyword(set.keyword(), set.pageable(), user.getCompany().getSecureId());
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeyword(set.keyword(), pageable);
+        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeyword(set.keyword(), pageable, user.getCompany().getSecureId());
 
         // List id
         List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId).collect(Collectors.toList());
@@ -73,16 +79,18 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Transactional
     public ProductCategoryModel.IndexResponse saveData(ProductCategoryModel.CreateRequest item) {
         Long userId = ContextPrincipal.getId();
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         ProductCategory newData = new ProductCategory();
         newData.setName(item.getName());
         newData.setIsActive(item.getIsActive());
+        newData.setCompany(user.getCompany());
 
         GlobalConverter.CmsAdminCreateAtBy(newData, userId);
         ProductCategory savedData = productCategoryRepository.save(newData);
 
         Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(List.of(savedData.getSecureId()));
-        ProductCategoryIndexProjection projection = productCategoryRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged()).getContent().getFirst();
+        ProductCategoryIndexProjection projection = productCategoryRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId()).getContent().getFirst();
         return convertToBackResponse(projection, mapCountProducts);
     }
 
@@ -90,6 +98,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Transactional
     public ProductCategoryModel.IndexResponse updateData(String id, ProductCategoryModel.UpdateRequest item) {
         Long userId = ContextPrincipal.getId();
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
         data.setName(item.getName());
@@ -99,7 +108,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         ProductCategory savedData = productCategoryRepository.save(data);
 
         Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(List.of(savedData.getSecureId()));
-        ProductCategoryIndexProjection projection = productCategoryRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged()).getContent().getFirst();
+        ProductCategoryIndexProjection projection = productCategoryRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId()).getContent().getFirst();
         return convertToBackResponse(projection, mapCountProducts);
     }
 
@@ -110,6 +119,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
         productRepository.updateProductCategoryToNull(data);
         productCategoryRepository.delete(data);
+    }
+
+    @Override
+    public List<Map<String, String>> getListInputForm() {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        List<CastKeyValueProjection> data = productCategoryRepository.getListInputForm(user.getCompany().getSecureId());
+        return data.stream().map((c) -> {
+            return Map.of("id", c.getKey(), "name", c.getValue());
+        }).collect(Collectors.toList());
     }
 
     private ProductCategoryModel.IndexResponse convertToBackResponse(ProductCategoryIndexProjection data, Map<String, Long> mapCountProducts) {

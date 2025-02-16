@@ -1,12 +1,14 @@
 package com.kopibery.pos.service.impl;
 
 import com.kopibery.pos.entity.Product;
+import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.model.ProductModel;
 import com.kopibery.pos.model.projection.ProductIndexProjection;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
 import com.kopibery.pos.repository.ProductCategoryRepository;
 import com.kopibery.pos.repository.ProductRepository;
+import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.ProductService;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
+    private final UserRepository userRepository;
+
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
@@ -38,15 +42,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultPageResponseDTO<ProductModel.ProductIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
         // First page result (get total count)
-        Page<ProductIndexProjection> firstResult = productRepository.findDataByKeyword(set.keyword(), set.pageable());
+        Page<ProductIndexProjection> firstResult = productRepository.findDataByKeyword(set.keyword(), set.pageable(), user.getCompany().getSecureId());
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<ProductIndexProjection> pageResult = productRepository.findDataByKeyword(set.keyword(), pageable);
+        Page<ProductIndexProjection> pageResult = productRepository.findDataByKeyword(set.keyword(), pageable, user.getCompany().getSecureId());
 
         // Map the data to the DTOs
         List<ProductModel.ProductIndexResponse> dtos = pageResult.stream().map(this::convertToBackResponse).collect(Collectors.toList());
@@ -69,6 +75,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductModel.ProductIndexResponse saveData(ProductModel.CreateRequest item) throws IOException {
         Long userId = ContextPrincipal.getId();
 
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
         Product newData = new Product();
         byte[] fileBytes = item.getImage() != null ? item.getImage().getBytes() : null;
 
@@ -89,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
         savedData.setImageUrl(item.getImage() != null ? "/get/file/product/" + savedData.getSecureId() : null);
         productRepository.save(savedData);
 
-        ProductIndexProjection projection = productRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged()).getContent().getFirst();
+        ProductIndexProjection projection = productRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId()).getContent().getFirst();
         return convertToBackResponse(projection);
     }
 
@@ -97,6 +105,8 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductModel.ProductIndexResponse updateData(String id, ProductModel.UpdateRequest item) throws IOException {
         Long userId = ContextPrincipal.getId();
+
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         Product data = TreeGetEntity.parsingProductByProjection(id, productRepository);
         byte[] fileBytes = item.getImage() != null ? item.getImage().getBytes() : null;
@@ -118,14 +128,47 @@ public class ProductServiceImpl implements ProductService {
         savedData.setImageUrl(item.getImage() != null ? "/get/file/product/" + savedData.getSecureId() : null);
         productRepository.save(savedData);
 
-        ProductIndexProjection projection = productRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged()).getContent().getFirst();
+        ProductIndexProjection projection = productRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId()).getContent().getFirst();
         return convertToBackResponse(projection);
     }
 
     @Override
+    @Transactional
     public void deleteData(String id) {
         Product data = TreeGetEntity.parsingProductByProjection(id, productRepository);
-        productRepository.delete(data);
+        log.info("productId is : {} with secure id :{}", data.getId(), data.getSecureId());
+        productRepository.updateIsActiveFalseAndIsDeletedTrue(data);
+    }
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    // Apps
+    @Override
+    public ResultPageResponseDTO<ProductModel.ProductIndexResponse> listIndexApp(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
+        ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
+
+        // First page result (get total count)
+        Page<ProductIndexProjection> firstResult = productRepository.findDataByKeywordInApps(set.keyword(), set.pageable(), user.getCompany().getSecureId());
+
+        // Use a correct Pageable for fetching the next page
+        Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
+        Page<ProductIndexProjection> pageResult = productRepository.findDataByKeywordInApps(set.keyword(), pageable, user.getCompany().getSecureId());
+
+        // Map the data to the DTOs
+        List<ProductModel.ProductIndexResponse> dtos = pageResult.stream().map(this::convertToBackResponse).collect(Collectors.toList());
+
+        return PageCreateReturn.create(
+                pageResult,
+                dtos
+        );
     }
 
     private ProductModel.ProductIndexResponse convertToBackResponse(ProductIndexProjection data) {

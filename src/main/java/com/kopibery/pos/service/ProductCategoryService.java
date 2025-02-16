@@ -3,6 +3,9 @@ package com.kopibery.pos.service;
 import com.kopibery.pos.model.ProductCategoryModel;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 
+import java.util.List;
+import java.util.Map;
+
 public interface ProductCategoryService {
     ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 
@@ -13,4 +16,6 @@ public interface ProductCategoryService {
     ProductCategoryModel.IndexResponse updateData(String id, ProductCategoryModel.UpdateRequest item);
 
     void deleteData(String id);
+
+    List<Map<String, String>> getListInputForm();
 }

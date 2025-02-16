@@ -48,6 +48,9 @@ public class Product extends AbstractEntity implements SecureIdentifiable {
     @JoinColumn(name = "category_id", referencedColumnName = "secure_id", nullable = false)
     private ProductCategory category;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = false;
+
     @Override
     public Long getId() {
         return super.getId();

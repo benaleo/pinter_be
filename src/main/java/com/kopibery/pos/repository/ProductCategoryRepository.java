@@ -3,6 +3,7 @@ package com.kopibery.pos.repository;
 import com.kopibery.pos.entity.ProductCategory;
 import com.kopibery.pos.model.dto.SavedStringAndLongValue;
 import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
+import com.kopibery.pos.model.projection.CastKeyValueProjection;
 import com.kopibery.pos.model.projection.ProductCategoryIndexProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +32,13 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
             FROM ProductCategory pc
             LEFT JOIN Users uc ON uc.id = pc.createdBy
             LEFT JOIN Users uu ON uu.id = pc.updatedBy
+            LEFT JOIN Company pcc ON pc.company = pcc
             WHERE
                 (LOWER(pc.name) LIKE LOWER(:keyword) OR
-                LOWER(pc.secureId) LIKE LOWER(:keyword))
+                LOWER(pc.secureId) LIKE LOWER(:keyword)) AND
+                (:companyId IS NULL OR pcc.secureId = :companyId OR pcc.parent.secureId = :companyId)
             """)
-    Page<ProductCategoryIndexProjection> findDataByKeyword(String keyword, Pageable pageable);
+    Page<ProductCategoryIndexProjection> findDataByKeyword(String keyword, Pageable pageable, String companyId);
 
     @Query("""
             SELECT new com.kopibery.pos.model.dto.SavedStringAndLongValue(pc.secureId, count(p.secureId))
@@ -47,4 +50,11 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     List<SavedStringAndLongValue> countProductByCategoryIds(List<String> idsList);
 
     List<ProductCategory> findAllByIsActive(boolean isActive);
+
+    @Query("""
+            SELECT new com.kopibery.pos.model.projection.CastKeyValueProjection(d.secureId, d.name)
+            FROM ProductCategory d
+            WHERE d.isActive = true AND d.company.secureId = :secureId
+            """)
+    List<CastKeyValueProjection> getListInputForm(String secureId);
 }

@@ -22,6 +22,10 @@ public class ProductCategory extends AbstractEntity implements SecureIdentifiabl
     @Column(name = "name", nullable = false)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "secure_id", updatable = false)
+    private Company company;
+
     @OneToMany(mappedBy = "category",  fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> listProduct;
 
