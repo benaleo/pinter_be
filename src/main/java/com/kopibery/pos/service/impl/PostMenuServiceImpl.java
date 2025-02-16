@@ -15,7 +15,7 @@ import com.kopibery.pos.repository.ProductRepository;
 import com.kopibery.pos.repository.TransactionRepository;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
-import com.kopibery.pos.service.PostMenuService;
+import com.kopibery.pos.service.PosService;
 import com.kopibery.pos.util.GlobalConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PostMenuServiceImpl implements PostMenuService {
+public class PostMenuServiceImpl implements PosService {
 
     private final ProductRepository productRepository;
     private final TransactionRepository transactionRepository;

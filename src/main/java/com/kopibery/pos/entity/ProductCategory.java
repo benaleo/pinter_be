@@ -29,6 +29,9 @@ public class ProductCategory extends AbstractEntity implements SecureIdentifiabl
     @OneToMany(mappedBy = "category",  fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> listProduct;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = false;
+
     public int getTotalProduct() {
         return listProduct.size();
     }

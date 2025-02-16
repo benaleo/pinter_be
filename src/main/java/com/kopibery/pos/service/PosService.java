@@ -9,7 +9,7 @@ import com.kopibery.pos.response.ResultPageResponseDTO;
 import java.util.List;
 import java.util.Map;
 
-public interface PostMenuService {
+public interface PosService {
 
     ResultPageResponseDTO<MenuModel.MenuIndexResponse> listMenuIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, String category);
 

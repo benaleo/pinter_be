@@ -7,6 +7,7 @@ import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.security.JwtUtil;
 import com.kopibery.pos.service.util.CustomUserDetailsService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,11 +29,11 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "Auth API")
 @Slf4j
 public class AuthController {
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;

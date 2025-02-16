@@ -7,7 +7,7 @@ import com.kopibery.pos.model.TransactionModel;
 import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.response.PaginationCmsResponse;
 import com.kopibery.pos.response.ResultPageResponseDTO;
-import com.kopibery.pos.service.PostMenuService;
+import com.kopibery.pos.service.PosService;
 import com.kopibery.pos.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,15 +24,15 @@ import java.util.Map;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(PosMenuController.urlRoute)
+@RequestMapping(PosController.urlRoute)
 @Tag(name = "Menu API")
 @Slf4j
 @SecurityRequirement(name = "Authorization")
-public class PosMenuController {
+public class PosController {
 
     static final String urlRoute = "/api/v1/pos";
 
-    private final PostMenuService postMenuService;
+    private final PosService posService;
     private final TransactionService transactionService;
 
     // index menu
@@ -49,7 +49,7 @@ public class PosMenuController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<MenuModel.MenuIndexResponse> response = postMenuService.listMenuIndex(pages, limit, sortBy, direction, keyword, category);
+            ResultPageResponseDTO<MenuModel.MenuIndexResponse> response = posService.listMenuIndex(pages, limit, sortBy, direction, keyword, category);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -64,7 +64,7 @@ public class PosMenuController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            List<Map<String, String>> response = postMenuService.listMenuCategoryIndex();
+            List<Map<String, String>> response = posService.listMenuCategoryIndex();
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list menu", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -132,7 +132,7 @@ public class PosMenuController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<MenuModel.OrderIndexResponse> response = postMenuService.listOrderIndex(pages, limit, sortBy, direction, keyword, paymentMethod, paymentStatus);
+            ResultPageResponseDTO<MenuModel.OrderIndexResponse> response = posService.listOrderIndex(pages, limit, sortBy, direction, keyword, paymentMethod, paymentStatus);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list order transaction", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);

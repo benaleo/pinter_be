@@ -57,4 +57,21 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
             WHERE d.isActive = true AND d.company.secureId = :secureId
             """)
     List<CastKeyValueProjection> getListInputForm(String secureId);
+
+    @Query("""
+            SELECT new com.kopibery.pos.model.projection.ProductCategoryIndexProjection(
+                pc.secureId, pc.name, pc.isActive,
+                pc.createdAt, pc.updatedAt, uc.name, uu.name
+            )
+            FROM ProductCategory pc
+            LEFT JOIN Users uc ON uc.id = pc.createdBy
+            LEFT JOIN Users uu ON uu.id = pc.updatedBy
+            LEFT JOIN Company pcc ON pc.company = pcc
+            WHERE
+                (LOWER(pc.name) LIKE LOWER(:keyword) OR
+                LOWER(pc.secureId) LIKE LOWER(:keyword)) AND
+                (:companyId IS NULL OR pcc.secureId = :companyId OR pcc.parent.secureId = :companyId) AND
+                pc.isDeleted = false
+            """)
+    Page<ProductCategoryIndexProjection> findDataByKeywordInApp(String keyword, Pageable pageable, String secureId);
 }

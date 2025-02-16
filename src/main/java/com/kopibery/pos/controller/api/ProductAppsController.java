@@ -1,10 +1,13 @@
 package com.kopibery.pos.controller.api;
 
+import com.kopibery.pos.controller.ProductCategoryController;
 import com.kopibery.pos.controller.ProductController;
+import com.kopibery.pos.model.ProductCategoryModel;
 import com.kopibery.pos.model.ProductModel;
 import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.response.PaginationCmsResponse;
 import com.kopibery.pos.response.ResultPageResponseDTO;
+import com.kopibery.pos.service.ProductCategoryService;
 import com.kopibery.pos.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,6 +31,7 @@ public class ProductAppsController {
     static final String urlRoute = "/api/v1/ms/";
 
     private final ProductService productService;
+    private final ProductCategoryService productCategoryService;
 
     @Operation(summary = "Get List Product", description = "Get List Product")
     @GetMapping("/product")
@@ -48,5 +52,26 @@ public class ProductAppsController {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
+
+    @Operation(summary = "Get List Product Category", description = "Get List Product Category")
+    @GetMapping("/product-category")
+    public ResponseEntity<?> listIndexProductCategory(
+            @RequestParam(name = "pages", required = false, defaultValue = "0") Integer pages,
+            @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
+            @RequestParam(name = "direction", required = false, defaultValue = "asc") String direction,
+            @RequestParam(name = "keyword", required = false) String keyword
+    ) {
+        // response true
+        log.info("GET " + urlRoute + "/product-category endpoint hit");
+        try {
+            ResultPageResponseDTO<ProductCategoryModel.IndexResponse> response = productCategoryService.listIndexInApp(pages, limit, sortBy, direction, keyword);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list product_category", response));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
 
 }

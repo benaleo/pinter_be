@@ -130,6 +130,46 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         }).collect(Collectors.toList());
     }
 
+    //
+    //
+    //
+    //
+    //
+    // Apps
+    //
+    //
+    //
+    //
+    //
+    @Override
+    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndexInApp(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
+        ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
+
+        // First page result (get total count)
+        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeywordInApp(set.keyword(), set.pageable(), user.getCompany().getSecureId());
+
+        // Use a correct Pageable for fetching the next page
+        Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
+        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeywordInApp(set.keyword(), pageable, user.getCompany().getSecureId());
+
+        // List id
+        List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId).collect(Collectors.toList());
+        Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(idsList);
+
+        // Map the data to the DTOs
+        List<ProductCategoryModel.IndexResponse> dtos = pageResult.stream().map((c) -> {
+            return convertToBackResponse(c, mapCountProducts);
+        }).collect(Collectors.toList());
+
+        return PageCreateReturn.create(
+                pageResult,
+                dtos
+        );
+    }
+
     private ProductCategoryModel.IndexResponse convertToBackResponse(ProductCategoryIndexProjection data, Map<String, Long> mapCountProducts) {
         Long total = mapCountProducts.get(data.getId());
 
