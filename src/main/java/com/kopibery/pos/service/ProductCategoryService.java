@@ -15,6 +15,8 @@ public interface ProductCategoryService {
 
     ProductCategoryModel.IndexResponse updateData(String id, ProductCategoryModel.UpdateRequest item);
 
+    ProductCategoryModel.IndexResponse updateSoftDelete(String id);
+
     void deleteData(String id);
 
     List<Map<String, String>> getListInputForm();
@@ -22,4 +24,5 @@ public interface ProductCategoryService {
 
     // Apps
     ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndexInApp(Integer pages, Integer limit, String sortBy, String direction, String keyword);
+
 }

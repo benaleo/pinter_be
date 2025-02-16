@@ -93,6 +93,20 @@ public class ProductCategoryController {
         }
     }
 
+    @PreAuthorize("hasAuthority('product_category.update')")
+    @Operation(summary = "Update Product Category", description = "Update Product Category")
+    @PutMapping("{id}/delete")
+    public ResponseEntity<ApiResponse> updateSoftDelete(@PathVariable("id") String id) {
+        log.info("PUT " + urlRoute + "/{}/delete endpoint hit", id);
+        try {
+            ProductCategoryModel.IndexResponse response = service.updateSoftDelete(id);
+            return ResponseEntity.ok(new ApiResponse(true, "Successfully deleted product_category", response));
+        } catch (Exception e) {
+            log.error("Error delete product_category : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
     @PreAuthorize("hasAuthority('product_category.delete')")
     @Operation(summary = "Delete Product Category", description = "Delete Product Category")
     @DeleteMapping("{id}")

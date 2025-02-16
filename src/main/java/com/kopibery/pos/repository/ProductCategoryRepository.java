@@ -1,6 +1,7 @@
 package com.kopibery.pos.repository;
 
 import com.kopibery.pos.entity.ProductCategory;
+import com.kopibery.pos.model.ProductCategoryModel;
 import com.kopibery.pos.model.dto.SavedStringAndLongValue;
 import com.kopibery.pos.model.projection.CastIdSecureIdProjection;
 import com.kopibery.pos.model.projection.CastKeyValueProjection;
@@ -8,8 +9,10 @@ import com.kopibery.pos.model.projection.ProductCategoryIndexProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -74,4 +77,9 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
                 pc.isDeleted = false
             """)
     Page<ProductCategoryIndexProjection> findDataByKeywordInApp(String keyword, Pageable pageable, String secureId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ProductCategory pc SET pc.isActive = false, pc.isDeleted = true WHERE pc = :data")
+    ProductCategoryModel.IndexResponse updateIsActiveFalseAndIsDeleteTrue(ProductCategory data);
 }

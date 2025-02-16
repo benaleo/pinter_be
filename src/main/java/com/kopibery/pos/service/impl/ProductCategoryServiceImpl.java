@@ -114,6 +114,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
+    public ProductCategoryModel.IndexResponse updateSoftDelete(String id) {
+        ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
+
+        return productCategoryRepository.updateIsActiveFalseAndIsDeleteTrue(data);
+    }
+
+    @Override
+    @Transactional
     public void deleteData(String id) {
         ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
 
