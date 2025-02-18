@@ -1,13 +1,11 @@
 package com.kopibery.pos.service.impl;
 
 import com.kopibery.pos.entity.*;
+import com.kopibery.pos.enums.InOutType;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
-import com.kopibery.pos.repository.CompanyRepository;
-import com.kopibery.pos.repository.RolePermissionRepository;
-import com.kopibery.pos.repository.RoleRepository;
-import com.kopibery.pos.repository.UserRepository;
+import com.kopibery.pos.repository.*;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.UserService;
@@ -16,7 +14,6 @@ import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.tree.Tree;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final RolePermissionRepository rolePermissionRepository;
+    private final RlUserShiftRepository relationUserShiftRepository;
 
     private final CompanyRepository companyRepository;
 
@@ -154,6 +153,27 @@ public class UserServiceImpl implements UserService {
     public UserModel.UserInfo getUserInfo() {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
+
+       return parseUserInfo(user, userShift);
+    }
+
+    @Override
+    public UserModel.UserInfo getPresenceUser(InOutType type) {
+        LocalDateTime now = LocalDateTime.now();
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
+        if (userShift != null) {
+            userShift.setStart(type.equals(InOutType.IN) ? now : userShift.getStart());
+            userShift.setEnd(type.equals(InOutType.OUT) ? now : userShift.getEnd());
+            relationUserShiftRepository.save(userShift);
+        }
+
+        return parseUserInfo(user, userShift);
+    }
+
+    private UserModel.UserInfo parseUserInfo(Users user, RlUserShift userShift){
         return new UserModel.UserInfo(
                 user.getSecureId(),
                 user.getName(),
@@ -161,6 +181,8 @@ public class UserServiceImpl implements UserService {
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,
+                userShift != null ? (userShift.getStart() != null ? userShift.getStart().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : null) : null,
+                userShift != null ? (userShift.getEnd() != null ? userShift.getEnd().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : null) : null,
                 rolePermissionRepository.findByRole(user.getRole()).stream()
                         .map(RolePermission::getPermission)
                         .map(Permissions::getName)
@@ -168,5 +190,4 @@ public class UserServiceImpl implements UserService {
                         .collect(Collectors.toList())
         );
     }
-
 }

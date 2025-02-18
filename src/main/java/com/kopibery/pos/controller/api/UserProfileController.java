@@ -1,5 +1,6 @@
 package com.kopibery.pos.controller.api;
 
+import com.kopibery.pos.enums.InOutType;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.response.PaginationCmsResponse;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -40,4 +42,21 @@ public class UserProfileController {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get user info", null));
         }
     }
+
+    // presence user
+    @Operation(summary = "Get user info", description = "Get user info")
+    @GetMapping("/presence")
+    public ResponseEntity<?> getPresenceUser(@RequestParam InOutType type) {
+        // response true
+        log.info("GET " + urlRoute + "/presence endpoint hit");
+        try {
+            UserModel.UserInfo response = userService.getPresenceUser(type);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get user info", response));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get user info", null));
+        }
+    }
+
+
 }

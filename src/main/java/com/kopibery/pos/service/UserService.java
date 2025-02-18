@@ -1,5 +1,6 @@
 package com.kopibery.pos.service;
 
+import com.kopibery.pos.enums.InOutType;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,4 +23,6 @@ public interface UserService {
     void deleteData(String id);
 
     UserModel.UserInfo getUserInfo();
+
+    UserModel.UserInfo getPresenceUser(InOutType type);
 }

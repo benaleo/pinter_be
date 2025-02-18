@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -35,4 +36,7 @@ public class RlUserShift extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "position_id", referencedColumnName = "secure_id")
     private MsJobPosition position;
+
+    private LocalDateTime start;
+    private LocalDateTime end;
 }

@@ -66,12 +66,14 @@ public class UserModel {
     @Data
     @AllArgsConstructor
     public static class UserInfo {
-        private String userId;
+        private String user_id;
         private String name;
         private String email;
         private String role;
-        private String companyId;
-        private String companyName;
+        private String company_id;
+        private String company_name;
+        private String in_at;
+        private String out_at;
         private List<Map<String, String>> permissions;
     }
 }
