@@ -53,8 +53,8 @@ public class Transaction extends AbstractEntity implements SecureIdentifiable {
     private Tier tier;
 
     @ManyToOne
-    @JoinColumn(name = "cashier_id", referencedColumnName = "secure_id")
-    private Users cashier;
+    @JoinColumn(name = "user_shift_id", referencedColumnName = "secure_id")
+    private RlUserShift userShift;
 
     @ManyToOne
     @JoinColumn(name = "store_id", referencedColumnName = "secure_id")

@@ -37,6 +37,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionProductRepository transactionProductRepository;
     private final MemberRepository memberRepository;
 
+    private final RlUserShiftRepository userShiftRepository;
+
     @Override
     public ResultPageResponseDTO<TransactionModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
 
@@ -92,6 +94,12 @@ public class TransactionServiceImpl implements TransactionService {
         LocalDateTime now = LocalDateTime.now();
         String nowFormat = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
+        RlUserShift userShift = userShiftRepository.findByUserAndDate(user, now.toLocalDate()).orElse(null);
+
+        if (userShift == null){
+            throw new RuntimeException("Kamu harus absen kedalam shift terlebih dahulu");
+        }
+
         String randomString6Char = GlobalConverter.generateRandomString(6);
 
         Transaction newData = new Transaction();
@@ -100,7 +108,7 @@ public class TransactionServiceImpl implements TransactionService {
         newData.setTypePayment(dto.getTypePayment());
         newData.setCashierName(user.getName());
         newData.setStoreName(user.getCompany().getName());
-        newData.setCashier(user);
+        newData.setUserShift(userShift);
         newData.setCompany(user.getCompany());
         newData.setStatus(dto.getStatus());
 
