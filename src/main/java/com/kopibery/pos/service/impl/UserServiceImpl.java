@@ -169,8 +169,12 @@ public class UserServiceImpl implements UserService {
             newShift.setDate(LocalDate.now());
             return relationUserShiftRepository.save(newShift);
         });
-        userShift.setStart(type.equals(InOutType.IN) ? now : userShift.getStart());
-        userShift.setEnd(type.equals(InOutType.OUT) ? now : userShift.getEnd());
+        if (userShift.getStart() == null) {
+            userShift.setStart(type.equals(InOutType.IN) ? now : null);
+        }
+        if (userShift.getEnd() == null) {
+            userShift.setEnd(type.equals(InOutType.OUT) ? now : null);
+        }
         relationUserShiftRepository.save(userShift);
 
         return parseUserInfo(user, userShift);
