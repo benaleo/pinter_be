@@ -1,5 +1,6 @@
 package com.kopibery.pos.repository;
 
+import com.kopibery.pos.entity.MsShift;
 import com.kopibery.pos.entity.RlUserShift;
 import com.kopibery.pos.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ import java.util.Optional;
 public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> {
 
     Optional<RlUserShift> findByUserAndDate(Users user, LocalDate localDate);
+
+    boolean existsByShift(MsShift data);
 }

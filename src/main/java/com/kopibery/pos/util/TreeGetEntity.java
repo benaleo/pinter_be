@@ -84,5 +84,14 @@ public class TreeGetEntity {
         );
     }
 
+    public static MsShift parsingUserShiftByProjection(String secureId, UserShiftRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Shift not found"
+        );
+    }
+
 
 }

@@ -35,4 +35,7 @@ public class MsShift extends AbstractEntity implements SecureIdentifiable {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "secure_id")
     private Company company;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted;
 }
