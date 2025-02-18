@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService {
 
         RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
 
-       return parseUserInfo(user, userShift);
+        return parseUserInfo(user, userShift);
     }
 
     @Override
@@ -163,17 +163,20 @@ public class UserServiceImpl implements UserService {
         LocalDateTime now = LocalDateTime.now();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
-        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
-        if (userShift != null) {
-            userShift.setStart(type.equals(InOutType.IN) ? now : userShift.getStart());
-            userShift.setEnd(type.equals(InOutType.OUT) ? now : userShift.getEnd());
-            relationUserShiftRepository.save(userShift);
-        }
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElseGet(() -> {
+            RlUserShift newShift = new RlUserShift();
+            newShift.setUser(user);
+            newShift.setDate(LocalDate.now());
+            return relationUserShiftRepository.save(newShift);
+        });
+        userShift.setStart(type.equals(InOutType.IN) ? now : userShift.getStart());
+        userShift.setEnd(type.equals(InOutType.OUT) ? now : userShift.getEnd());
+        relationUserShiftRepository.save(userShift);
 
         return parseUserInfo(user, userShift);
     }
 
-    private UserModel.UserInfo parseUserInfo(Users user, RlUserShift userShift){
+    private UserModel.UserInfo parseUserInfo(Users user, RlUserShift userShift) {
         return new UserModel.UserInfo(
                 user.getSecureId(),
                 user.getName(),
