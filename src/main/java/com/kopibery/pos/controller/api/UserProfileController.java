@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -43,20 +40,21 @@ public class UserProfileController {
         }
     }
 
-    // presence user
+    // presence user in
     @Operation(summary = "Get user info", description = "Get user info")
-    @GetMapping("/presence")
+    @PutMapping("/presence")
     public ResponseEntity<?> getPresenceUser(@RequestParam InOutType type) {
         // response true
         log.info("GET " + urlRoute + "/presence endpoint hit");
         try {
-            UserModel.UserInfo response = userService.getPresenceUser(type);
+            UserModel.UserInfo response = userService.getPresenceUserIn(type);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get user info", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get user info", null));
         }
     }
+
 
 
 }

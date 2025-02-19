@@ -8,8 +8,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -57,6 +61,34 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     @JoinColumn(name = "company_id", referencedColumnName = "secure_id")
     @EqualsAndHashCode.Exclude
     private Company company;
+    
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<RlUserShift> userShift;
+
+    // parse attendance
+
+    public String userClockIn(){
+        return userShift.stream()
+                .filter(e -> e.getDate().equals(LocalDate.now()))
+                .findFirst()
+                .filter(e -> e.getTsIn() != null)
+                .map(e -> e.getTsIn().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
+                .orElse(null);
+    }
+
+    public String userClockOut(){
+        return userShift.stream()
+                .filter(e -> e.getDate().equals(LocalDate.now()))
+                .findFirst()
+                .filter(e -> e.getTsOut() != null)
+                .map(e -> e.getTsOut().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
+                .orElse(null);
+    }
+
+    
+    public String getNow(){
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+    }
 
 
     // Getters and setters

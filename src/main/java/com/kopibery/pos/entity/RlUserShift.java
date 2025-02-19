@@ -37,6 +37,9 @@ public class RlUserShift extends AbstractEntity {
     @JoinColumn(name = "position_id", referencedColumnName = "secure_id")
     private MsJobPosition position;
 
-    private LocalDateTime start;
-    private LocalDateTime end;
+    @Column(name = "in_at", updatable = false)
+    private LocalDateTime tsIn;
+
+    @Column(name = "out_at", updatable = false)
+    private LocalDateTime tsOut;
 }

@@ -12,6 +12,7 @@ import com.kopibery.pos.service.UserService;
 import com.kopibery.pos.util.ContextPrincipal;
 import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,15 +152,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserModel.UserInfo getUserInfo() {
-        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+//        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+//
+//        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
 
-        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
-
-        return parseUserInfo(user, userShift);
+        return parseUserInfo(null);
     }
 
     @Override
-    public UserModel.UserInfo getPresenceUser(InOutType type) {
+    public UserModel.UserInfo getPresenceUserIn(InOutType type) {
         LocalDateTime now = LocalDateTime.now();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
@@ -169,18 +170,18 @@ public class UserServiceImpl implements UserService {
             newShift.setDate(LocalDate.now());
             return relationUserShiftRepository.save(newShift);
         });
-        if (userShift.getStart() == null) {
-            userShift.setStart(type.equals(InOutType.IN) ? now : null);
+        if (type.equals(InOutType.IN)) {
+            relationUserShiftRepository.updateTsByUserShiftId(userShift.getId(), now, true);
         }
-        if (userShift.getEnd() == null) {
-            userShift.setEnd(type.equals(InOutType.OUT) ? now : null);
+        if (type.equals(InOutType.OUT)) {
+            relationUserShiftRepository.updateTsByUserShiftId(userShift.getId(), now, false);
         }
-        relationUserShiftRepository.save(userShift);
 
-        return parseUserInfo(user, userShift);
+        return parseUserInfo(type);
     }
 
-    private UserModel.UserInfo parseUserInfo(Users user, RlUserShift userShift) {
+    private UserModel.UserInfo parseUserInfo(InOutType type) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
         return new UserModel.UserInfo(
                 user.getSecureId(),
                 user.getName(),
@@ -188,8 +189,8 @@ public class UserServiceImpl implements UserService {
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,
-                userShift != null ? (userShift.getStart() != null ? userShift.getStart().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : null) : null,
-                userShift != null ? (userShift.getEnd() != null ? userShift.getEnd().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : null) : null,
+                type.equals(InOutType.IN) ? user.getNow() : user.userClockIn(),
+                type.equals(InOutType.OUT) ? user.getNow() : user.userClockOut(),
                 rolePermissionRepository.findByRole(user.getRole()).stream()
                         .map(RolePermission::getPermission)
                         .map(Permissions::getName)

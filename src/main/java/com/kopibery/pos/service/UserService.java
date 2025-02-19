@@ -3,11 +3,10 @@ package com.kopibery.pos.service;
 import com.kopibery.pos.enums.InOutType;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.response.ResultPageResponseDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 public interface UserService {
     ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
@@ -24,5 +23,6 @@ public interface UserService {
 
     UserModel.UserInfo getUserInfo();
 
-    UserModel.UserInfo getPresenceUser(InOutType type);
+    UserModel.UserInfo getPresenceUserIn(InOutType type);
+
 }
