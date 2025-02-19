@@ -189,8 +189,8 @@ public class UserServiceImpl implements UserService {
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,
-                type.equals(InOutType.IN) ? user.getNow() : user.userClockIn(),
-                type.equals(InOutType.OUT) ? user.getNow() : user.userClockOut(),
+                type != null && type.equals(InOutType.IN) ? user.getNow() : user.userClockIn(),
+                type != null && type.equals(InOutType.OUT) ? user.getNow() : user.userClockOut(),
                 rolePermissionRepository.findByRole(user.getRole()).stream()
                         .map(RolePermission::getPermission)
                         .map(Permissions::getName)
