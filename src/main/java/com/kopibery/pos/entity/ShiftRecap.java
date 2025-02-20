@@ -28,15 +28,15 @@ public class ShiftRecap extends AbstractEntity implements SecureIdentifiable {
     private MsShift shift;
 
     @Column(name = "cash")
-    private Integer cash;
+    private Integer cash = 0;
 
     @Column(name = "total_income")
-    private Integer totalIncome;
+    private Integer totalIncome = 0;
 
     @Column(name = "total_expense")
-    private Integer totalExpense;
+    private Integer totalExpense = 0;
 
     @Column(name = "total_profit")
-    private Integer totalProfit;
+    private Integer totalProfit = 0;
 
 }

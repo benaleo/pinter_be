@@ -39,4 +39,6 @@ public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> 
             WHERE d.secureId = :secureId
             """)
     Optional<CastIdSecureIdProjection> findIdBySecureId(String secureId);
+
+    boolean existsByUserAndDate(Users user, LocalDate now);
 }

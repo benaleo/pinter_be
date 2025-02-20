@@ -28,4 +28,6 @@ public interface UserService {
     UserModel.UserInfo setCompanyModal(Integer value);
 
     Users findByEmail(String email);
+
+    void assignUserToShift(UserModel.userAssignShiftRequest item);
 }

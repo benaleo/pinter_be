@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,7 +23,7 @@ public interface UserShiftRepository extends JpaRepository<MsShift, Long> {
             FROM MsShift d
             WHERE d.secureId = :secureId
             """)
-    Optional<CastIdSecureIdProjection> findIdBySecureId(String secureID);
+    Optional<CastIdSecureIdProjection> findIdBySecureId(String secureId);
 
     @Modifying
     @Transactional
@@ -32,4 +33,6 @@ public interface UserShiftRepository extends JpaRepository<MsShift, Long> {
             WHERE d = :data
             """)
     void updateByShift(MsShift data);
+
+    List<MsShift> findAllByIsActiveTrue();
 }

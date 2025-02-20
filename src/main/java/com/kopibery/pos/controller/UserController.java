@@ -115,4 +115,19 @@ public class UserController {
         }
     }
 
+    // assign user to shift
+    @Operation(summary = "POST Assign User to Shift", description = "API for assign user to shift")
+    @PostMapping("/assign")
+    public ResponseEntity<ApiResponse> assignUserToShift(@Valid @RequestBody UserModel.userAssignShiftRequest item) {
+        log.info("POST " + urlRoute + "/assign endpoint hit");
+        try {
+            service.assignUserToShift(item);
+            return ResponseEntity.created(URI.create(urlRoute + "/assign"))
+                    .body(new ApiResponse(true, "Successfully assigned user to shift", null));
+        } catch (Exception e) {
+            log.error("Error assign user to shift : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
 }

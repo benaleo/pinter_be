@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,7 @@ public class UserServiceImpl implements UserService {
     private final RolePermissionRepository rolePermissionRepository;
     private final RlUserShiftRepository relationUserShiftRepository;
     private final ShiftRecapRepository shiftRecapRepository;
+    private final UserShiftRepository userShiftRepository;
 
     private final TransactionRepository transactionRepository;
     private final CompanyRepository companyRepository;
@@ -203,6 +206,33 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with email: " + email)
         );
+    }
+
+    @Override
+    @Transactional
+    public void assignUserToShift(UserModel.userAssignShiftRequest item) {
+        List<RlUserShift> relationShifts = userRepository.findBySecureIdIn(item.getUserIds()).stream()
+                .map(user -> {
+                    MsShift shift = TreeGetEntity.parsingUserShiftByProjection(item.getShiftId(), userShiftRepository);
+                    RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now())
+                            .orElseGet(() -> {
+                                RlUserShift newShift = new RlUserShift();
+                                newShift.setShift(shift);
+                                newShift.setUser(user);
+                                newShift.setDate(LocalDate.now());
+                                newShift.setCreatedBy(ContextPrincipal.getId());
+                                return newShift;
+                            });
+                    userShift.setShift(shift);
+                    userShift.setUpdatedAt(LocalDateTime.now());
+                    userShift.setUpdatedBy(ContextPrincipal.getId());
+                    return userShift;
+                })
+                .collect(Collectors.toList());
+        if (!relationShifts.isEmpty()) {
+            log.info("run save entity");
+            relationUserShiftRepository.saveAll(relationShifts);
+        }
     }
 
     private UserModel.UserInfo parseUserInfo(InOutType type) {

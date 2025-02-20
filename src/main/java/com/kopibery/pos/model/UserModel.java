@@ -77,4 +77,10 @@ public class UserModel {
         private String out_at;
         private List<Map<String, String>> permissions;
     }
+
+    @Data
+    public static class userAssignShiftRequest {
+        private String shiftId;
+        private List<String> userIds;
+    }
 }
