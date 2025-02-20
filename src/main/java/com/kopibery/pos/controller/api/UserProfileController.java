@@ -1,6 +1,7 @@
 package com.kopibery.pos.controller.api;
 
 import com.kopibery.pos.enums.InOutType;
+import com.kopibery.pos.exception.BadRequestException;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.response.ApiResponse;
 import com.kopibery.pos.response.PaginationCmsResponse;
@@ -54,6 +55,26 @@ public class UserProfileController {
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get user info", null));
         }
     }
+
+    // Edit company modal
+    @Operation(summary = "Edit company modal", description = "Edit company modal")
+    @PutMapping("/company/modal")
+    public ResponseEntity<?> setCompanyModal(@RequestParam Integer value) {
+        // response true
+        log.info("GET " + urlRoute + "/company/modal endpoint hit");
+        try {
+            UserModel.UserInfo response = userService.setCompanyModal(value);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit company modal", response));
+        } catch (BadRequestException e){
+            log.error("Error edit company modal : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error edit company modal : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error set modal", null));
+        }
+    }
+
+
 
 
 

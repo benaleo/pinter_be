@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface UserShiftRepository extends JpaRepository<MsShift, Long> {
 
-    Page<MsShift> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
+    Page<MsShift> findByNameLikeIgnoreCase(String keyword, Pageable pageable);
 
     @Query("""
             SELECT new com.kopibery.pos.model.projection.CastIdSecureIdProjection(d.id, d.secureId)

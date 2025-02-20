@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,20 +29,6 @@ public class Formatter {
         return formatDate != null ? formatDate.format(formatterAppsWithSeconds) : null;
     }
 
-    // string to LocalDate
-    public static LocalDate stringToLocalDate(String date) {
-        LocalDate parsedDate = null;
-        if (date != null && !date.isEmpty()) {
-            try {
-                parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            } catch (DateTimeParseException e) {
-                throw new RuntimeException("Invalid date format: " + date, e);
-            }
-        }
-        return parsedDate;
-    }
-
-
     // cms formatter
     private static final DateTimeFormatter formatterLocalDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -58,7 +45,6 @@ public class Formatter {
     public static String formatDescription(String description) {
         return Jsoup.parse(description).text();
     }
-
 
     public static String formatDescriptionReplyComment(String description) {
         // Handle null input
@@ -98,6 +84,40 @@ public class Formatter {
         OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateString);
         return offsetDateTime.toLocalDateTime();
     }
+
+    // string to LocalDateTime
+    public static LocalDateTime parseToLocalDateTimeJPA(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateString, formatter);
+    }
+
+    // string to LocalDate
+    public static LocalDate parseToLocalDate(String date) {
+        LocalDate parsedDate = null;
+        if (date != null && !date.isEmpty()) {
+            try {
+                parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            } catch (DateTimeParseException e) {
+                throw new RuntimeException("Invalid date format: " + date, e);
+            }
+        }
+        return parsedDate;
+    }
+
+    // string to LocalTime
+    public static LocalTime parseToLocalTime(String time) {
+        LocalTime parsedTime = null;
+        if (time != null && !time.isEmpty()) {
+            try {
+                parsedTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+            } catch (DateTimeParseException e) {
+                throw new RuntimeException("Invalid time format: " + time, e);
+            }
+        }
+        return parsedTime;
+    }
+
+
 
     // to get month
     public static String formatDateWithMonthName(LocalDateTime tanggal) {

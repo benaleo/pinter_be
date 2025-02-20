@@ -72,6 +72,7 @@ public class UserModel {
         private String role;
         private String company_id;
         private String company_name;
+        private Integer company_modal;
         private String in_at;
         private String out_at;
         private List<Map<String, String>> permissions;

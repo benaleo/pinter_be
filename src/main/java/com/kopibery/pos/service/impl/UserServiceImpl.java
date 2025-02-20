@@ -2,6 +2,7 @@ package com.kopibery.pos.service.impl;
 
 import com.kopibery.pos.entity.*;
 import com.kopibery.pos.enums.InOutType;
+import com.kopibery.pos.exception.BadRequestException;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +40,9 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final RlUserShiftRepository relationUserShiftRepository;
+    private final ShiftRecapRepository shiftRecapRepository;
 
+    private final TransactionRepository transactionRepository;
     private final CompanyRepository companyRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -163,12 +167,7 @@ public class UserServiceImpl implements UserService {
         LocalDateTime now = LocalDateTime.now();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
-        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElseGet(() -> {
-            RlUserShift newShift = new RlUserShift();
-            newShift.setUser(user);
-            newShift.setDate(LocalDate.now());
-            return relationUserShiftRepository.save(newShift);
-        });
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElseGet(() -> createRlUserShiftOnNull(user));
         if (type.equals(InOutType.IN)) {
             relationUserShiftRepository.updateTsByUserShiftId(userShift.getId(), now, true);
         }
@@ -180,6 +179,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserModel.UserInfo setCompanyModal(Integer value) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElseGet(() -> createRlUserShiftOnNull(user));
+        if (userShift.getShift() == null) {
+            throw new BadRequestException("Mohon untuk masukan ke shift terlebih dahulu.");
+        }
+        ShiftRecap recap = Optional.of(shiftRecapRepository.findByShift(userShift.getShift())).orElse(null);
+        if (recap.getCash() == null) {
+            recap.setCash(value);
+        } else {
+            if (transactionRepository.existsByUserShift(userShift)) {
+                throw new BadRequestException("Tidak bisa melakukan aksi karena sudah ada transaksi.");
+            } else {
+                recap.setCash(value);
+            }
+        }
+        return parseUserInfo(null);
+    }
+
+    @Override
     public Users findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with email: " + email)
@@ -188,6 +207,8 @@ public class UserServiceImpl implements UserService {
 
     private UserModel.UserInfo parseUserInfo(InOutType type) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElseGet(() -> createRlUserShiftOnNull(user));
+        ShiftRecap recap = shiftRecapRepository.findByShift(userShift.getShift());
         return new UserModel.UserInfo(
                 user.getSecureId(),
                 user.getName(),
@@ -195,6 +216,7 @@ public class UserServiceImpl implements UserService {
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,
+                recap != null ? recap.getCash() : 0,
                 type != null && type.equals(InOutType.IN) ? user.getNow() : user.userClockIn(),
                 type != null && type.equals(InOutType.OUT) ? user.getNow() : user.userClockOut(),
                 rolePermissionRepository.findByRole(user.getRole()).stream()
@@ -203,5 +225,12 @@ public class UserServiceImpl implements UserService {
                         .map(permission -> Map.of("name", permission))
                         .collect(Collectors.toList())
         );
+    }
+
+    private RlUserShift createRlUserShiftOnNull(Users user) {
+        RlUserShift newShift = new RlUserShift();
+        newShift.setUser(user);
+        newShift.setDate(LocalDate.now());
+        return relationUserShiftRepository.save(newShift);
     }
 }

@@ -71,6 +71,10 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     @EqualsAndHashCode.Exclude
     private Company company;
 
+    @ManyToOne
+    @JoinColumn(name = "tier_id", referencedColumnName = "secure_id")
+    private Tier tier;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<RlUserShift> userShift;
 

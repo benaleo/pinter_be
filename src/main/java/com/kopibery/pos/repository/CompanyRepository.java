@@ -52,4 +52,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
             WHERE LOWER(c.name) = LOWER(:companyName)
             """)
     Optional<Company> findByName(String companyName);
+
+    Optional<Company> findBySecureId(String companyId);
 }

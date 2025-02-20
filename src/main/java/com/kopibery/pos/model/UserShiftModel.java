@@ -29,17 +29,18 @@ public class UserShiftModel {
 
     @Data
     public static class ShiftCreateRequest {
+        private String companyId;
         private String name;
         private String description;
-        private LocalTime start;
-        private LocalTime end;
+        private String start;
+        private String end;
     }
 
     @Data
     public static class ShiftUpdateRequest {
         private String name;
         private String description;
-        private LocalTime start;
-        private LocalTime end;
+        private String start;
+        private String end;
     }
 }

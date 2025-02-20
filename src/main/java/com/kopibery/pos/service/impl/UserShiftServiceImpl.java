@@ -1,10 +1,12 @@
 package com.kopibery.pos.service.impl;
 
+import com.kopibery.pos.entity.Company;
 import com.kopibery.pos.entity.MsShift;
 import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.model.UserShiftModel;
 import com.kopibery.pos.model.search.ListOfFilterPagination;
 import com.kopibery.pos.model.search.SavedKeywordAndPageable;
+import com.kopibery.pos.repository.CompanyRepository;
 import com.kopibery.pos.repository.RlUserShiftRepository;
 import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.repository.UserShiftRepository;
@@ -12,11 +14,11 @@ import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.UserShiftService;
 import com.kopibery.pos.util.ContextPrincipal;
+import com.kopibery.pos.util.Formatter;
 import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.tree.Tree;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ public class UserShiftServiceImpl implements UserShiftService {
     private final UserShiftRepository userShiftRepository;
     private final RlUserShiftRepository relationUserShiftRepository;
 
+    private final CompanyRepository companyRepository;
+
     @Override
     public ResultPageResponseDTO<UserShiftModel.ShiftIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
@@ -42,11 +46,11 @@ public class UserShiftServiceImpl implements UserShiftService {
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
         // First page result (get total count)
-        Page<MsShift> firstResult = userShiftRepository.findByNameContainingIgnoreCase(set.keyword(), set.pageable());
+        Page<MsShift> firstResult = userShiftRepository.findByNameLikeIgnoreCase(set.keyword(), set.pageable());
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<MsShift> pageResult = userShiftRepository.findByNameContainingIgnoreCase(set.keyword(), pageable);
+        Page<MsShift> pageResult = userShiftRepository.findByNameLikeIgnoreCase(set.keyword(), pageable);
 
         // Map the data to the DTOs
         List<UserShiftModel.ShiftIndexResponse> dtos = pageResult.stream().map((c) -> {
@@ -77,13 +81,16 @@ public class UserShiftServiceImpl implements UserShiftService {
     @Override
     public UserShiftModel.ShiftDetailResponse saveData(UserShiftModel.ShiftCreateRequest dto) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        Company company = companyRepository.findBySecureId(dto.getCompanyId()).orElse(null);
 
         MsShift newData = new MsShift();
         newData.setName(dto.getName());
         newData.setDescription(dto.getDescription());
-        newData.setStartTime(dto.getStart());
-        newData.setEndTime(dto.getEnd());
-        newData.setCompany(user.getCompany());
+        newData.setStartTime(Formatter.parseToLocalTime(dto.getStart()));
+        newData.setEndTime(Formatter.parseToLocalTime(dto.getEnd()));
+        newData.setCompany(company != null ? company : user.getCompany());
+
+        GlobalConverter.CmsAdminCreateAtBy(newData, user.getId());
         MsShift savedData = userShiftRepository.save(newData);
         return ConvertToDetailResponse(savedData);
     }
@@ -93,8 +100,10 @@ public class UserShiftServiceImpl implements UserShiftService {
         MsShift data = TreeGetEntity.parsingUserShiftByProjection(id, userShiftRepository);
         data.setName(dto.getName() != null ? dto.getName() : data.getName());
         data.setDescription(dto.getDescription() != null ? dto.getDescription() : data.getDescription());
-        data.setStartTime(dto.getStart() != null ? dto.getStart() : data.getStartTime());
-        data.setEndTime(dto.getEnd() != null ? dto.getEnd() : data.getEndTime());
+        data.setStartTime(dto.getStart() != null ? Formatter.parseToLocalTime(dto.getStart()) : data.getStartTime());
+        data.setEndTime(dto.getEnd() != null ? Formatter.parseToLocalTime(dto.getEnd()) : data.getEndTime());
+
+        GlobalConverter.CmsAdminUpdateAtBy(data, ContextPrincipal.getId());
         MsShift savedData = userShiftRepository.save(data);
 
         return ConvertToDetailResponse(savedData);
@@ -105,7 +114,7 @@ public class UserShiftServiceImpl implements UserShiftService {
     public void deleteData(String id) {
         MsShift data = TreeGetEntity.parsingUserShiftByProjection(id, userShiftRepository);
         boolean exists = relationUserShiftRepository.existsByShift(data);
-        if (exists){
+        if (exists) {
             log.info("updated shift to soft delete");
             userShiftRepository.updateByShift(data);
         } else {
@@ -115,7 +124,7 @@ public class UserShiftServiceImpl implements UserShiftService {
 
     }
 
-    private UserShiftModel.ShiftDetailResponse ConvertToDetailResponse(MsShift data){
+    private UserShiftModel.ShiftDetailResponse ConvertToDetailResponse(MsShift data) {
         return new UserShiftModel.ShiftDetailResponse(
                 data.getName(),
                 data.getDescription(),

@@ -1,5 +1,6 @@
 package com.kopibery.pos.repository;
 
+import com.kopibery.pos.entity.RlUserShift;
 import com.kopibery.pos.entity.Transaction;
 import com.kopibery.pos.enums.TransactionStatus;
 import com.kopibery.pos.enums.TransactionType;
@@ -66,4 +67,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             WHERE d = :data
             """)
     void updateStatusTransaction(Transaction data, TransactionStatus status);
+
+    boolean existsByUserShift(RlUserShift userShift);
 }

@@ -25,5 +25,7 @@ public interface UserService {
 
     UserModel.UserInfo getPresenceUserIn(InOutType type);
 
+    UserModel.UserInfo setCompanyModal(Integer value);
+
     Users findByEmail(String email);
 }

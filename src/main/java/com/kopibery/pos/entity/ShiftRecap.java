@@ -7,8 +7,8 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "recap_", indexes = {
-        @Index(name = "idx_shift_secure_id", columnList = "secure_id", unique = true)
+@Table(name = "user_shift_recap", indexes = {
+        @Index(name = "idx_user_shift_recap_secure_id", columnList = "secure_id", unique = true)
 })
 @Data
 public class ShiftRecap extends AbstractEntity implements SecureIdentifiable {
