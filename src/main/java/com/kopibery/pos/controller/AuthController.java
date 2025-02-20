@@ -136,15 +136,16 @@ public class AuthController {
     }
 
     // reset password
-    @SecurityRequirement(name = "Authorization")
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestParam(value = "token", required = false) String authorizationHeader,
             @RequestParam(value = "id", required = false) String identifier,
             @RequestBody AuthModel.resetPasswordRequest dto) {
         log.info("PUT " + "/api/auth/reset-password endpoint hit");
         // Extract the email from the token authorizationHeader
+        log.info("authorizationHeader : {}", authorizationHeader);
         String email = getEmailFromAuthHeader(authorizationHeader);
+        log.info("Email was get as : {}", email);
         Users user = userService.findByEmail(email);
 
         Map<String, Object> jsonMap = new HashMap<>();
@@ -166,12 +167,16 @@ public class AuthController {
         } catch (BadRequestException e) {
             log.error("BadRequestException: {}", e.getMessage());
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e){
+            log.error("Error : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
 
     // get user from header auth
     private String getEmailFromAuthHeader(String authorizationHeader) {
-        String tokenz = jwtHeaderTokenExtractor.extract(authorizationHeader);
+        log.info("Auth Header : {}", authorizationHeader);
+        String tokenz = jwtHeaderTokenExtractor.extractOnParam(authorizationHeader);
         log.info("Extracted token: {}", tokenz);
 
         // Extract the email from the token

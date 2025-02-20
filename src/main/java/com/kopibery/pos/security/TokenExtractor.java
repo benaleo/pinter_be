@@ -6,7 +6,9 @@ public interface TokenExtractor {
 	
 	String extract(String payload);
 
-	String getEmail(String token);
+    String extractOnParam(String payload);
+
+    String getEmail(String token);
 
 	Long getUserId(String token);
 

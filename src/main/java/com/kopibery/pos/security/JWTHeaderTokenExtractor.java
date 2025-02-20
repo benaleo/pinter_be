@@ -3,12 +3,14 @@ package com.kopibery.pos.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 
 
 @Component
+@Slf4j
 public class JWTHeaderTokenExtractor implements TokenExtractor {
 
 	private static final String HEADER_PREFIX = "Bearer ";
@@ -20,8 +22,20 @@ public class JWTHeaderTokenExtractor implements TokenExtractor {
 
     @Override
 	public String extract(String payload) {
+		log.info("Payload is : {}", payload);
 		if (payload != null && payload.startsWith("Bearer ")) {
+			log.info("Start get substring is : {}", payload);
 			return payload.substring(7); // Extract the token
+		}
+		return null;
+	}
+
+	@Override
+	public String extractOnParam(String payload) {
+		log.info("Payload is : {}", payload);
+		if (payload != null) {
+			log.info("Start get substring is : {}", payload);
+			return payload; // Extract the token
 		}
 		return null;
 	}
