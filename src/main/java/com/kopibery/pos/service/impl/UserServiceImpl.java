@@ -12,12 +12,12 @@ import com.kopibery.pos.service.UserService;
 import com.kopibery.pos.util.ContextPrincipal;
 import com.kopibery.pos.util.GlobalConverter;
 import com.kopibery.pos.util.TreeGetEntity;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
     private String baseUrl;
 
     @Override
-    public ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    public ResultPageResponseDTO<UserModel.userIndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
@@ -60,8 +59,8 @@ public class UserServiceImpl implements UserService {
         Page<Users> pageResult = userRepository.findDataByKeyword(set.keyword(), pageable);
 
         // Map the data to the DTOs
-        List<UserModel.IndexResponse> dtos = pageResult.stream().map((c) -> {
-            UserModel.IndexResponse dto = new UserModel.IndexResponse();
+        List<UserModel.userIndexResponse> dtos = pageResult.stream().map((c) -> {
+            UserModel.userIndexResponse dto = new UserModel.userIndexResponse();
             dto.setName(c.getName());
             dto.setEmail(c.getEmail());
             dto.setAvatar(baseUrl + "/cms/v1/am/user/" + c.getSecureId() + "/avatar");
@@ -83,9 +82,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserModel.DetailResponse findDataById(String id) {
+    public UserModel.userDetailResponse findDataById(String id) {
         Users data = TreeGetEntity.parsingUserByProjection(id, userRepository);
-        return new UserModel.DetailResponse(
+        return new UserModel.userDetailResponse(
                 data.getName(),
                 data.getEmail(),
                 baseUrl + "/cms/v1/am/user/" + data.getSecureId() + "/avatar",
@@ -99,7 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveData(UserModel.CreateRequest item) {
+    public void saveData(UserModel.userCreateRequest item) {
         Roles role = TreeGetEntity.parsingRoleByProjection(item.getRoleId(), roleRepository);
 
         Users newUser = new Users();
@@ -118,7 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateData(String id, UserModel.UpdateRequest item) {
+    public void updateData(String id, UserModel.userUpdateRequest item) {
         Roles role = TreeGetEntity.parsingRoleByProjection(item.getRoleId(), roleRepository);
 
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
@@ -178,6 +177,13 @@ public class UserServiceImpl implements UserService {
         }
 
         return parseUserInfo(type);
+    }
+
+    @Override
+    public Users findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with email: " + email)
+        );
     }
 
     private UserModel.UserInfo parseUserInfo(InOutType type) {

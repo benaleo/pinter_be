@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch API</title>
+    <script>
+        fetch('https://cms-byc2024.kelolain.id/api/v1/users/info', {
+            method: 'GET',
+            headers: {
+                'accept': '*/*',
+                'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiZW5hbGVvYmF5dSs1QGdtYWlsLmNvbSIsIngiOjUwNiwiaXNzIjoiaHR0cHM6Ly9iY2EuY28uaWQiLCJpYXQiOjE3MzgzMjE2NzAsImV4cCI6MTczODkyNjQ3MH0.8D2NnnX49LpnMuvZZPppuIcfNeg2096ocq4-zEdpeObiTEg26_2DMTZoYHB7K6rL'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const img = document.createElement('img');
+                img.src = data.data.qrCode;
+                document.body.appendChild(img);
+            })
+            .catch(error => {
+                const errorMessage = document.createElement('p');
+                errorMessage.innerText = 'Error: ' + error.message;
+                document.body.appendChild(errorMessage);
+            });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -33,5 +33,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
             """)
     Page<Users> findDataByKeyword(String keyword, Pageable pageable);
 
+    Optional<Users> findByEmailIgnoreCase(String email);
+
 
 }

@@ -11,7 +11,7 @@ public class UserModel {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
-    public static class IndexResponse extends AdminModelBaseDTOResponse {
+    public static class userIndexResponse extends AdminModelBaseDTOResponse {
 
         private String name;
         private String email;
@@ -24,7 +24,7 @@ public class UserModel {
 
     @Data
     @AllArgsConstructor
-    public static class DetailResponse {
+    public static class userDetailResponse {
 
         private String name;
         private String email;
@@ -39,7 +39,7 @@ public class UserModel {
     }
 
     @Data
-    public static class CreateRequest {
+    public static class userCreateRequest {
 
         private String name;
         private String email;
@@ -52,7 +52,7 @@ public class UserModel {
     }
 
     @Data
-    public static class UpdateRequest {
+    public static class userUpdateRequest {
 
         private String name;
         private String password;

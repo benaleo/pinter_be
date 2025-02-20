@@ -1,21 +1,21 @@
 package com.kopibery.pos.service;
 
+import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.enums.InOutType;
 import com.kopibery.pos.model.UserModel;
 import com.kopibery.pos.response.ResultPageResponseDTO;
-import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 public interface UserService {
-    ResultPageResponseDTO<UserModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
+    ResultPageResponseDTO<UserModel.userIndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 
-    UserModel.DetailResponse findDataById(String id);
+    UserModel.userDetailResponse findDataById(String id);
 
-    void saveData(UserModel.CreateRequest item);
+    void saveData(UserModel.userCreateRequest item);
 
-    void updateData(String id, UserModel.UpdateRequest item);
+    void updateData(String id, UserModel.userUpdateRequest item);
 
     void updateAvatar(String id, MultipartFile avatar) throws IOException;
 
@@ -25,4 +25,5 @@ public interface UserService {
 
     UserModel.UserInfo getPresenceUserIn(InOutType type);
 
+    Users findByEmail(String email);
 }

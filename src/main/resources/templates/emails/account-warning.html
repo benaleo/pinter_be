@@ -1,0 +1,121 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <title></title>
+
+    <style>
+        @page {
+            size: A5;
+            margin: 0;
+        }
+
+        
+	   @font-face {
+            font-family: 'BCASans Regular';
+            font-style: normal;
+            font-weight: 300;
+            src: url('./fonts/BCASans-Regular.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'BCASans SemiBold';
+            font-style: normal;
+            font-weight: 600;
+            src: url('./fonts/BCASans-SemiBold.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'BCASans Bold';
+            font-style: normal;
+            font-weight: Bold;
+            src: url('./fonts/BCASans-Bold.ttf') format('truetype');
+        }
+        html {
+            background: #fff;
+        }
+
+        body {
+            width: 148.5mm;
+            margin: auto;
+        }
+
+        table {
+            table-layout: fixed;
+            border: 0;
+        }
+        .proj-textsemibold{
+            font-family: 'BCASans SemiBold';
+        }
+        p{
+            margin: 0 !important;
+        }
+        .card{
+            display: -webkit-flex;
+            align-items: center;
+            background: #F5F7F9;
+            border-radius: 8px;
+            padding: 16px;
+        }
+    </style>
+</head>
+
+<body style=" 
+    color: #6A7480;
+    font-family: 'BCASans Regular';
+    font-size: 16px;
+    background: #F5F7F9;
+    border-radius: 16px;
+    margin: 20px auto;
+    ">
+    <div style="padding:12px">
+        <div style="line-height: 1.5;font-size: 14px;     background: #F5F7F9;">
+            <div style="padding:10px 20px">
+                <img style="
+                height:40px;
+                display: block;
+                padding-top: 1em;
+                padding-bottom: 1.5em;" src="https://cms-byc2024.kelolain.id/uploads/system/1bd5cdf8-8fa0-40fd-815b-cb9500577e27.png">
+            </div>
+            <div style="margin-bottom:0.5em; padding:20px;border-radius: 8px; background: #fff;">
+                <img style="width:32px; display: block; margin-left: auto;" src="https://cms-byc2024.kelolain.id/uploads/system/iconwarning_a60a4546-5ba1-4ff6-9ed4-9465f7ad6799.png">
+                <p class="proj-textsemibold" style="font-size: 17px; color: #1F3448;">Account violation <br> warning</p>
+            </div>
+            <div style="margin-bottom:0.5em; padding:20px;border-radius: 8px; background: #fff; font-size: 14px;">
+                <p class="proj-textsemibold" style="color: #1F3448; margin-bottom: 8px !important;">Hi [[${name}]],</p>
+                <p style="margin-bottom: 1.5em !important;">
+                    We have received a report regarding a violation of our community guidelines associated with your account. 
+                </p>
+                <p style="margin-bottom: 1.5em !important;">
+                    Reason for the report: <br>
+                   <span style="color:#D3274B; font-weight: bold;">[[${reason}]].</span>
+                </p>
+                <p style="margin-bottom: 1.5em !important;">
+                    This is your first and final warning. 
+                    Any further violations may result in the permanent suspension of your account. 
+                </p>
+                <p>
+                    We encourage you to review our community guidelines to ensure compliance moving forward.
+                </p>
+            </div>
+            <div style="padding:20px;border-radius: 8px; background: #fff; font-size: 14px;">
+                <p>Thank you,</p>
+                <p class="proj-textsemibold" style="color: #1F3448;">BCA Young Community</p>
+            </div>
+            <div style="text-align: center; padding: 20px 0;">
+                <img style="
+                height:20px;
+                display: block;
+                margin: 0 auto;
+                padding-top: 10px;
+                padding-bottom: 10px;" src="https://cms-byc2024.kelolain.id/uploads/system/6ebee84b-4ea8-4796-8117-0512c29fd2cc.png">
+                <p style="color: #1F3448;">PT Bank Central Asia Tbk</p>
+                <p>BCA is licensed and supervised by <br>
+                    the Financial Services Authority and Bank Indonesia.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

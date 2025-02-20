@@ -1,25 +1,34 @@
 package com.kopibery.pos.entity;
 
-import com.kopibery.pos.entity.impl.SecureIdentifiable;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.kopibery.pos.entity.impl.SecureIdentifiable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Users extends AbstractEntity implements UserDetails, SecureIdentifiable {
 
     @Override
@@ -61,13 +70,13 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     @JoinColumn(name = "company_id", referencedColumnName = "secure_id")
     @EqualsAndHashCode.Exclude
     private Company company;
-    
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<RlUserShift> userShift;
 
     // parse attendance
 
-    public String userClockIn(){
+    public String userClockIn() {
         return userShift.stream()
                 .filter(e -> e.getDate().equals(LocalDate.now()))
                 .findFirst()
@@ -76,7 +85,7 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
                 .orElse(null);
     }
 
-    public String userClockOut(){
+    public String userClockOut() {
         return userShift.stream()
                 .filter(e -> e.getDate().equals(LocalDate.now()))
                 .findFirst()
@@ -85,11 +94,9 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
                 .orElse(null);
     }
 
-    
-    public String getNow(){
+    public String getNow() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
     }
-
 
     // Getters and setters
 

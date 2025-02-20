@@ -41,7 +41,7 @@ public class UserController {
         log.info("GET " + urlRoute + " endpoint hit");
 
         try {
-            ResultPageResponseDTO<UserModel.IndexResponse> response = service.findDataIndex(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<UserModel.userIndexResponse> response = service.findDataIndex(pages, limit, sortBy, direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list user", response));
         } catch (Exception e) {
             log.error("Error : {}", e.getMessage(), e);
@@ -54,7 +54,7 @@ public class UserController {
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
         log.info("GET " + urlRoute + "/{id} endpoint hit");
         try {
-            UserModel.DetailResponse item = service.findDataById(id);
+            UserModel.userDetailResponse item = service.findDataById(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully found user", item));
         } catch (Exception e) {
             log.error("Error get data : {}", e.getMessage(), e);
@@ -64,7 +64,7 @@ public class UserController {
 
     @Operation(summary = "POST Create User", description = "API for create data user")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@Valid @RequestBody UserModel.CreateRequest item) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody UserModel.userCreateRequest item) {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
             service.saveData(item);
@@ -78,7 +78,7 @@ public class UserController {
 
     @Operation(summary = "PUT Update User", description = "API for update data user")
     @PutMapping("{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody UserModel.UpdateRequest item) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody UserModel.userUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{} endpoint hit", id);
         try {
             service.updateData(id, item);
