@@ -117,7 +117,7 @@ public class PosController {
     }
 
 
-    // index menu
+    // index transaction
     @Operation(summary = "Get List Menu", description = "Get List Menu")
     @GetMapping("/transaction")
     public ResponseEntity<?> listOrderIndex(

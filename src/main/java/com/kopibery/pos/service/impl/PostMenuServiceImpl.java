@@ -1,6 +1,7 @@
 package com.kopibery.pos.service.impl;
 
 import com.kopibery.pos.entity.ProductCategory;
+import com.kopibery.pos.entity.Users;
 import com.kopibery.pos.enums.TransactionStatus;
 import com.kopibery.pos.enums.TransactionType;
 import com.kopibery.pos.model.MenuModel;
@@ -13,10 +14,14 @@ import com.kopibery.pos.model.search.SavedKeywordAndPageable;
 import com.kopibery.pos.repository.ProductCategoryRepository;
 import com.kopibery.pos.repository.ProductRepository;
 import com.kopibery.pos.repository.TransactionRepository;
+import com.kopibery.pos.repository.UserRepository;
 import com.kopibery.pos.response.PageCreateReturn;
 import com.kopibery.pos.response.ResultPageResponseDTO;
 import com.kopibery.pos.service.PosService;
+import com.kopibery.pos.util.ContextPrincipal;
 import com.kopibery.pos.util.GlobalConverter;
+import com.kopibery.pos.util.TreeGetEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +41,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostMenuServiceImpl implements PosService {
 
+    private final UserRepository userRepository;
+    
     private final ProductRepository productRepository;
     private final TransactionRepository transactionRepository;
     private final ProductCategoryRepository productCategoryRepository;
@@ -87,7 +94,8 @@ public class PostMenuServiceImpl implements PosService {
 
     @Override
     public List<Map<String, String>> listMenuCategoryIndex() {
-        List<ProductCategory> categories = productCategoryRepository.findAllByIsActive(true);
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        List<ProductCategory> categories = productCategoryRepository.findAllByIsActiveAndCompanyId(true, user.getCompany().getSecureId());
         List<Map<String, String>> responses = new ArrayList<>();
 
         Map<String, String> response = new HashMap<>();

@@ -82,4 +82,11 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     @Transactional
     @Query("UPDATE ProductCategory pc SET pc.isActive = false, pc.isDeleted = true WHERE pc = :data")
     void updateIsActiveFalseAndIsDeleteTrue(ProductCategory data);
+
+    @Query("""
+            SELECT pc FROM ProductCategory pc
+            WHERE pc.isActive = :status AND
+            (:companyId IS NULL OR pc.company.secureId = :companyId OR pc.company.parent.secureId = :companyId)
+            """)
+    List<ProductCategory> findAllByIsActiveAndCompanyId(boolean status, String companyId);
 }
