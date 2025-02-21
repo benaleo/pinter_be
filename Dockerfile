@@ -1,5 +1,5 @@
 # Use the official Maven image to build the app
-FROM maven:3.8.4-openjdk-21-slim AS build
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 
 # Create and change to the app directory.
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean package
 
 # Use the Eclipse Temurin image for the runtime
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-alpine
 
 # Create and change to the app directory.
 WORKDIR /app
