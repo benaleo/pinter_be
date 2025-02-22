@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.kopibery.pos.exception.BadRequestException;
 
 import java.net.URI;
 
@@ -73,9 +74,12 @@ public class ProductCategoryController {
             ProductCategoryModel.IndexResponse response = service.saveData(item);
             return ResponseEntity.created(URI.create("/cms/v1/product_category/"))
                     .body(new ApiResponse(true, "Successfully created product_category", response));
-        } catch (Exception e) {
+        } catch (BadRequestException e) {
             log.error("Error create product_category : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error create product_category : {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
 

@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         Product data = TreeGetEntity.parsingProductByProjection(id, productRepository);
-        byte[] fileBytes = item.getImage() != null ? item.getImage().getBytes() : null;
+        byte[] fileBytes = item.getImage() != null && item.getImage().getOriginalFilename() != null ? item.getImage().getBytes() : null;
 
         data.setName(item.getName() != null ? item.getName() : data.getName());
         data.setPrice(item.getPrice() != null ? item.getPrice() : data.getPrice());

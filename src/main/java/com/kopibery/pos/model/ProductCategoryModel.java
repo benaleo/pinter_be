@@ -4,6 +4,7 @@ import com.kopibery.pos.enums.ProductCategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import jakarta.validation.constraints.NotBlank;
 
 public class ProductCategoryModel {
 
@@ -26,6 +27,7 @@ public class ProductCategoryModel {
 
     @Data
     public static class CreateRequest {
+        @NotBlank(message = "Name is required")
         private String name;
         private ProductCategoryType type;
         private Boolean isActive;

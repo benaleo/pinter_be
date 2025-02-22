@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.kopibery.pos.exception.BadRequestException;
 
 import java.util.List;
 import java.util.Map;
@@ -40,23 +41,29 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private final ProductCategoryRepository productCategoryRepository;
 
     @Override
-    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    @Transactional
+    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit,
+            String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
         String roleName = ContextPrincipal.getRoleName();
         String companyId = roleName.equals("SUPERADMIN") ? null : user.getCompany().getSecureId();
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
-        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
+                filter);
 
         // First page result (get total count)
-        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeyword(set.keyword(), set.pageable(), companyId);
+        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeyword(set.keyword(),
+                set.pageable(), companyId);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeyword(set.keyword(), pageable, companyId);
+        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeyword(set.keyword(),
+                pageable, companyId);
 
         // List id
-        List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId).collect(Collectors.toList());
+        List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId)
+                .collect(Collectors.toList());
         Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(idsList);
 
         // Map the data to the DTOs
@@ -66,8 +73,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
         return PageCreateReturn.create(
                 pageResult,
-                dtos
-        );
+                dtos);
     }
 
     @Override
@@ -83,6 +89,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         Long userId = ContextPrincipal.getId();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
+        if (item.getName().isEmpty() || item.getName() == null) {
+            throw new BadRequestException("Name cannot be empty");
+        }
+
         ProductCategory newData = new ProductCategory();
         newData.setName(item.getName());
         newData.setIsActive(item.getIsActive());
@@ -92,8 +102,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         GlobalConverter.CmsAdminCreateAtBy(newData, userId);
         ProductCategory savedData = productCategoryRepository.save(newData);
 
-        Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(List.of(savedData.getSecureId()));
-        ProductCategoryIndexProjection projection = productCategoryRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId()).getContent().getFirst();
+        Map<String, Long> mapCountProducts = dataProjectionService
+                .countProductByCategoryIds(List.of(savedData.getSecureId()));
+        ProductCategoryIndexProjection projection = productCategoryRepository
+                .findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId())
+                .getContent().getFirst();
         return convertToBackResponse(projection, mapCountProducts);
     }
 
@@ -111,8 +124,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         GlobalConverter.CmsAdminUpdateAtBy(data, userId);
         ProductCategory savedData = productCategoryRepository.save(data);
 
-        Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(List.of(savedData.getSecureId()));
-        ProductCategoryIndexProjection projection = productCategoryRepository.findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId()).getContent().getFirst();
+        Map<String, Long> mapCountProducts = dataProjectionService
+                .countProductByCategoryIds(List.of(savedData.getSecureId()));
+        ProductCategoryIndexProjection projection = productCategoryRepository
+                .findDataByKeyword(savedData.getSecureId(), Pageable.unpaged(), user.getCompany().getSecureId())
+                .getContent().getFirst();
         return convertToBackResponse(projection, mapCountProducts);
     }
 
@@ -151,21 +167,26 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     //
     //
     @Override
-    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndexInApp(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndexInApp(Integer pages, Integer limit,
+            String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
-        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
+                filter);
 
         // First page result (get total count)
-        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeywordInApp(set.keyword(), set.pageable(), user.getCompany().getSecureId());
+        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository
+                .findDataByKeywordInApp(set.keyword(), set.pageable(), user.getCompany().getSecureId());
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeywordInApp(set.keyword(), pageable, user.getCompany().getSecureId());
+        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository
+                .findDataByKeywordInApp(set.keyword(), pageable, user.getCompany().getSecureId());
 
         // List id
-        List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId).collect(Collectors.toList());
+        List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId)
+                .collect(Collectors.toList());
         Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(idsList);
 
         // Map the data to the DTOs
@@ -175,20 +196,21 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
         return PageCreateReturn.create(
                 pageResult,
-                dtos
-        );
+                dtos);
     }
 
-    private ProductCategoryModel.IndexResponse convertToBackResponse(ProductCategoryIndexProjection data, Map<String, Long> mapCountProducts) {
+    private ProductCategoryModel.IndexResponse convertToBackResponse(ProductCategoryIndexProjection data,
+            Map<String, Long> mapCountProducts) {
         Long total = mapCountProducts.get(data.getId());
 
         ProductCategoryModel.IndexResponse dto = new ProductCategoryModel.IndexResponse();
-        dto.setName(data.getName());                   // name
+        dto.setName(data.getName()); // name
         dto.setTotalProducts(total != null ? total : 0L);
         dto.setType(data.getType());
-        dto.setIsActive(data.getIsActive());           // status active
+        dto.setIsActive(data.getIsActive()); // status active
 
-        GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, data.getId(), data.getCreatedAt(), data.getUpdatedAt(), data.getCreatedBy(), data.getUpdatedBy());
+        GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, data.getId(), data.getCreatedAt(),
+                data.getUpdatedAt(), data.getCreatedBy(), data.getUpdatedBy());
         return dto;
     }
 
@@ -196,7 +218,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         return new ProductCategoryModel.DetailResponse(
                 data.getName(),
                 data.getType(),
-                data.getIsActive()
-        );
+                data.getIsActive());
     }
 }
