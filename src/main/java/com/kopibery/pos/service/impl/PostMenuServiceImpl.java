@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -93,6 +94,7 @@ public class PostMenuServiceImpl implements PosService {
     }
 
     @Override
+    @Transactional
     public List<Map<String, String>> listMenuCategoryIndex() {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
         List<ProductCategory> categories = productCategoryRepository.findAllByIsActiveAndCompanyId(true, user.getCompany().getSecureId());

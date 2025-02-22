@@ -157,6 +157,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserModel.UserInfo getUserInfo() {
 //        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 //
@@ -166,6 +167,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserModel.UserInfo getPresenceUserIn(InOutType type) {
         LocalDateTime now = LocalDateTime.now();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
@@ -182,6 +184,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserModel.UserInfo setCompanyModal(Integer value) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
         RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now()).orElseGet(() -> createRlUserShiftOnNull(user));

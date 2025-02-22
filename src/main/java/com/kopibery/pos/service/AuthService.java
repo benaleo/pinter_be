@@ -13,4 +13,6 @@ public interface AuthService {
     void generateAndSendOtp(String identity, Users user) throws MessagingException;
 
     void setNewPassword(String email, String identifier, AuthModel.resetPasswordRequest dto);
+
+    Object login(String email, String password);
 }

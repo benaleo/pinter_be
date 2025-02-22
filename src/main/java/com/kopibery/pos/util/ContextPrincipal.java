@@ -30,4 +30,16 @@ public class ContextPrincipal {
         }
     }
 
+    public static String getRoleName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        // Since Users implements UserDetails, we can cast it directly
+        if (principal instanceof Users) {
+            return ((Users) principal).getRole().getName();  // Get the role name from the Users entity
+        } else {
+            throw new SecurityException("Principal is not of expected type Users");
+        }
+    }
+
 }

@@ -34,7 +34,6 @@ public class AuthController {
     private final UserRepository userRepository;
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
     private final JWTTokenFactory jwtTokenFactory;
     private final JWTHeaderTokenExtractor jwtHeaderTokenExtractor;
 
@@ -44,22 +43,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthModel.loginRequest request) {
         try {
-            Users user = userRepository.findByEmail(request.getEmail()).orElse(null);
-            log.info("User email in: {}", (user != null ? user.getEmail() : "unknown"));
-
-            if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                throw new IllegalArgumentException("Invalid email or password");
-            }
-
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-            log.info("user details username: {}", userDetails.getUsername());
-            final String token = jwtUtil.generateToken(userDetails.getUsername());
-            log.info("token: {}", token);
-            Map<String, String> newMap = new HashMap<>();
-            newMap.put("token", token);
+            Object response = authService.login(request.getEmail(), request.getPassword());
 
             // Generate JWT token after successful authentication
-            return ResponseEntity.ok().body(new ApiResponse(true, "Auth login successfully", newMap));
+            return ResponseEntity.ok().body(new ApiResponse(true, "Auth login successfully", response));
         } catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage(), null));
         } catch (Exception e) {

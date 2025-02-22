@@ -37,22 +37,23 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private final DataProjectionService dataProjectionService;
     private final UserRepository userRepository;
 
-    private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
     @Override
     public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        String roleName = ContextPrincipal.getRoleName();
+        String companyId = roleName.equals("SUPERADMIN") ? null : user.getCompany().getSecureId();
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
         // First page result (get total count)
-        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeyword(set.keyword(), set.pageable(), user.getCompany().getSecureId());
+        Page<ProductCategoryIndexProjection> firstResult = productCategoryRepository.findDataByKeyword(set.keyword(), set.pageable(), companyId);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeyword(set.keyword(), pageable, user.getCompany().getSecureId());
+        Page<ProductCategoryIndexProjection> pageResult = productCategoryRepository.findDataByKeyword(set.keyword(), pageable, companyId);
 
         // List id
         List<String> idsList = pageResult.stream().map(ProductCategoryIndexProjection::getId).collect(Collectors.toList());
