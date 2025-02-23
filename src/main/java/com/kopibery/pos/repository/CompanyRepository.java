@@ -34,9 +34,10 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
             WHERE
                 (LOWER(c.name) LIKE LOWER(:keyword) OR
                 LOWER(c.parent.secureId) LIKE LOWER (:keyword)) AND
-                (:isParent IS NULL OR (CASE WHEN :isParent = false THEN c.parent IS NULL ELSE c.parent IS NOT NULL END))
+                (:isParent IS NULL OR (CASE WHEN :isParent = true THEN c.parent IS NULL ELSE c.parent IS NOT NULL END))
             """)
     Page<CompanyIndexProjection> findDataByKeyword(String keyword, Pageable pageable, Boolean isParent);
+
     @Query("""
             SELECT c.name
             FROM Company c

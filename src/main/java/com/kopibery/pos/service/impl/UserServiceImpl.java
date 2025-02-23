@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
             UserModel.userIndexResponse dto = new UserModel.userIndexResponse();
             dto.setName(c.getName());
             dto.setEmail(c.getEmail());
-            dto.setAvatar(baseUrl + "/cms/v1/am/user/" + c.getSecureId() + "/avatar");
+            dto.setAvatar(c.getAvatar() != null ? baseUrl + "/cms/v1/am/user/" + c.getSecureId() + "/avatar" : null);
 
             dto.setRoleName(c.getRole().getName());
             dto.setCompanyName(c.getCompany() != null ? c.getCompany().getName() : null);

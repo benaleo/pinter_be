@@ -57,8 +57,7 @@ public class UserShiftServiceImpl implements UserShiftService {
             UserShiftModel.ShiftIndexResponse dto = new UserShiftModel.ShiftIndexResponse();
             dto.setName(c.getName());
             dto.setDescription(c.getDescription());
-            dto.setStart(c.getStartTime().toString());
-            dto.setEnd(c.getEndTime().toString());
+            dto.setPeriod(new UserShiftModel.PeriodStartEnd(c.getStartTime().toString(), c.getEndTime().toString()));
             dto.setCompany_name(user.getCompany() != null ? user.getCompany().getName() : null);
 
             GlobalConverter.CmsIDTimeStampResponseAndId(dto, c, userRepository);
@@ -128,8 +127,7 @@ public class UserShiftServiceImpl implements UserShiftService {
         return new UserShiftModel.ShiftDetailResponse(
                 data.getName(),
                 data.getDescription(),
-                data.getStartTime().toString(),
-                data.getEndTime().toString()
+                new UserShiftModel.PeriodStartEnd(data.getStartTime().toString(), data.getEndTime().toString())
         );
     }
 }

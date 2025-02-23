@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalTime;
-
 public class UserShiftModel {
 
     @EqualsAndHashCode(callSuper = true)
@@ -13,8 +11,7 @@ public class UserShiftModel {
     public static class ShiftIndexResponse extends AdminModelBaseDTOResponse {
         private String name;
         private String description;
-        private String start;
-        private String end;
+        private PeriodStartEnd period;
         private String company_name;
     }
 
@@ -23,8 +20,7 @@ public class UserShiftModel {
     public static class ShiftDetailResponse {
         private String name;
         private String description;
-        private String start;
-        private String end;
+        private PeriodStartEnd period;
     }
 
     @Data
@@ -40,6 +36,13 @@ public class UserShiftModel {
     public static class ShiftUpdateRequest {
         private String name;
         private String description;
+        private String start;
+        private String end;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class PeriodStartEnd {
         private String start;
         private String end;
     }
