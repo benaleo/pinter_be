@@ -19,7 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,7 +53,7 @@ public class CompanyServiceImpl implements CompanyService {
             dto.setCity(c.getCity());
             dto.setPhone(c.getPhone());
 
-            List<String> companyNames = companyRepository.findAllByParentId(c.getId());
+            List<String> companyNames = companyRepository.findListByParentId(c.getId());
             dto.setCompanyNames(companyNames);
 
             GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, c.getId(), c.getCreatedAt(), c.getUpdatedAt(), c.getCreatedBy(), c.getCreatedBy());
@@ -80,18 +82,19 @@ public class CompanyServiceImpl implements CompanyService {
         newData.setPhone(item.getPhone());
         Company savedData = companyRepository.save(newData);
 
-        for (String subCompanyName : item.getCompanyNames()){
-            Company company = companyRepository.findByName(subCompanyName)
-                    .orElseGet(() -> {
-                        Company newCompany = new Company();
-                        newCompany.setName(subCompanyName);
-                        newCompany.setParent(savedData);
-                        return companyRepository.save(newCompany);
-                    });
-
-            company.setParent(savedData);
-            companyRepository.save(company);
+        List<Company> childs = new ArrayList<>();
+        AtomicInteger indexChild = new AtomicInteger(1);
+        for (CompanyModel.CompanyChildRequest dto : item.getCompanies()) {
+            Company newCompany = new Company();
+            newCompany.setName(dto.getName());
+            newCompany.setAddress(dto.getAddress());
+            newCompany.setPhone(dto.getPhone());
+            newCompany.setCity(dto.getCity());
+            newCompany.setCode(savedData.getCode() + "-" + indexChild.getAndIncrement());
+            newCompany.setParent(savedData);
+            childs.add(newCompany);
         }
+        companyRepository.saveAll(childs);
 
         return convertToDetailResponse(savedData);
     }
@@ -105,6 +108,27 @@ public class CompanyServiceImpl implements CompanyService {
         data.setPhone(item.getPhone() != null ? item.getPhone() : data.getPhone());
         Company savedData = companyRepository.save(data);
 
+        for (CompanyModel.CompanyChildRequest dto : item.getCompanies()) {
+            Company childCompany = companyRepository.findBySecureId(dto.getId()).orElseGet(
+                    () -> {
+                        Company newChild = new Company();
+
+                        newChild.setName(dto.getName());
+                        newChild.setAddress(dto.getAddress());
+                        newChild.setPhone(dto.getPhone());
+                        newChild.setCity(dto.getCity());
+                        newChild.setCode(savedData.getCode() + "-" + companyRepository.findAllByParent(savedData).size() + 1);
+                        newChild.setParent(savedData);
+                        return newChild;
+                    }
+            );
+            childCompany.setName(StringUtils.capitalize(dto.getName()));
+            childCompany.setAddress(dto.getAddress() != null ? dto.getAddress() : childCompany.getAddress());
+            childCompany.setCity(dto.getCity() != null ? dto.getCity() : childCompany.getCity());
+            childCompany.setPhone(dto.getPhone() != null ? dto.getPhone() : childCompany.getPhone());
+            companyRepository.save(childCompany);
+        }
+
         return convertToDetailResponse(savedData);
     }
 
@@ -115,13 +139,23 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private CompanyModel.CompanyDetailResponse convertToDetailResponse(Company data) {
-        List<String> companyNames = companyRepository.findAllByParentId(data.getSecureId());
+        List<Company> childCompanies = companyRepository.findAllByParent(data);
+        List<CompanyModel.CompanyChildResponse> childResponses = childCompanies.stream().map(c -> {
+            return new CompanyModel.CompanyChildResponse(
+                    c.getSecureId(),
+                    c.getName(),
+                    c.getAddress(),
+                    c.getCity(),
+                    c.getPhone()
+            );
+        }).collect(Collectors.toList());
         return new CompanyModel.CompanyDetailResponse(
                 data.getName(),
                 data.getAddress(),
                 data.getCity(),
                 data.getPhone(),
-                companyNames
+                data.getIsActive(),
+                childResponses
         );
     }
 }

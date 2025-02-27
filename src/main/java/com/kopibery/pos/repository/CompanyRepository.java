@@ -45,7 +45,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
                 c.parent.secureId = :parentId AND
                 c.parent IS NOT NULL
             """)
-    List<String> findAllByParentId(String parentId);
+    List<String> findListByParentId(String parentId);
 
     @Query("""
             SELECT c
@@ -55,4 +55,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     Optional<Company> findByName(String companyName);
 
     Optional<Company> findBySecureId(String companyId);
+
+    List<Company> findAllByParent(Company parent);
 }

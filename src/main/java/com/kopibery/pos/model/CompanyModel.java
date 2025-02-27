@@ -15,6 +15,8 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
+        private String code;
+        private Boolean isActive;
         private List<String> companyNames;
     }
 
@@ -25,7 +27,8 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
-        private List<String> companyNames;
+        private Boolean isActive;
+        private List<CompanyChildResponse> companies;
     }
 
     @Data
@@ -34,7 +37,7 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
-        private List<String> companyNames;
+        private List<CompanyChildRequest> companies;
     }
 
     @Data
@@ -43,6 +46,27 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
+        private List<CompanyChildRequest> companies;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class CompanyChildResponse {
+        private String id;
+        private String name;
+        private String address;
+        private String city;
+        private String phone;
+    }
+
+    @Data
+    public static class CompanyChildRequest {
+        private String id;
+        private String name;
+        private String address;
+        private String city;
+        private String phone;
+        private Boolean isActive;
     }
 
 
