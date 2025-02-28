@@ -31,24 +31,24 @@ public class KopiberyBeApplication {
         SpringApplication.run(KopiberyBeApplication.class, args);
     }
 
-     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-        corsConfiguration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "https://console.kasirpinter.id"
-        ));
-
-        corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
-        corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
-        corsConfiguration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        return source;
-    }
+//     @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//
+//        corsConfiguration.setAllowedOrigins(Arrays.asList(
+//                "http://localhost:3000",
+//                "https://console.kasirpinter.id"
+//        ));
+//
+//        corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+//        corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+//        corsConfiguration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", corsConfiguration);
+//
+//        return source;
+//    }
 
     @EventListener(ApplicationStartedEvent.class)
     public void onApplicationStarted() {
