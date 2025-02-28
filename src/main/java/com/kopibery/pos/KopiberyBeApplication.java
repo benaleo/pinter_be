@@ -23,6 +23,9 @@ public class KopiberyBeApplication {
     @Value("${app.base.url}")
     private String baseUrl;
 
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
     public static void main(String[] args) {
         SpringApplication.run(KopiberyBeApplication.class, args);
     }
@@ -48,6 +51,7 @@ public class KopiberyBeApplication {
     @EventListener(ApplicationStartedEvent.class)
     public void onApplicationStarted() {
         System.out.println("Test value baseUrl: " + baseUrl);
+        System.out.println("Test value database url: " + dbUrl);
     }
 
 }
