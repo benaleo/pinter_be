@@ -17,7 +17,9 @@ public class CorsConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://console.kasirpinter.id"
+                "https://console.kasirpinter.id",
+                "https://secret-api.kasirpinter.id",
+                "https://api-kopibery.benaleo-dev.my.id"
                 ));
         corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
