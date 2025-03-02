@@ -1,5 +1,6 @@
 package com.kasirpinter.pos.repository;
 
+import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.model.projection.CastIdSecureIdProjection;
 import org.springframework.data.domain.Page;
@@ -37,4 +38,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmailIgnoreCase(String email);
 
     List<Users> findBySecureIdIn(List<String> userIds);
+
+    boolean existsByCompany(Company c);
 }

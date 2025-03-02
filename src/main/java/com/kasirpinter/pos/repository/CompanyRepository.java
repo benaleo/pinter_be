@@ -57,4 +57,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     Optional<Company> findBySecureId(String companyId);
 
     List<Company> findAllByParent(Company parent);
+
+    void deleteAllByParent(Company data);
 }

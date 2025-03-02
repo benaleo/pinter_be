@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,8 +139,18 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public void deleteData(String id) {
         Company data = TreeGetEntity.parsingCompanyByProjection(id, companyRepository);
+        List<Company> subData = companyRepository.findAllByParent(data);
+
+        for (Company c : subData) {
+            boolean isExistsOnUser = userRepository.existsByCompany(c);
+            if (isExistsOnUser) {
+                throw new RuntimeException("Company has been used on user");
+            }
+        }
+        companyRepository.deleteAllByParent(data); // delete all child();
         companyRepository.delete(data);
     }
 

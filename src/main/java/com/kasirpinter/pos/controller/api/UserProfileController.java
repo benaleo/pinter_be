@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,23 @@ public class UserProfileController {
     static final String urlRoute = "/api/v1/user";
 
     private final UserService userService;
+
+    // check user auth
+    @Operation(summary = "Get user info", description = "Get user info")
+    @GetMapping("/check")
+    public ResponseEntity<?> getUserCheck() {
+        // response true
+        log.info("GET " + urlRoute + "/info endpoint hit");
+        try {
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success check user auth", null));
+        } catch (BadRequestException e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error get user info", null));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Unauthorized", null));
+        }
+    }
 
     // category menu
     @Operation(summary = "Get user info", description = "Get user info")
