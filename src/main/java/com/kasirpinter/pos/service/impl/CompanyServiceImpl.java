@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static com.kasirpinter.pos.util.RandomStringGenerator.generateRandomAlphabetString;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -80,7 +82,10 @@ public class CompanyServiceImpl implements CompanyService {
         newData.setAddress(item.getAddress());
         newData.setCity(item.getCity());
         newData.setPhone(item.getPhone());
+        newData.setCode(generateRandomAlphabetString(6));
         Company savedData = companyRepository.save(newData);
+
+        // random code
 
         List<Company> childs = new ArrayList<>();
         AtomicInteger indexChild = new AtomicInteger(1);
@@ -90,7 +95,7 @@ public class CompanyServiceImpl implements CompanyService {
             newCompany.setAddress(dto.getAddress());
             newCompany.setPhone(dto.getPhone());
             newCompany.setCity(dto.getCity());
-            newCompany.setCode(savedData.getCode() + "-" + indexChild.getAndIncrement());
+            newCompany.setCode( savedData.getCode() + "-" + indexChild.getAndIncrement());
             newCompany.setParent(savedData);
             childs.add(newCompany);
         }

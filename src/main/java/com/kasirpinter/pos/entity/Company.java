@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 })
 public class Company extends AbstractEntity implements SecureIdentifiable {
 
-    @Column(name = "code", unique = true, columnDefinition = "varchar(6)")
+    @Column(name = "code", unique = true, columnDefinition = "varchar(9)")
     private String code;
     private String name;
     private String address;
