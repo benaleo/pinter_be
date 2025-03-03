@@ -113,6 +113,7 @@ public class CompanyServiceImpl implements CompanyService {
         data.setAddress(item.getAddress() != null ? item.getAddress() : data.getAddress());
         data.setCity(item.getCity() != null ? item.getCity() : data.getCity());
         data.setPhone(item.getPhone() != null ? item.getPhone() : data.getPhone());
+        data.setIsActive(item.getIsActive() != null ? item.getIsActive() : data.getIsActive());
         Company savedData = companyRepository.save(data);
 
         for (CompanyModel.CompanyChildRequest dto : item.getCompanies()) {
