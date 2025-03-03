@@ -38,6 +38,7 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
+        private Boolean isActive;
         private List<CompanyChildRequest> companies;
     }
 
@@ -47,6 +48,7 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
+        private Boolean isActive;
         private List<CompanyChildRequest> companies;
     }
 
@@ -58,6 +60,7 @@ public class CompanyModel {
         private String address;
         private String city;
         private String phone;
+        private Boolean isActive;
     }
 
     @Data

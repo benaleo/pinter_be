@@ -163,7 +163,8 @@ public class CompanyServiceImpl implements CompanyService {
                     c.getName(),
                     c.getAddress(),
                     c.getCity(),
-                    c.getPhone()
+                    c.getPhone(),
+                    c.getIsActive()
             );
         }).collect(Collectors.toList());
         return new CompanyModel.CompanyDetailResponse(
