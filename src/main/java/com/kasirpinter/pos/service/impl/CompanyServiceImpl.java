@@ -84,6 +84,7 @@ public class CompanyServiceImpl implements CompanyService {
         newData.setCity(item.getCity());
         newData.setPhone(item.getPhone());
         newData.setCode(generateRandomAlphabetString(6));
+        newData.setIsActive(true);
         Company savedData = companyRepository.save(newData);
 
         // random code
