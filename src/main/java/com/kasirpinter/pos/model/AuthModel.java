@@ -18,6 +18,17 @@ public class AuthModel {
         private String name;
         private String email;
         private String password;
+        private String phone;
+        private RegisterCompanyRequest company;
+    
+    }
+
+    @Data
+    public static class RegisterCompanyRequest{
+        private String name;
+        private String address;
+        private String city;
+        private String phone;
     }
 
     @Data

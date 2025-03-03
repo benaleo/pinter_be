@@ -6,14 +6,21 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.kasirpinter.pos.converter.LogGeneralConverter;
+import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.entity.Otp;
+import com.kasirpinter.pos.entity.Roles;
 import com.kasirpinter.pos.exception.BadRequestException;
 import com.kasirpinter.pos.model.AuthModel;
+import com.kasirpinter.pos.model.AuthModel.registerRequest;
 import com.kasirpinter.pos.model.LogGeneralRequest;
+import com.kasirpinter.pos.repository.CompanyRepository;
 import com.kasirpinter.pos.repository.OtpRepository;
+import com.kasirpinter.pos.repository.RoleRepository;
 import com.kasirpinter.pos.service.EmailService;
 import com.kasirpinter.pos.service.util.CustomUserDetailsService;
 import com.kasirpinter.pos.util.OtpUtil;
+import com.kasirpinter.pos.util.RandomStringGenerator;
+
 import jakarta.mail.MessagingException;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,6 +50,8 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final CompanyRepository companyRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     @Transactional
@@ -142,6 +151,42 @@ public class AuthServiceImpl implements AuthService {
         Map<String, String> newMap = new HashMap<>();
         newMap.put("token", token);
         return newMap;
+    }
+
+    @Override
+    public void registerUser(registerRequest request) {
+        Users newUser = new Users();
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setIsActive(true);
+        newUser.setPhone(request.getPhone());
+
+        Company company = new Company();
+        AuthModel.RegisterCompanyRequest registerCompanyRequest = request.getCompany();
+        company.setName(registerCompanyRequest.getName());
+        company.setAddress(registerCompanyRequest.getAddress());
+        company.setCity(registerCompanyRequest.getCity());
+        company.setPhone(registerCompanyRequest.getPhone());
+        company.setCode(RandomStringGenerator.generateRandomAlphabetString(6));
+        Company savedCompany = companyRepository.save(company);
+        
+        Company childCompany = new Company();
+        childCompany.setName(registerCompanyRequest.getName());
+        childCompany.setAddress(registerCompanyRequest.getAddress());
+        childCompany.setCity(registerCompanyRequest.getCity());
+        childCompany.setPhone(registerCompanyRequest.getPhone());
+        childCompany.setCode(RandomStringGenerator.generateRandomAlphabetString(6));
+        childCompany.setParent(savedCompany);
+        companyRepository.save(childCompany);
+
+        newUser.setCompany(childCompany);
+
+        Roles role = roleRepository.findByName("ADMIN").orElseThrow(() -> new RuntimeException("Role not found"));
+        newUser.setRole(role);
+
+        // Save the new user
+        userRepository.save(newUser);
+
     }
 
 }

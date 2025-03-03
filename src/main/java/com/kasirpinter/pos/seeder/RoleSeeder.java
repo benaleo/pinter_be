@@ -66,6 +66,16 @@ public class RoleSeeder implements CommandLineRunner {
                     return roleRepository.save(role);
                 });
 
+        Roles adminUser;
+        if (roleRepository.findByName("ADMIN").isPresent()) {
+            adminUser = roleRepository.findByName("ADMIN")
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+        } else {
+            adminUser = new Roles();
+            adminUser.setName("ADMIN");
+            roleRepository.save(adminUser);
+        }
+
         Roles adminOperatorRole;
         if (roleRepository.findByName("ADMIN-OPERATOR").isPresent()) {
             adminOperatorRole = roleRepository.findByName("ADMIN-OPERATOR")
@@ -111,12 +121,12 @@ public class RoleSeeder implements CommandLineRunner {
         }
 
          // make second admin
-        if (userRepository.findByEmail("admin@pinter.id").isEmpty()){
+        if (userRepository.findByEmail("admin@kasirpinter.id").isEmpty()){
             Users user = new Users();
             user.setRole(adminRole);
             user.setName("ADMIN");
-            user.setEmail("admin@pinter.id");
-            user.setPassword(passwordEncoder.encode("adminberi"));
+            user.setEmail("admin@kasirpinter.id");
+            user.setPassword(passwordEncoder.encode("kosongan"));
             userRepository.save(user);
         }
 

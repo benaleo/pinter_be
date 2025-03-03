@@ -64,14 +64,7 @@ public class AuthController {
                 throw new BadRequestException("Email already exists");
             }
 
-            Users newUser = new Users();
-            newUser.setEmail(request.getEmail());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setIsActive(true);
-
-            // Save the new user
-            userRepository.save(newUser);
-
+           authService.registerUser(request);
             // Return success response
             return ResponseEntity.ok().body(new ApiResponse(true, "User registered successfully", null));
         } catch (BadRequestException e) {
