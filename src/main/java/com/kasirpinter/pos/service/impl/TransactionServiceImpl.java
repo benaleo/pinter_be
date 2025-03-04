@@ -77,6 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
         return new TransactionModel.DetailResponse(
                 data.getInvoice(),
                 data.getAmountPayment(),
+                data.getCustomerName(),
                 data.getTypePayment(),
                 data.getCashierName(),
                 data.getStoreName(),

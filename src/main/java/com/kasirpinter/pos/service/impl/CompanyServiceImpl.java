@@ -37,16 +37,20 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
 
     @Override
-    public ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, Boolean isParent) {
+    public ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> listIndex(Integer pages, Integer limit,
+            String sortBy, String direction, String keyword, Boolean isParent) {
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
-        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
+                filter);
 
         // First page result (get total count)
-        Page<CompanyIndexProjection> firstResult = companyRepository.findDataByKeyword(set.keyword(), set.pageable(), isParent);
+        Page<CompanyIndexProjection> firstResult = companyRepository.findDataByKeyword(set.keyword(), set.pageable(),
+                isParent);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<CompanyIndexProjection> pageResult = companyRepository.findDataByKeyword(set.keyword(), pageable, isParent);
+        Page<CompanyIndexProjection> pageResult = companyRepository.findDataByKeyword(set.keyword(), pageable,
+                isParent);
 
         // Map the data to the DTOs
         List<CompanyModel.CompanyIndexResponse> dtos = pageResult.stream().map((c) -> {
@@ -59,14 +63,14 @@ public class CompanyServiceImpl implements CompanyService {
             List<String> companyNames = companyRepository.findListByParentId(c.getId());
             dto.setCompanyNames(companyNames);
 
-            GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, c.getId(), c.getCreatedAt(), c.getUpdatedAt(), c.getCreatedBy(), c.getCreatedBy());
+            GlobalConverter.CmsIDTimeStampResponseAndIdProjection(dto, c.getId(), c.getCreatedAt(), c.getUpdatedAt(),
+                    c.getCreatedBy(), c.getCreatedBy());
             return dto;
         }).collect(Collectors.toList());
 
         return PageCreateReturn.create(
                 pageResult,
-                dtos
-        );
+                dtos);
     }
 
     @Override
@@ -97,7 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
             newCompany.setAddress(dto.getAddress());
             newCompany.setPhone(dto.getPhone());
             newCompany.setCity(dto.getCity());
-            newCompany.setCode( savedData.getCode() + "-" + indexChild.getAndIncrement());
+            newCompany.setCode(savedData.getCode() + "-" + indexChild.getAndIncrement());
             newCompany.setParent(savedData);
             childs.add(newCompany);
         }
@@ -107,37 +111,43 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public CompanyModel.CompanyDetailResponse updateData(String id, CompanyModel.CompanyUpdateRequest item) {
-        Company data = TreeGetEntity.parsingCompanyByProjection(id, companyRepository);
-        data.setName(StringUtils.capitalize(item.getName()));
-        data.setAddress(item.getAddress() != null ? item.getAddress() : data.getAddress());
-        data.setCity(item.getCity() != null ? item.getCity() : data.getCity());
-        data.setPhone(item.getPhone() != null ? item.getPhone() : data.getPhone());
-        data.setIsActive(item.getIsActive() != null ? item.getIsActive() : data.getIsActive());
-        Company savedData = companyRepository.save(data);
+        try {
+            Company data = TreeGetEntity.parsingCompanyByProjection(id, companyRepository);
+            data.setName(StringUtils.capitalize(item.getName()));
+            data.setAddress(item.getAddress() != null ? item.getAddress() : data.getAddress());
+            data.setCity(item.getCity() != null ? item.getCity() : data.getCity());
+            data.setPhone(item.getPhone() != null ? item.getPhone() : data.getPhone());
+            data.setIsActive(item.getIsActive() != null ? item.getIsActive() : data.getIsActive());
+            Company savedData = companyRepository.save(data);
 
-        for (CompanyModel.CompanyChildRequest dto : item.getCompanies()) {
-            Company childCompany = companyRepository.findBySecureId(dto.getId()).orElseGet(
-                    () -> {
-                        Company newChild = new Company();
+            for (CompanyModel.CompanyChildRequest dto : item.getCompanies()) {
+                Company childCompany = companyRepository.findBySecureId(dto.getId()).orElseGet(
+                        () -> {
+                            Company newChild = new Company();
 
-                        newChild.setName(dto.getName());
-                        newChild.setAddress(dto.getAddress());
-                        newChild.setPhone(dto.getPhone());
-                        newChild.setCity(dto.getCity());
-                        newChild.setCode(savedData.getCode() + "-" + companyRepository.findAllByParent(savedData).size() + 1);
-                        newChild.setParent(savedData);
-                        return newChild;
-                    }
-            );
-            childCompany.setName(StringUtils.capitalize(dto.getName()));
-            childCompany.setAddress(dto.getAddress() != null ? dto.getAddress() : childCompany.getAddress());
-            childCompany.setCity(dto.getCity() != null ? dto.getCity() : childCompany.getCity());
-            childCompany.setPhone(dto.getPhone() != null ? dto.getPhone() : childCompany.getPhone());
-            companyRepository.save(childCompany);
+                            newChild.setName(dto.getName());
+                            newChild.setAddress(dto.getAddress());
+                            newChild.setPhone(dto.getPhone());
+                            newChild.setCity(dto.getCity());
+                            newChild.setCode(savedData.getCode() + "-"
+                                    + companyRepository.findAllByParent(savedData).size() + 1);
+                            newChild.setParent(savedData);
+                            return newChild;
+                        });
+                childCompany.setName(StringUtils.capitalize(dto.getName()));
+                childCompany.setAddress(dto.getAddress() != null ? dto.getAddress() : childCompany.getAddress());
+                childCompany.setCity(dto.getCity() != null ? dto.getCity() : childCompany.getCity());
+                childCompany.setPhone(dto.getPhone() != null ? dto.getPhone() : childCompany.getPhone());
+                companyRepository.save(childCompany);
+            }
+
+            return convertToDetailResponse(savedData);
+        } catch (Exception e) {
+            log.error("Error update data company : {}", e.getMessage(), e);
+            throw new RuntimeException("Ups, Error while update");
         }
-
-        return convertToDetailResponse(savedData);
     }
 
     @Override
@@ -165,8 +175,7 @@ public class CompanyServiceImpl implements CompanyService {
                     c.getAddress(),
                     c.getCity(),
                     c.getPhone(),
-                    c.getIsActive()
-            );
+                    c.getIsActive());
         }).collect(Collectors.toList());
         return new CompanyModel.CompanyDetailResponse(
                 data.getName(),
@@ -174,7 +183,6 @@ public class CompanyServiceImpl implements CompanyService {
                 data.getCity(),
                 data.getPhone(),
                 data.getIsActive(),
-                childResponses
-        );
+                childResponses);
     }
 }

@@ -12,26 +12,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "company", indexes = {
-        @Index(name = "idx_company_secure_id", columnList = "secure_id", unique = true)
+@Table(name = "company_categories", indexes = {
+        @Index(name = "idx_company_categories_secure_id", columnList = "secure_id", unique = true)
 })
-public class Company extends AbstractEntity implements SecureIdentifiable {
+public class CompanyCategory extends AbstractEntity implements SecureIdentifiable {
 
-    @Column(name = "code", unique = true, columnDefinition = "varchar(9)")
-    private String code;
     private String name;
-    private String address;
-    private String city;
-    private String phone;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "secure_id")
-    private CompanyCategory category;
-
-
-    @ManyToOne
-    @JoinColumn(name = "parent_id", referencedColumnName = "secure_id")
-    private Company parent;
+    private String category;
 
     @Override
     public Long getId() {

@@ -18,6 +18,7 @@ public class TransactionModel {
         private Integer totalPayment;
         private Integer amountPayment;
         private Integer returnPayment;
+        private String customerName;
         private String typePayment;
         private String cashierName;
         private String storeName;
@@ -29,6 +30,7 @@ public class TransactionModel {
     public static class DetailResponse {
         private String invoice;
         private Integer amountPayment;
+        private String customerName;
         private TransactionType typePayment;
         private String cashierName;
         private String storeName;
