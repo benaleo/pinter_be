@@ -2,6 +2,7 @@ package com.kasirpinter.pos.repository;
 
 import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.entity.Users;
+import com.kasirpinter.pos.model.dto.SavedLongAndStringValue;
 import com.kasirpinter.pos.model.projection.CastIdSecureIdProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +41,13 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     List<Users> findBySecureIdIn(List<String> userIds);
 
     boolean existsByCompany(Company c);
+
+    @Query("""
+            SELECT new com.kasirpinter.pos.model.dto.SavedLongAndStringValue(d.id, d.name)
+            FROM Users d
+            WHERE d.id IN (:idsList)
+            """)
+    List<SavedLongAndStringValue> findUserNameByIdsMaps(List<Long> idsList);
+
+
 }

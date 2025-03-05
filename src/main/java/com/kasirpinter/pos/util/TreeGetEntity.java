@@ -102,5 +102,14 @@ public class TreeGetEntity {
         );
     }
 
+ public static CompanyCategory parsingCompanyCategoryByProjection(String secureId, CompanyCategoryRepository repository) {
+        return getIdBySecureId(
+                secureId,
+                repository::findIdBySecureId,
+                projection -> repository.findById(projection.getId()),
+                "Shift not found"
+        );
+    }
+
 
 }

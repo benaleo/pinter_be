@@ -7,4 +7,8 @@ public interface DataProjectionService {
 
     // product
     Map<String,Long> countProductByCategoryIds(List<String> idsList);
+
+    // user
+    Map<Long,String> findUserNameByIdsMaps(List<Long> idsList);
+
 }
