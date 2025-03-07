@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(CompanyController.urlRoute)
+@RequestMapping(CompanyCategoryController.urlRoute)
 @Tag(name = "Company Category API")
 @Slf4j
 @SecurityRequirement(name = "Authorization")
@@ -62,7 +62,7 @@ public class CompanyCategoryController {
 
     @PreAuthorize("hasAuthority('company_category.read')")
     @Operation(summary = "Get detail Company Category", description = "Get detail Company Category")
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
         log.info("GET " + urlRoute + "/{id} endpoint hit");
         try {
@@ -91,7 +91,7 @@ public class CompanyCategoryController {
 
     @PreAuthorize("hasAuthority('company_category.update')")
     @Operation(summary = "Update Company Category", description = "Update Company Category")
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody CompanyCategoryModel.CompanyCategoryUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{id} endpoint hit");
         try {
@@ -105,7 +105,7 @@ public class CompanyCategoryController {
 
     @PreAuthorize("hasAuthority('company_category.delete')")
     @Operation(summary = "Delete Company Category", description = "Delete Company Category")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {
         log.info("DELETE " + urlRoute + "/{id} endpoint hit");
         try {

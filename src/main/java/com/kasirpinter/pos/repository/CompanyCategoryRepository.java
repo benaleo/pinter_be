@@ -16,12 +16,12 @@ public interface CompanyCategoryRepository extends JpaRepository<CompanyCategory
 
     @Query("""
             SELECT new com.kasirpinter.pos.model.projection.CompanyCategoryIndexProjection(
-                cc.secureId, cc.name, cc.category, cc.isActive, cc.createdAt, cc.updatedAt
+                cc.secureId, cc.name, cc.category, cc.isActive, cc.createdAt, cc.updatedAt, cc.createdBy, cc.updatedBy
             )
             FROM CompanyCategory cc
             WHERE
                 (LOWER(cc.name) LIKE LOWER(:keyword) OR
-                LOWER(cc.category) LIKE LOWER(:keyword)) AND
+                LOWER(cc.category) LIKE LOWER(:keyword))
             """)
     Page<CompanyCategoryIndexProjection> findDataByKeyword(String keyword, Pageable pageable);
 
