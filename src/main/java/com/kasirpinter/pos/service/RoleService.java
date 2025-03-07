@@ -5,13 +5,13 @@ import com.kasirpinter.pos.response.PaginationCmsResponse;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 
 public interface RoleService {
-    ResultPageResponseDTO<RoleModel.IndexResponse> listData(Integer pages, Integer limit, String sortBy, String direction, String keyword);
+    ResultPageResponseDTO<RoleModel.RoleIndexResponse> listData(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 
-    RoleModel.DetailResponse findDataBySecureId(String id);
+    RoleModel.RoleDetailResponse findDataBySecureId(String id);
 
-    RoleModel.DetailResponse saveData(RoleModel.CreateUpdateRequest item);
+    RoleModel.RoleDetailResponse saveData(RoleModel.RoleCreateUpdateRequest item);
 
-    RoleModel.DetailResponse updateData(String id, RoleModel.CreateUpdateRequest item);
+    RoleModel.RoleDetailResponse updateData(String id, RoleModel.RoleCreateUpdateRequest item);
 
     void deleteData(String id);
 }

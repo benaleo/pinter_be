@@ -5,10 +5,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kasirpinter.pos.converter.LogGeneralConverter;
 import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.entity.Otp;
 import com.kasirpinter.pos.entity.Roles;
+import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.exception.BadRequestException;
 import com.kasirpinter.pos.model.AuthModel;
 import com.kasirpinter.pos.model.AuthModel.registerRequest;
@@ -16,24 +23,15 @@ import com.kasirpinter.pos.model.LogGeneralRequest;
 import com.kasirpinter.pos.repository.CompanyRepository;
 import com.kasirpinter.pos.repository.OtpRepository;
 import com.kasirpinter.pos.repository.RoleRepository;
+import com.kasirpinter.pos.repository.UserRepository;
+import com.kasirpinter.pos.security.JwtUtil;
+import com.kasirpinter.pos.service.AuthService;
 import com.kasirpinter.pos.service.EmailService;
 import com.kasirpinter.pos.service.util.CustomUserDetailsService;
 import com.kasirpinter.pos.util.OtpUtil;
 import com.kasirpinter.pos.util.RandomStringGenerator;
 
 import jakarta.mail.MessagingException;
-
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.kasirpinter.pos.entity.Users;
-import com.kasirpinter.pos.repository.UserRepository;
-import com.kasirpinter.pos.security.JwtUtil;
-import com.kasirpinter.pos.service.AuthService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

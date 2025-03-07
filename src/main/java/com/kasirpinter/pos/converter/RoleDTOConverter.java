@@ -36,9 +36,9 @@ public class RoleDTOConverter {
     private EntityManager entityManager;
 
     // for get data
-    public RoleModel.IndexResponse convertToListResponse(Roles data) {
+    public RoleModel.RoleIndexResponse convertToListResponse(Roles data) {
         // mapping Entity with DTO Entity
-        RoleModel.IndexResponse dto = new RoleModel.IndexResponse();
+        RoleModel.RoleIndexResponse dto = new RoleModel.RoleIndexResponse();
         dto.setName(data.getName());                                                // name
         dto.setIsActive(data.getIsActive());                                        // status active
         GlobalConverter.CmsIDTimeStampResponseAndId(dto, data, userRepository);     // id & timestamp
@@ -46,9 +46,9 @@ public class RoleDTOConverter {
         return dto;
     }
 
-    public RoleModel.DetailResponse convertToDetailResponse(Roles data) {
+    public RoleModel.RoleDetailResponse convertToDetailResponse(Roles data) {
         // mapping Entity with DTO Entity
-        RoleModel.DetailResponse dto = new RoleModel.DetailResponse();
+        RoleModel.RoleDetailResponse dto = new RoleModel.RoleDetailResponse();
         dto.setId(data.getSecureId());
         dto.setName(data.getName());
 
@@ -65,7 +65,7 @@ public class RoleDTOConverter {
     }
 
     // for create data
-    public Roles convertToCreateRequest(@Valid RoleModel.CreateUpdateRequest dto, Long userId) {
+    public Roles convertToCreateRequest(@Valid RoleModel.RoleCreateUpdateRequest dto, Long userId) {
         // Mapping DTO to Entity
         Roles data = new Roles();
         data.setName(dto.getName().toUpperCase());
@@ -130,7 +130,7 @@ public class RoleDTOConverter {
 
 
     // update
-    public void convertToUpdateRequest(Roles data, @Valid RoleModel.CreateUpdateRequest dto, Long userId) {
+    public void convertToUpdateRequest(Roles data, @Valid RoleModel.RoleCreateUpdateRequest dto, Long userId) {
         // Update fields based on the DTO
         if (data.getId() <= 5) {
             data.setName(data.getName());

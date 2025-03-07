@@ -34,27 +34,27 @@ public class RoleServiceImpl implements RoleService {
     private final RoleDTOConverter converter;
 
     @Override
-    public ResultPageResponseDTO<RoleModel.IndexResponse> listData(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    public ResultPageResponseDTO<RoleModel.RoleIndexResponse> listData(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
         // on pageable
         SavedKeywordAndPageable set = GlobalConverter.createPageable(pages, limit, sortBy, direction, keyword);
         Page<Roles> firstResult = roleRepository.findByNameLikeIgnoreCase(set.keyword(), set.pageable());
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
         // on result
         Page<Roles> pageResult = roleRepository.findByNameLikeIgnoreCase(set.keyword(), pageable);
-        List<RoleModel.IndexResponse> dtos = pageResult.stream().map(converter::convertToListResponse).collect(Collectors.toList());
+        List<RoleModel.RoleIndexResponse> dtos = pageResult.stream().map(converter::convertToListResponse).collect(Collectors.toList());
 
         return PageCreateReturn.create(pageResult, dtos);
     }
 
     @Override
-    public RoleModel.DetailResponse findDataBySecureId(String id) {
+    public RoleModel.RoleDetailResponse findDataBySecureId(String id) {
         Roles data = TreeGetEntity.parsingRoleByProjection(id, roleRepository);
 
         return converter.convertToDetailResponse(data);
     }
 
     @Override
-    public RoleModel.DetailResponse saveData(RoleModel.CreateUpdateRequest item) {
+    public RoleModel.RoleDetailResponse saveData(RoleModel.RoleCreateUpdateRequest item) {
         Long userId = ContextPrincipal.getId();
 
         // set entity to add with model mapper
@@ -66,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleModel.DetailResponse updateData(String id, RoleModel.CreateUpdateRequest item) {
+    public RoleModel.RoleDetailResponse updateData(String id, RoleModel.RoleCreateUpdateRequest item) {
         // Check if the role exists and get it
         Roles role = TreeGetEntity.parsingRoleByProjection(id, roleRepository);
         // convert

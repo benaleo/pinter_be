@@ -1,5 +1,18 @@
 package com.kasirpinter.pos.service.impl;
 
+import static com.kasirpinter.pos.util.RandomStringGenerator.generateRandomAlphabetString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.model.CompanyModel;
 import com.kasirpinter.pos.model.projection.CompanyIndexProjection;
@@ -12,20 +25,9 @@ import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.CompanyService;
 import com.kasirpinter.pos.util.GlobalConverter;
 import com.kasirpinter.pos.util.TreeGetEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static com.kasirpinter.pos.util.RandomStringGenerator.generateRandomAlphabetString;
 
 @Service
 @RequiredArgsConstructor

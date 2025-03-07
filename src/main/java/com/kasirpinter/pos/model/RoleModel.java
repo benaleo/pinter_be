@@ -1,27 +1,23 @@
 package com.kasirpinter.pos.model;
 
-import com.kasirpinter.pos.model.AdminModelBaseDTOResponse;
-import com.kasirpinter.pos.model.RolePermissionModel;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
-import java.util.List;
 
 public class RoleModel {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
-    public static class IndexResponse extends AdminModelBaseDTOResponse {
+    public static class RoleIndexResponse extends AdminModelBaseDTOResponse {
         private String name;
         private Boolean isActive;
     }
 
     @Data
-    public static class DetailResponse {
+    public static class RoleDetailResponse {
         private String id;
         private String name;
         private Boolean isActive;
@@ -30,7 +26,7 @@ public class RoleModel {
     }
 
     @Data
-    public static class CreateUpdateRequest {
+    public static class RoleCreateUpdateRequest {
         @NotBlank(message = "Name is required")
         private String name;
 
