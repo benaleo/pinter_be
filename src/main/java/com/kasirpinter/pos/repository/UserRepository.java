@@ -49,5 +49,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
             """)
     List<SavedLongAndStringValue> findUserNameByIdsMaps(List<Long> idsList);
 
+    boolean existsByPhone(String phone);
+
 
 }

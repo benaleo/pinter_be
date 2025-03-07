@@ -156,9 +156,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void registerUser(registerRequest request) {
         Users newUser = new Users();
+        newUser.setName(request.getName());
         newUser.setEmail(request.getEmail());
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setIsActive(true);
+        boolean existingPhone = userRepository.existsByPhone(request.getPhone());
+        if (existingPhone) {
+            throw new BadRequestException("Phone number already exists");
+        }
         newUser.setPhone(request.getPhone());
 
         Company company = new Company();
