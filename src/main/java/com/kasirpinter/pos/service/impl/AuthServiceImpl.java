@@ -173,6 +173,7 @@ public class AuthServiceImpl implements AuthService {
         company.setCity(registerCompanyRequest.getCity());
         company.setPhone(registerCompanyRequest.getPhone());
         company.setCode(RandomStringGenerator.generateRandomAlphabetString(6));
+        company.setIsActive(true);
         Company savedCompany = companyRepository.save(company);
         
         Company childCompany = new Company();
@@ -182,6 +183,7 @@ public class AuthServiceImpl implements AuthService {
         childCompany.setPhone(registerCompanyRequest.getPhone());
         childCompany.setCode(RandomStringGenerator.generateRandomAlphabetString(6));
         childCompany.setParent(savedCompany);
+        childCompany.setIsActive(true);
         companyRepository.save(childCompany);
 
         newUser.setCompany(childCompany);
