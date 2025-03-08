@@ -11,7 +11,7 @@ public class ProductCategoryModel {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
-    public static class IndexResponse extends AdminModelBaseDTOResponse {
+    public static class ProductCategoryIndexResponse extends AdminModelBaseDTOResponse {
         private String name;
         private Long totalProducts = 0L;
         private ProductCategoryType type;
@@ -20,14 +20,14 @@ public class ProductCategoryModel {
 
     @Data
     @AllArgsConstructor
-    public static class DetailResponse {
+    public static class ProductCategoryDetailResponse {
         private String name;
         private ProductCategoryType type;
         private Boolean isActive;
     }
 
     @Data
-    public static class CreateRequest {
+    public static class ProductCategoryCreateRequest {
         @NotBlank(message = "Name is required")
         private String name;
         private ProductCategoryType type;
@@ -35,7 +35,7 @@ public class ProductCategoryModel {
     }
 
     @Data
-    public static class UpdateRequest {
+    public static class ProductCategoryUpdateRequest {
         private String name;
         private ProductCategoryType type;
         private Boolean isActive;

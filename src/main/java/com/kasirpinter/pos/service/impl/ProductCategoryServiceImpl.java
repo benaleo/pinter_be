@@ -42,7 +42,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit,
+    public ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> listIndex(Integer pages, Integer limit,
             String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
         String roleName = ContextPrincipal.getRoleName();
@@ -67,7 +67,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(idsList);
 
         // Map the data to the DTOs
-        List<ProductCategoryModel.IndexResponse> dtos = pageResult.stream().map((c) -> {
+        List<ProductCategoryModel.ProductCategoryIndexResponse> dtos = pageResult.stream().map((c) -> {
             return convertToBackResponse(c, mapCountProducts);
         }).collect(Collectors.toList());
 
@@ -77,7 +77,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
-    public ProductCategoryModel.DetailResponse findDataBySecureId(String id) {
+    public ProductCategoryModel.ProductCategoryDetailResponse findDataBySecureId(String id) {
         ProductCategory data = TreeGetEntity.parsingProductCategoryByProjection(id, productCategoryRepository);
 
         return convertToDetail(data);
@@ -85,7 +85,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategoryModel.IndexResponse saveData(ProductCategoryModel.CreateRequest item) {
+    public ProductCategoryModel.ProductCategoryIndexResponse saveData(ProductCategoryModel.ProductCategoryCreateRequest item) {
         Long userId = ContextPrincipal.getId();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
@@ -112,7 +112,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategoryModel.IndexResponse updateData(String id, ProductCategoryModel.UpdateRequest item) {
+    public ProductCategoryModel.ProductCategoryIndexResponse updateData(String id, ProductCategoryModel.ProductCategoryUpdateRequest item) {
         Long userId = ContextPrincipal.getId();
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
@@ -167,7 +167,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     //
     //
     @Override
-    public ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndexInApp(Integer pages, Integer limit,
+    public ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> listIndexInApp(Integer pages, Integer limit,
             String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
@@ -190,7 +190,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         Map<String, Long> mapCountProducts = dataProjectionService.countProductByCategoryIds(idsList);
 
         // Map the data to the DTOs
-        List<ProductCategoryModel.IndexResponse> dtos = pageResult.stream().map((c) -> {
+        List<ProductCategoryModel.ProductCategoryIndexResponse> dtos = pageResult.stream().map((c) -> {
             return convertToBackResponse(c, mapCountProducts);
         }).collect(Collectors.toList());
 
@@ -199,11 +199,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
                 dtos);
     }
 
-    private ProductCategoryModel.IndexResponse convertToBackResponse(ProductCategoryIndexProjection data,
+    private ProductCategoryModel.ProductCategoryIndexResponse convertToBackResponse(ProductCategoryIndexProjection data,
             Map<String, Long> mapCountProducts) {
         Long total = mapCountProducts.get(data.getId());
 
-        ProductCategoryModel.IndexResponse dto = new ProductCategoryModel.IndexResponse();
+        ProductCategoryModel.ProductCategoryIndexResponse dto = new ProductCategoryModel.ProductCategoryIndexResponse();
         dto.setName(data.getName()); // name
         dto.setTotalProducts(total != null ? total : 0L);
         dto.setType(data.getType());
@@ -214,8 +214,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         return dto;
     }
 
-    private ProductCategoryModel.DetailResponse convertToDetail(ProductCategory data) {
-        return new ProductCategoryModel.DetailResponse(
+    private ProductCategoryModel.ProductCategoryDetailResponse convertToDetail(ProductCategory data) {
+        return new ProductCategoryModel.ProductCategoryDetailResponse(
                 data.getName(),
                 data.getType(),
                 data.getIsActive());

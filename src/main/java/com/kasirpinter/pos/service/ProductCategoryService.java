@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductCategoryService {
-    ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
+    ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 
-    ProductCategoryModel.DetailResponse findDataBySecureId(String id);
+    ProductCategoryModel.ProductCategoryDetailResponse findDataBySecureId(String id);
 
-    ProductCategoryModel.IndexResponse saveData(ProductCategoryModel.CreateRequest item);
+    ProductCategoryModel.ProductCategoryIndexResponse saveData(ProductCategoryModel.ProductCategoryCreateRequest item);
 
-    ProductCategoryModel.IndexResponse updateData(String id, ProductCategoryModel.UpdateRequest item);
+    ProductCategoryModel.ProductCategoryIndexResponse updateData(String id, ProductCategoryModel.ProductCategoryUpdateRequest item);
 
     void updateSoftDelete(String id);
 
@@ -23,6 +23,6 @@ public interface ProductCategoryService {
 
 
     // Apps
-    ResultPageResponseDTO<ProductCategoryModel.IndexResponse> listIndexInApp(Integer pages, Integer limit, String sortBy, String direction, String keyword);
+    ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> listIndexInApp(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 
 }

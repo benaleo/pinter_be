@@ -43,7 +43,7 @@ public class ProductCategoryController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<ProductCategoryModel.IndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list product_category", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -57,7 +57,7 @@ public class ProductCategoryController {
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
         log.info("GET " + urlRoute + "/{id} endpoint hit");
         try {
-            ProductCategoryModel.DetailResponse item = service.findDataBySecureId(id);
+            ProductCategoryModel.ProductCategoryDetailResponse item = service.findDataBySecureId(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully found product_category", item));
         } catch (Exception e) {
             log.error("Error get detail : {}", e.getMessage(), e);
@@ -68,10 +68,10 @@ public class ProductCategoryController {
     @PreAuthorize("hasAuthority('product_category.create')")
     @Operation(summary = "Create Product Category", description = "Create Product Category")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@Valid @RequestBody ProductCategoryModel.CreateRequest item) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody ProductCategoryModel.ProductCategoryCreateRequest item) {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
-            ProductCategoryModel.IndexResponse response = service.saveData(item);
+            ProductCategoryModel.ProductCategoryIndexResponse response = service.saveData(item);
             return ResponseEntity.created(URI.create("/cms/v1/product_category/"))
                     .body(new ApiResponse(true, "Successfully created product_category", response));
         } catch (BadRequestException e) {
@@ -86,10 +86,10 @@ public class ProductCategoryController {
     @PreAuthorize("hasAuthority('product_category.update')")
     @Operation(summary = "Update Product Category", description = "Update Product Category")
     @PutMapping("{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody ProductCategoryModel.UpdateRequest item) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody ProductCategoryModel.ProductCategoryUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{id} endpoint hit");
         try {
-            ProductCategoryModel.IndexResponse response = service.updateData(id, item);
+            ProductCategoryModel.ProductCategoryIndexResponse response = service.updateData(id, item);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully updated product_category", response));
         } catch (Exception e) {
             log.error("Error update product_category : {}", e.getMessage(), e);

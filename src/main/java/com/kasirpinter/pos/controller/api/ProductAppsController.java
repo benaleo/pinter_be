@@ -65,7 +65,7 @@ public class ProductAppsController {
         // response true
         log.info("GET " + urlRoute + "/product-category endpoint hit");
         try {
-            ResultPageResponseDTO<ProductCategoryModel.IndexResponse> response = productCategoryService.listIndexInApp(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> response = productCategoryService.listIndexInApp(pages, limit, sortBy, direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list product_category", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
