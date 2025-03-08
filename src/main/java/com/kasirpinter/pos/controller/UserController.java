@@ -1,6 +1,7 @@
 package com.kasirpinter.pos.controller;
 
 import com.kasirpinter.pos.model.UserModel;
+import com.kasirpinter.pos.model.UserModel.AdminInfo;
 import com.kasirpinter.pos.response.ApiResponse;
 import com.kasirpinter.pos.response.PaginationCmsResponse;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
@@ -28,6 +29,23 @@ public class UserController {
 
     static final String urlRoute = "/cms/v1/am/user";
     private UserService service;
+
+
+
+    @Operation(summary = "GET List User", description = "API for get list user index with pagination")
+    @GetMapping("/info")
+    public ResponseEntity<?> userInfo() {
+        // response true
+        log.info("GET " + urlRoute + "/info endpoint hit");
+
+        try {
+            UserModel.AdminInfo response = service.getAdminInfo();
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list user", response));
+        } catch (Exception e) {
+            log.error("Error : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
 
     @Operation(summary = "GET List User", description = "API for get list user index with pagination")
     @GetMapping

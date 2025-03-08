@@ -1,12 +1,11 @@
 package com.kasirpinter.pos.model;
 
-import com.kasirpinter.pos.model.AdminModelBaseDTOResponse;
+import java.util.List;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.List;
-import java.util.Map;
 
 public class UserModel {
 
@@ -65,8 +64,21 @@ public class UserModel {
     }
 
     @Data
+    public static class UserInfoBaseModel {
+        private String user_id;
+        private String name;
+        private String email;
+        private String role;
+        private String company_id;
+        private String company_name;
+        private Integer company_modal;
+        private String in_at;
+        private String out_at;
+    }
+
+    @Data
     @AllArgsConstructor
-    public static class UserInfo {
+    public static class UserInfo  {
         private String user_id;
         private String name;
         private String email;
@@ -84,4 +96,21 @@ public class UserModel {
         private String shiftId;
         private List<String> userIds;
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class AdminInfo {
+        private String user_id;
+        private String name;
+        private String email;
+        private String role;
+        private String company_id;
+        private String company_name;
+        private Integer company_modal;
+        private String in_at;
+        private String out_at;
+        private List<RolePermissionModel.ListPermission> permissions;
+    }
+
+ 
 }

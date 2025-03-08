@@ -1,5 +1,13 @@
 package com.kasirpinter.pos.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kasirpinter.pos.converter.RoleDTOConverter;
 import com.kasirpinter.pos.entity.Roles;
 import com.kasirpinter.pos.exception.BadRequestException;
@@ -8,20 +16,14 @@ import com.kasirpinter.pos.model.search.SavedKeywordAndPageable;
 import com.kasirpinter.pos.repository.RolePermissionRepository;
 import com.kasirpinter.pos.repository.RoleRepository;
 import com.kasirpinter.pos.response.PageCreateReturn;
-import com.kasirpinter.pos.response.PaginationCmsResponse;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.RoleService;
 import com.kasirpinter.pos.util.ContextPrincipal;
 import com.kasirpinter.pos.util.GlobalConverter;
 import com.kasirpinter.pos.util.TreeGetEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +56,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional
     public RoleModel.RoleDetailResponse saveData(RoleModel.RoleCreateUpdateRequest item) {
         Long userId = ContextPrincipal.getId();
 
@@ -66,6 +69,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional
     public RoleModel.RoleDetailResponse updateData(String id, RoleModel.RoleCreateUpdateRequest item) {
         // Check if the role exists and get it
         Roles role = TreeGetEntity.parsingRoleByProjection(id, roleRepository);

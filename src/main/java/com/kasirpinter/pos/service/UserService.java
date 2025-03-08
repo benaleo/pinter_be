@@ -3,6 +3,7 @@ package com.kasirpinter.pos.service;
 import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.enums.InOutType;
 import com.kasirpinter.pos.model.UserModel;
+import com.kasirpinter.pos.model.UserModel.AdminInfo;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,4 +31,6 @@ public interface UserService {
     Users findByEmail(String email);
 
     void assignUserToShift(UserModel.userAssignShiftRequest item);
+
+    UserModel.AdminInfo getAdminInfo();
 }
