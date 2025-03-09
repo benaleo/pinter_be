@@ -93,6 +93,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
             throw new BadRequestException("Name cannot be empty");
         }
 
+        if (user.getCompany() == null) {
+            throw new BadRequestException("Kamu harus terdaftar pada perusahaan");
+        }
+
         ProductCategory newData = new ProductCategory();
         newData.setName(item.getName());
         newData.setIsActive(item.getIsActive());
@@ -146,14 +150,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         productCategoryRepository.delete(data);
     }
 
-    @Override
-    public List<Map<String, String>> getListInputForm() {
-        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
-        List<CastKeyValueProjection> data = productCategoryRepository.getListInputForm(user.getCompany().getSecureId());
-        return data.stream().map((c) -> {
-            return Map.of("id", c.getKey(), "name", c.getValue());
-        }).collect(Collectors.toList());
-    }
 
     //
     //

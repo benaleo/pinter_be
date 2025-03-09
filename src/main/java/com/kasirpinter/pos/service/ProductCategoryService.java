@@ -19,9 +19,6 @@ public interface ProductCategoryService {
 
     void deleteData(String id);
 
-    List<Map<String, String>> getListInputForm();
-
-
     // Apps
     ResultPageResponseDTO<ProductCategoryModel.ProductCategoryIndexResponse> listIndexInApp(Integer pages, Integer limit, String sortBy, String direction, String keyword);
 

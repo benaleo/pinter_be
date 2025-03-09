@@ -2,6 +2,7 @@ package com.kasirpinter.pos.repository;
 
 import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.model.projection.CastIdSecureIdProjection;
+import com.kasirpinter.pos.model.projection.CastKeyValueProjection;
 import com.kasirpinter.pos.model.projection.CompanyIndexProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,4 +60,14 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     List<Company> findAllByParent(Company parent);
 
     void deleteAllByParent(Company data);
+
+
+    @Query("""
+            SELECT new com.kasirpinter.pos.model.projection.CastKeyValueProjection(c.secureId, c.name)
+            FROM Company c
+            WHERE c.isActive = true AND c.parent IS NOT NULL AND
+            (:companyId IS NULL OR c.secureId = :companyId) AND
+            (:companyId IS NULL OR c.parent.secureId = :companyId)
+            """)
+    List<CastKeyValueProjection> getListInputForm(String companyId);
 }

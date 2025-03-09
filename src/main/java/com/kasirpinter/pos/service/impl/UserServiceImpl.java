@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
 
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
         user.setName(item.getName() != null ? item.getName() : user.getName());
-        user.setPassword(item.getPassword() != null ? passwordEncoder.encode(item.getPassword()) : user.getPassword());
+        user.setPassword(item.getPassword() != null && item.getPassword().length() > 0  ? passwordEncoder.encode(item.getPassword()) : user.getPassword());
         user.setIsActive(item.getIsActive() != null ? item.getIsActive() : user.getIsActive());
 
         Company company = TreeGetEntity.parsingCompanyByProjection(item.getCompanyId(), companyRepository);

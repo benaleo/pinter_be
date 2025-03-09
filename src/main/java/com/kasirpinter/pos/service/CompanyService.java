@@ -1,5 +1,8 @@
 package com.kasirpinter.pos.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.kasirpinter.pos.model.CompanyModel;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 
@@ -13,4 +16,7 @@ public interface CompanyService {
     CompanyModel.CompanyDetailResponse updateData(String id, CompanyModel.CompanyUpdateRequest item);
 
     void deleteData(String id);
+
+    // attribute
+    List<Map<String, String>> getListInputForm();
 }

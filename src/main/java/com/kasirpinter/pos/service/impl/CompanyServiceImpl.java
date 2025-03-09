@@ -4,6 +4,7 @@ import static com.kasirpinter.pos.util.RandomStringGenerator.generateRandomAlpha
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -186,5 +187,10 @@ public class CompanyServiceImpl implements CompanyService {
                 data.getPhone(),
                 data.getIsActive(),
                 childResponses);
+    }
+
+    @Override
+    public List<Map<String, String>> getListInputForm() {
+        return 
     }
 }
