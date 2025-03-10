@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.kasirpinter.pos.model.CompanyModel;
+import com.kasirpinter.pos.model.attribute.AttributeResponse;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 
 public interface CompanyService {
@@ -18,5 +19,5 @@ public interface CompanyService {
     void deleteData(String id);
 
     // attribute
-    List<Map<String, String>> getListInputForm();
+    List<AttributeResponse<String>> getListInputForm(String companyId);
 }

@@ -70,4 +70,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
             (:companyId IS NULL OR c.parent.secureId = :companyId)
             """)
     List<CastKeyValueProjection> getListInputForm(String companyId);
+
+    List<Company> findAllByParentAndIsActiveIsTrue(Company parent);
 }

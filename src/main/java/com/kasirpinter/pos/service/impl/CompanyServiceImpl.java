@@ -4,10 +4,10 @@ import static com.kasirpinter.pos.util.RandomStringGenerator.generateRandomAlpha
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.kasirpinter.pos.model.attribute.AttributeResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -190,7 +190,17 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<Map<String, String>> getListInputForm() {
-        return 
+    public List<AttributeResponse<String>> getListInputForm(String companyId) {
+        Company data = TreeGetEntity.parsingCompanyByProjection(companyId, companyRepository);
+        List<Company> datas = companyRepository.findAllByParentAndIsActiveIsTrue(data);
+
+        return datas.stream()
+                .map(dto -> {
+                    AttributeResponse<String> response = new AttributeResponse<>();
+                    response.setId(dto.getSecureId());
+                    response.setName(dto.getName());
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 }
