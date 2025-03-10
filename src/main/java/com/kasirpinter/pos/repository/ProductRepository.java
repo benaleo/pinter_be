@@ -76,12 +76,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             )
             FROM Product p
             LEFT JOIN p.category c
+            JOIN Company cc ON cc.secureId = c.company.secureId
             WHERE
                 (LOWER(p.name) LIKE LOWER(:keyword)) AND
                 (:category IS NULL OR c.name = :category) AND
-                p.isActive = true AND p.isDeleted = false
+                p.isActive = true AND p.isDeleted = false AND
+                (:companyId IS NULL OR cc.secureId = :companyId OR cc.parent.secureId = :companyId)
             """)
-    Page<AppMenuProjection> findMenuByKeyword(String keyword, Pageable pageable, String category);
+    Page<AppMenuProjection> findMenuByKeyword(String keyword, Pageable pageable, String category, String companyId);
 
     @Modifying
     @Transactional

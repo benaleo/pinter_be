@@ -1,5 +1,6 @@
 package com.kasirpinter.pos.service.impl;
 
+import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.entity.ProductCategory;
 import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.enums.TransactionStatus;
@@ -53,15 +54,18 @@ public class PostMenuServiceImpl implements PosService {
 
     @Override
     public ResultPageResponseDTO<MenuModel.MenuIndexResponse> listMenuIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, String category) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        Company company = user.getCompany();
+
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
         // First page result (get total count)
-        Page<AppMenuProjection> firstResult = productRepository.findMenuByKeyword(set.keyword(), set.pageable(), category);
+        Page<AppMenuProjection> firstResult = productRepository.findMenuByKeyword(set.keyword(), set.pageable(), category, company.getSecureId());
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<AppMenuProjection> pageResult = productRepository.findMenuByKeyword(set.keyword(), pageable, category);
+        Page<AppMenuProjection> pageResult = productRepository.findMenuByKeyword(set.keyword(), pageable, category, company.getSecureId());
 
         // Map the data to the DTOs
         List<MenuModel.MenuIndexResponse> dtos = pageResult.stream().map(this::convertSingleMenuResponse).collect(Collectors.toList());
@@ -74,15 +78,18 @@ public class PostMenuServiceImpl implements PosService {
 
     @Override
     public ResultPageResponseDTO<MenuModel.OrderIndexResponse> listOrderIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword, TransactionType paymentMethod, TransactionStatus paymentStatus) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        Company company = user.getCompany();
+
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
 
         // First page result (get total count)
-        Page<AppOrderProjection> firstResult = transactionRepository.findOrderByKeyword(set.keyword(), set.pageable(), paymentMethod, paymentStatus);
+        Page<AppOrderProjection> firstResult = transactionRepository.findOrderByKeyword(set.keyword(), set.pageable(), paymentMethod, paymentStatus, company.getSecureId());
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<AppOrderProjection> pageResult = transactionRepository.findOrderByKeyword(set.keyword(), pageable, paymentMethod, paymentStatus);
+        Page<AppOrderProjection> pageResult = transactionRepository.findOrderByKeyword(set.keyword(), pageable, paymentMethod, paymentStatus, company.getSecureId());
 
         // Map the data to the DTOs
         List<MenuModel.OrderIndexResponse> dtos = pageResult.stream().map(this::convertSingleOrderResponse).collect(Collectors.toList());

@@ -41,12 +41,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             SELECT new com.kasirpinter.pos.model.projection.AppOrderProjection(
                 t.secureId, t.invoice, t.customerName, t.cashierName, t.amountPayment, t.status, t.typePayment, t.createdAt)
             FROM Transaction t
+            LEFT JOIN t.company c
             WHERE
                 (LOWER(t.invoice) LIKE LOWER(:keyword)) AND
                 (:paymentMethod IS NULL OR t.typePayment = :paymentMethod) AND
-                (:paymentStatus IS NULL OR t.status = :paymentStatus)
+                (:paymentStatus IS NULL OR t.status = :paymentStatus) AND
+                (:companyId IS NULL OR c.id = :companyId)
             """)
-    Page<AppOrderProjection> findOrderByKeyword(String keyword, Pageable pageable, TransactionType paymentMethod, TransactionStatus paymentStatus);
+    Page<AppOrderProjection> findOrderByKeyword(String keyword, Pageable pageable, TransactionType paymentMethod, TransactionStatus paymentStatus, String companyId);
 
     @Query("""
             SELECT new com.kasirpinter.pos.model.projection.AppDetailMenuOrderProjection(
