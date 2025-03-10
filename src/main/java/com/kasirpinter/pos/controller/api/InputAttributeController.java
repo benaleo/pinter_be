@@ -6,8 +6,10 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kasirpinter.pos.enums.ProductCategoryTypeInput;
 import com.kasirpinter.pos.response.ApiResponse;
 import com.kasirpinter.pos.service.InputAttributeService;
 
@@ -29,10 +31,11 @@ public class InputAttributeController {
     private final InputAttributeService inputAttributeService;
 
     @GetMapping("/product-category")
-    public ResponseEntity<?> getProductCategory() {
+    public ResponseEntity<?> getProductCategory(
+            @RequestParam(required = false, defaultValue = "ALL") ProductCategoryTypeInput type) {
         log.info("GET " + urlRoute + "/product-category endpoint hit");
         try {
-            List<Map<String, String>> response = inputAttributeService.getListProductCategory();
+            List<Map<String, String>> response = inputAttributeService.getListProductCategory(type);
             return ResponseEntity.ok().body(new ApiResponse(true, "Success get product category", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);

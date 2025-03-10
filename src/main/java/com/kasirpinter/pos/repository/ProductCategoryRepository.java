@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kasirpinter.pos.enums.ProductCategoryType;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -57,9 +59,11 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     @Query("""
             SELECT new com.kasirpinter.pos.model.projection.CastKeyValueProjection(d.secureId, d.name)
             FROM ProductCategory d
-            WHERE d.isActive = true AND d.company.secureId = :secureId
+            WHERE d.isActive = true AND d.isDeleted = false AND
+            (:companyId IS NULL OR d.company.secureId = :companyId) AND
+            (:type IS NULL OR d.type = :type)
             """)
-    List<CastKeyValueProjection> getListInputForm(String secureId);
+    List<CastKeyValueProjection> getListInputForm(String companyId, ProductCategoryType type);
 
     @Query("""
             SELECT new com.kasirpinter.pos.model.projection.ProductCategoryIndexProjection(

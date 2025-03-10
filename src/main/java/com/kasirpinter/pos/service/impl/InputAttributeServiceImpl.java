@@ -15,6 +15,9 @@ import com.kasirpinter.pos.service.InputAttributeService;
 import com.kasirpinter.pos.util.ContextPrincipal;
 import com.kasirpinter.pos.util.TreeGetEntity;
 
+import com.kasirpinter.pos.enums.ProductCategoryTypeInput;
+import com.kasirpinter.pos.enums.ProductCategoryType;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,8 +32,10 @@ public class InputAttributeServiceImpl implements InputAttributeService {
 
     @Override
     public List<Map<String, String>> getListCompany() {
+        String roleName = ContextPrincipal.getRoleName();
+        boolean isAll = roleName.equals("SUPERADMIN");
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
-        String companyId = user.getCompany() != null ? user.getCompany().getSecureId() : null;
+        String companyId = isAll || user.getCompany() == null ? null : user.getCompany().getSecureId();
         List<CastKeyValueProjection> data = companyRepository.getListInputForm(companyId);
         return data.stream().map((c) -> {
             return Map.of("id", c.getKey(), "name", c.getValue());
@@ -38,9 +43,13 @@ public class InputAttributeServiceImpl implements InputAttributeService {
     }
 
     @Override
-    public List<Map<String, String>> getListProductCategory() {
+    public List<Map<String, String>> getListProductCategory(ProductCategoryTypeInput type) {
+
+        ProductCategoryType typeEnum = type.equals(ProductCategoryTypeInput.ALL) ? null : ProductCategoryType.valueOf(type.name());
+
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
-        List<CastKeyValueProjection> data = productCategoryRepository.getListInputForm(user.getCompany().getSecureId());
+        String companyId = user.getCompany() == null ? null : user.getCompany().getSecureId();
+        List<CastKeyValueProjection> data = productCategoryRepository.getListInputForm(companyId, typeEnum);
         return data.stream().map((c) -> {
             return Map.of("id", c.getKey(), "name", c.getValue());
         }).collect(Collectors.toList());

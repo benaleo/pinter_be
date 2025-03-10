@@ -62,7 +62,7 @@ public class TreeGetEntity {
                 secureId,
                 repository::findIdBySecureId,
                 projection -> repository.findById(projection.getId()),
-                "Product not found"
+                "Product Category not found"
         );
     }
 
