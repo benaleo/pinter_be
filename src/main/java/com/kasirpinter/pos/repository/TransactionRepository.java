@@ -46,7 +46,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 (LOWER(t.invoice) LIKE LOWER(:keyword)) AND
                 (:paymentMethod IS NULL OR t.typePayment = :paymentMethod) AND
                 (:paymentStatus IS NULL OR t.status = :paymentStatus) AND
-                (:companyId IS NULL OR c.id = :companyId)
+                (:companyId IS NULL OR c.secureId = :companyId)
             """)
     Page<AppOrderProjection> findOrderByKeyword(String keyword, Pageable pageable, TransactionType paymentMethod, TransactionStatus paymentStatus, String companyId);
 

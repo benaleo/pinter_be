@@ -157,7 +157,9 @@ public class TransactionServiceImpl implements TransactionService {
         convertTransactionProduct(dto, savedData);
 
         // decrease the stock product
-        convertToDecreaseStockInPaid(savedData);
+        if (!data.getStatus().equals(TransactionStatus.PENDING) && savedData.getStatus().equals(TransactionStatus.PAID)) {
+            convertToDecreaseStockInPaid(savedData);
+        }
 
         // return
         return convertToBackResponse(savedData);
@@ -174,6 +176,14 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public void updateStatusToCancel(String id) {
         Transaction data = TreeGetEntity.parsingTransactionByProjection(id, transactionRepository);
+        List<TransactionProduct> products = transactionProductRepository.findAllByTransaction(data);
+
+        for (TransactionProduct item : products) {
+            Product product = item.getProduct();
+            product.setStock(product.getStock() + item.getQuantity());
+            productRepository.save(product);
+        }
+
         transactionRepository.updateStatusTransaction(data, TransactionStatus.CANCELLED);
     }
 
@@ -196,7 +206,7 @@ public class TransactionServiceImpl implements TransactionService {
         // if paid transaction
         List<TransactionProduct> products = transactionProductRepository.findAllByTransaction(data);
         log.info("products count = {}", products.size());
-        if (data.getStatus().equals(TransactionStatus.PAID) && !products.isEmpty()) {
+        if (data.getStatus().equals(TransactionStatus.PAID) || data.getStatus().equals(TransactionStatus.PENDING) && !products.isEmpty()) {
             for (TransactionProduct item : products) {
                 Product product = item.getProduct();
                 product.setStock(product.getIsUnlimited() ? product.getStock() : product.getStock() - item.getQuantity());
