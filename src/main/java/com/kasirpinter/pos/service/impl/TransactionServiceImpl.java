@@ -174,7 +174,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public void updateStatusToCancel(String id) {
+    public TransactionModel.IndexResponse updateStatusToCancel(String id) {
         Transaction data = TreeGetEntity.parsingTransactionByProjection(id, transactionRepository);
         List<TransactionProduct> products = transactionProductRepository.findAllByTransaction(data);
 
@@ -185,6 +185,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         transactionRepository.updateStatusTransaction(data, TransactionStatus.CANCELLED);
+
+        return convertToBackResponse(data);
     }
 
     private TransactionModel.IndexResponse convertToBackResponse(Transaction c) {

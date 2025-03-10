@@ -14,5 +14,5 @@ public interface TransactionService {
 
     void deleteData(String id);
 
-    void updateStatusToCancel(String transactionId);
+    TransactionModel.IndexResponse updateStatusToCancel(String transactionId);
 }
