@@ -302,6 +302,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateMyPassword(UserModel.userUpdatePasswordRequest req) {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        if (!passwordEncoder.matches(req.oldPassword(), user.getPassword())) {
+            throw new BadRequestException("Password lama salah");
+        }
+        if (!req.password().equals(req.confirmPassword())) {
+            throw new BadRequestException("Password baru tidak sama");
+        }
+        user.setPassword(passwordEncoder.encode(req.password()));
+        userRepository.save(user);
+    }
+
+    @Override
     public Users findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with email: " + email));

@@ -85,7 +85,7 @@ public class UserProfileController {
         try {
             UserModel.UserInfo response = userService.setCompanyModal(value);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit company modal", response));
-        } catch (BadRequestException e){
+        } catch (BadRequestException e) {
             log.error("Error edit company modal : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class UserProfileController {
         try {
             UserModel.UserInfo response = userService.updateMyProfile(req);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile", response));
-        } catch (BadRequestException e){
+        } catch (BadRequestException e) {
             log.error("Error edit profile : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         } catch (Exception e) {
@@ -112,7 +112,7 @@ public class UserProfileController {
         }
     }
 
-      // Edit user avatar
+    // Edit user avatar
     @Operation(summary = "Edit profile", description = "Edit profile")
     @PutMapping(value = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateMyProfileAvatar(@RequestPart MultipartFile avatar) {
@@ -121,7 +121,7 @@ public class UserProfileController {
         try {
             UserModel.UserInfo response = userService.updateMyProfileAvatar(avatar);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile avatar", response));
-        } catch (BadRequestException e){
+        } catch (BadRequestException e) {
             log.error("Error edit profile avatar : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         } catch (Exception e) {
@@ -130,8 +130,22 @@ public class UserProfileController {
         }
     }
 
-
-
-
+    // Edit user password
+    @Operation(summary = "Edit profile", description = "Edit profile")
+    @PutMapping("/password")
+    public ResponseEntity<?> updateMyProfile(@RequestBody UserModel.userUpdatePasswordRequest req) {
+        // response true
+        log.info("GET " + urlRoute + "/password endpoint hit");
+        try {
+            UserModel.UserInfo response = userService.updateMyPassword(req);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile", response));
+        } catch (BadRequestException e) {
+            log.error("Error edit profile : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error edit profile : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Failed update profile", null));
+        }
+    }
 
 }

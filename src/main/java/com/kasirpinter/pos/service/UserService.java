@@ -32,6 +32,8 @@ public interface UserService {
 
     UserModel.UserInfo updateMyProfileAvatar(MultipartFile avatar) throws IOException;
 
+    void updateMyPassword(UserModel.userUpdatePasswordRequest req);
+
 
     // other
 

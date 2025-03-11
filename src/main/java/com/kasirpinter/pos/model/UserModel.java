@@ -1,11 +1,11 @@
 package com.kasirpinter.pos.model;
 
-import java.util.List;
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
+import java.util.Map;
 
 public class UserModel {
 
@@ -64,15 +64,18 @@ public class UserModel {
     }
 
     public record userUpdateAppRequest(
-        String name,
-        String email,
-        String phone
-    ){}
+            String name,
+            String email,
+            String phone
+    ) {
+    }
 
     public record userUpdatePasswordRequest(
-        String password,
-        String confirmPassword
-    ){}
+            String oldPassword,
+            String password,
+            String confirmPassword
+    ) {
+    }
 
     @Data
     public static class UserInfoBaseModel {
@@ -89,7 +92,7 @@ public class UserModel {
 
     @Data
     @AllArgsConstructor
-    public static class UserInfo  {
+    public static class UserInfo {
         private String user_id;
         private String name;
         private String email;
@@ -123,5 +126,5 @@ public class UserModel {
         private List<RolePermissionModel.ListPermission> permissions;
     }
 
- 
+
 }
