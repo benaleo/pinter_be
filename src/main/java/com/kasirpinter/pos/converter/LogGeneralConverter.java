@@ -17,6 +17,7 @@ public class LogGeneralConverter {
     public void sendLogHistory(LogGeneralRequest dto){
         LogHistory newData = new LogHistory();
         newData.setIdentifier(dto.getIdentifier());
+        newData.setModel(dto.getModel());
         newData.setFromLog(dto.getFromLog());
         newData.setToLog(dto.getToLog());
         newData.setNote(dto.getNote());

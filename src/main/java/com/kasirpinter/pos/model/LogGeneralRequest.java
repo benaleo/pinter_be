@@ -9,6 +9,8 @@ public class LogGeneralRequest {
 
     private String identifier;
 
+    private String model;
+
     private String fromLog;
 
     private String toLog;

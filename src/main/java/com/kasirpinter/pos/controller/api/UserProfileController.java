@@ -12,8 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @AllArgsConstructor
@@ -89,6 +91,42 @@ public class UserProfileController {
         } catch (Exception e) {
             log.error("Error edit company modal : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, "Error set modal", null));
+        }
+    }
+
+    // Edit user profile
+    @Operation(summary = "Edit profile", description = "Edit profile")
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateMyProfile(@RequestBody UserModel.userUpdateAppRequest req) {
+        // response true
+        log.info("GET " + urlRoute + "/profile endpoint hit");
+        try {
+            UserModel.UserInfo response = userService.updateMyProfile(req);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile", response));
+        } catch (BadRequestException e){
+            log.error("Error edit profile : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error edit profile : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Failed update profile", null));
+        }
+    }
+
+      // Edit user avatar
+    @Operation(summary = "Edit profile", description = "Edit profile")
+    @PutMapping(value = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMyProfileAvatar(@RequestPart MultipartFile avatar) {
+        // response true
+        log.info("GET " + urlRoute + "/profile/avatar endpoint hit");
+        try {
+            UserModel.UserInfo response = userService.updateMyProfileAvatar(avatar);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile avatar", response));
+        } catch (BadRequestException e){
+            log.error("Error edit profile avatar : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error edit profile avatar : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Failed update profile avatar", null));
         }
     }
 

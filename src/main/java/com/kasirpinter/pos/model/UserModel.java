@@ -63,6 +63,17 @@ public class UserModel {
 
     }
 
+    public record userUpdateAppRequest(
+        String name,
+        String email,
+        String phone
+    ){}
+
+    public record userUpdatePasswordRequest(
+        String password,
+        String confirmPassword
+    ){}
+
     @Data
     public static class UserInfoBaseModel {
         private String user_id;

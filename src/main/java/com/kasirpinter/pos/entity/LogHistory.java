@@ -22,6 +22,9 @@ public class LogHistory {
     @Column(name = "identifier")
     private String identifier;
 
+    @Column(name = "model")
+    private String model;
+
     @Column(name = "from_log")
     private String fromLog;
 

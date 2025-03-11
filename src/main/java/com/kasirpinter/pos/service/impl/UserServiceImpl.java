@@ -3,11 +3,12 @@ package com.kasirpinter.pos.service.impl;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.kasirpinter.pos.converter.LogGeneralConverter;
+import com.kasirpinter.pos.model.LogGeneralRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +69,8 @@ public class UserServiceImpl implements UserService {
     private final CompanyRepository companyRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final LogGeneralConverter logConverter;
 
     @Value("${app.base.url}")
     private String baseUrl;
@@ -224,6 +227,77 @@ public class UserServiceImpl implements UserService {
                 recap.setCash(value);
             }
         }
+        return parseUserInfo(null);
+    }
+
+    @Override
+    public UserModel.UserInfo updateMyProfile(UserModel.userUpdateAppRequest req) {
+        Map<String, Object> changedData = new HashMap<>();
+        Map<String, Object> beforeData = new HashMap<>();
+
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        user.setName(req.name() != null ? req.name() : user.getName());
+        user.setEmail(req.email() != null ? req.email() : user.getEmail());
+        user.setPhone(req.phone() != null ? req.phone() : user.getPhone());
+        userRepository.save(user);
+
+        if (req.name() != null && !req.name().equals(user.getName())) {
+            changedData.put("name", req.name());
+            beforeData.put("name", Optional.ofNullable(user.getName()).orElse(""));
+        }
+
+        if (req.email() != null && !req.email().equals(user.getEmail())) {
+            changedData.put("email", req.email());
+            beforeData.put("email", Optional.ofNullable(user.getEmail()).orElse(""));
+        }
+
+        if (req.phone() != null && !req.phone().equals(user.getPhone())) {
+            changedData.put("phone", req.phone());
+            beforeData.put("phone", Optional.ofNullable(user.getPhone()).orElse(""));
+        }
+
+        List<Map<String, String>> listResponse = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : changedData.entrySet()) {
+            String key = entry.getKey();
+            String valueBefore = beforeData.get(key) == null ? "" : beforeData.get(key).toString();
+            String valueAfter = changedData.get(key) == null ? "" : changedData.get(key).toString();
+            Map<String, String> response = new HashMap<>();
+            response.put("property", key);
+            response.put("before", valueBefore);
+            response.put("after", valueAfter);
+            listResponse.add(response);
+        }
+
+        String jsonResponse = new Gson().toJson(listResponse).replaceAll("\\\\", "");
+        // save to log
+        LogGeneralRequest log = new LogGeneralRequest(
+                user.getSecureId(),
+                "USER_ACTIVE",
+                jsonResponse,
+                "ACTIVE",
+                "UPDATED",
+                "ADMIN");
+        logConverter.sendLogHistory(log);
+
+        return parseUserInfo(null);
+    }
+
+    @Override
+    public UserModel.UserInfo updateMyProfileAvatar(MultipartFile avatar) throws IOException {
+        String fileName = avatar.getOriginalFilename();
+        String fileExtension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1 ): null;
+
+        if (!Arrays.asList("jpg", "png", "jpeg").contains(fileExtension)) {
+            throw new BadRequestException("Only allowed .jpg / .png / .jpeg");
+        }
+
+        byte[] fileBytes = avatar.getBytes();
+
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        user.setAvatar(fileBytes);
+        user.setAvatarName(fileName);
+        userRepository.save(user);
+
         return parseUserInfo(null);
     }
 

@@ -28,9 +28,17 @@ public interface UserService {
 
     UserModel.UserInfo setCompanyModal(Integer value);
 
+    UserModel.UserInfo updateMyProfile(UserModel.userUpdateAppRequest req);
+
+    UserModel.UserInfo updateMyProfileAvatar(MultipartFile avatar) throws IOException;
+
+
+    // other
+
     Users findByEmail(String email);
 
     void assignUserToShift(UserModel.userAssignShiftRequest item);
 
     UserModel.AdminInfo getAdminInfo();
+
 }
