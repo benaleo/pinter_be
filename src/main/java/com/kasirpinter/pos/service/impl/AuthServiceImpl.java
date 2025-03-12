@@ -124,6 +124,7 @@ public class AuthServiceImpl implements AuthService {
         // send to log
         LogGeneralRequest logRequest = new LogGeneralRequest(
                 identifier,
+                "FORGOT-PASSWORD",
                 "reset".equals(identifier) ? "Reset Password" : "Change Password",
                 "Change Password",
                 "Successfully change the password",

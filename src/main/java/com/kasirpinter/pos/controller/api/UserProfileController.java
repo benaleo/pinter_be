@@ -137,8 +137,8 @@ public class UserProfileController {
         // response true
         log.info("GET " + urlRoute + "/password endpoint hit");
         try {
-            UserModel.UserInfo response = userService.updateMyPassword(req);
-            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile", response));
+            userService.updateMyPassword(req);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile", null));
         } catch (BadRequestException e) {
             log.error("Error edit profile : {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
