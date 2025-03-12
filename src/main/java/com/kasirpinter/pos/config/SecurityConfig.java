@@ -98,6 +98,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Arrays.asList(
                 "https://console.kasirpinter.id",  // Pastikan URL persis, tanpa trailing slash
+                "https://secret-api.kasirpinter.id",  // Pastikan URL persis, tanpa trailing slash
                 "http://localhost:3000"
         ));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Explicit method
