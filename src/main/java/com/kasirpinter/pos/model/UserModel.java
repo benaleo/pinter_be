@@ -94,8 +94,11 @@ public class UserModel {
     @AllArgsConstructor
     public static class UserInfo {
         private String user_id;
+        private String avatar;
         private String name;
         private String email;
+        private String phone;
+        private String address;
         private String role;
         private String company_id;
         private String company_name;

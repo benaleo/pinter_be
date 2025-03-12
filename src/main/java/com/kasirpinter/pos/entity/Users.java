@@ -68,6 +68,9 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
 
     @Column(unique = true)
     private String phone;
+
+    @Column(name = "address")
+    private String address;
     
     @ManyToOne
     @JoinColumn(name = "role_id")

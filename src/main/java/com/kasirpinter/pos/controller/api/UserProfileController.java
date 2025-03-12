@@ -114,12 +114,12 @@ public class UserProfileController {
 
     // Edit user avatar
     @Operation(summary = "Edit profile", description = "Edit profile")
-    @PutMapping(value = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateMyProfileAvatar(@RequestPart MultipartFile avatar) {
+    @PutMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMyProfileAvatar(@RequestPart(required = false) MultipartFile avatar, @RequestParam(required = false, defaultValue = "false") Boolean isRemove) {
         // response true
-        log.info("GET " + urlRoute + "/profile/avatar endpoint hit");
+        log.info("GET " + urlRoute + "/avatar endpoint hit");
         try {
-            UserModel.UserInfo response = userService.updateMyProfileAvatar(avatar);
+            UserModel.UserInfo response = userService.updateMyProfileAvatar(avatar, isRemove);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile avatar", response));
         } catch (BadRequestException e) {
             log.error("Error edit profile avatar : {}", e.getMessage(), e);

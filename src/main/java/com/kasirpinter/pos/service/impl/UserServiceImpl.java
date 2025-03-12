@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import com.kasirpinter.pos.converter.ImageUrlConverter;
 import com.kasirpinter.pos.converter.LogGeneralConverter;
 import com.kasirpinter.pos.model.LogGeneralRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +70,7 @@ public class UserServiceImpl implements UserService {
     private final CompanyRepository companyRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final ImageUrlConverter urlConverter;
 
     private final LogGeneralConverter logConverter;
 
@@ -200,9 +202,13 @@ public class UserServiceImpl implements UserService {
                 .orElseGet(() -> createRlUserShiftOnNull(user));
         if (type.equals(InOutType.IN)) {
             relationUserShiftRepository.updateTsByUserShiftId(userShift.getId(), now, true);
+            // save to log
+            logConverter.sendHistoryPresence(user, "IN");
         }
         if (type.equals(InOutType.OUT)) {
             relationUserShiftRepository.updateTsByUserShiftId(userShift.getId(), now, false);
+            // save to log
+            logConverter.sendHistoryPresence(user, "OUT");
         }
 
         return parseUserInfo(type);
@@ -227,6 +233,8 @@ public class UserServiceImpl implements UserService {
                 recap.setCash(value);
             }
         }
+        // save to log
+        logConverter.sendUpdateCompanyModal(user, userShift, value);
         return parseUserInfo(null);
     }
 
@@ -270,33 +278,37 @@ public class UserServiceImpl implements UserService {
 
         String jsonResponse = new Gson().toJson(listResponse).replaceAll("\\\\", "");
         // save to log
-        LogGeneralRequest log = new LogGeneralRequest(
-                user.getSecureId(),
-                "USER_ACTIVE",
-                jsonResponse,
-                "ACTIVE",
-                "UPDATED",
-                "ADMIN");
-        logConverter.sendLogHistory(log);
-
+        logConverter.sendLogHistoryUpdateProfile(user, "PROFILE", "DATA", "UPDATED", jsonResponse);
         return parseUserInfo(null);
     }
 
     @Override
-    public UserModel.UserInfo updateMyProfileAvatar(MultipartFile avatar) throws IOException {
-        String fileName = avatar.getOriginalFilename();
-        String fileExtension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1 ): null;
+    @Transactional
+    public UserModel.UserInfo updateMyProfileAvatar(MultipartFile avatar, Boolean isRemove) throws IOException {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
-        if (!Arrays.asList("jpg", "png", "jpeg").contains(fileExtension)) {
-            throw new BadRequestException("Only allowed .jpg / .png / .jpeg");
+        if (avatar != null && avatar.getOriginalFilename() != null){
+            String fileName = avatar.getOriginalFilename();
+            String fileExtension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1 ): null;
+
+            if (!Arrays.asList("jpg", "png", "jpeg").contains(fileExtension)) {
+                throw new BadRequestException("Only allowed .jpg / .png / .jpeg");
+            }
+
+            byte[] fileBytes = avatar.getBytes();
+
+            user.setAvatar(fileBytes);
+            user.setAvatarName(fileName);
+            userRepository.save(user);
+            // save to log
+            logConverter.sendLogHistoryAvatar(user, "PROFILE", "AVATAR", "AVATAR-UPDATED");
         }
 
-        byte[] fileBytes = avatar.getBytes();
-
-        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
-        user.setAvatar(fileBytes);
-        user.setAvatarName(fileName);
-        userRepository.save(user);
+        if (isRemove){
+            userRepository.updateAvatarAndAvatarNameToNull(user.getId());
+            // save to log
+            logConverter.sendLogHistoryAvatar(user, "PROFILE", "AVATAR", "AVATAR-REMOVED");
+        }
 
         return parseUserInfo(null);
     }
@@ -312,6 +324,9 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(passwordEncoder.encode(req.password()));
         userRepository.save(user);
+
+        // save to log
+        logConverter.sendLogHistoryPassword(user, "PROFILE");
     }
 
     @Override
@@ -354,8 +369,11 @@ public class UserServiceImpl implements UserService {
         ShiftRecap recap = shiftRecapRepository.findByShift(userShift.getShift());
         return new UserModel.UserInfo(
                 user.getSecureId(),
+                urlConverter.getUserAvatar(user.getSecureId()),
                 user.getName(),
                 user.getEmail(),
+                user.getPhone(),
+                user.getAddress(),
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,
