@@ -369,7 +369,7 @@ public class UserServiceImpl implements UserService {
         ShiftRecap recap = shiftRecapRepository.findByShift(userShift.getShift());
         return new UserModel.UserInfo(
                 user.getSecureId(),
-                urlConverter.getUserAvatar(user.getSecureId()),
+                user.getAvatar() == null ? null : urlConverter.getUserAvatar(user.getSecureId()),
                 user.getName(),
                 user.getEmail(),
                 user.getPhone(),
