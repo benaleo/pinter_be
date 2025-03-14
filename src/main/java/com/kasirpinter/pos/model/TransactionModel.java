@@ -13,7 +13,7 @@ public class TransactionModel {
 
     @EqualsAndHashCode(callSuper = true)
     @Data
-    public static class IndexResponse extends AdminModelBaseDTOResponse {
+    public static class TransactionIndexResponse extends AdminModelBaseDTOResponse {
         private String invoice;
         private Integer totalPayment;
         private Integer amountPayment;
@@ -27,7 +27,7 @@ public class TransactionModel {
 
     @Data
     @AllArgsConstructor
-    public static class DetailResponse {
+    public static class TransactionDetailResponse {
         private String invoice;
         private Integer amountPayment;
         private String customerName;
@@ -40,7 +40,7 @@ public class TransactionModel {
     }
 
     @Data
-    public static class CreateUpdateRequest {
+    public static class TransactionCreateUpdateRequest {
         private String customerName;
         private Integer amountPayment;
         private TransactionType typePayment;

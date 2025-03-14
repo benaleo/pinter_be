@@ -40,7 +40,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final RlUserShiftRepository userShiftRepository;
 
     @Override
-    public ResultPageResponseDTO<TransactionModel.IndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    public ResultPageResponseDTO<TransactionModel.TransactionIndexResponse> findDataIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
@@ -53,7 +53,7 @@ public class TransactionServiceImpl implements TransactionService {
         Page<Transaction> pageResult = transactionRepository.findDataByKeyword(set.keyword(), pageable);
 
         // Map the data to the DTOs
-        List<TransactionModel.IndexResponse> dtos = pageResult.stream().map(this::convertToBackResponse).collect(Collectors.toList());
+        List<TransactionModel.TransactionIndexResponse> dtos = pageResult.stream().map(this::convertToBackResponse).collect(Collectors.toList());
 
         return PageCreateReturn.create(
                 pageResult,
@@ -62,7 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionModel.DetailResponse findDataById(String id) {
+    public TransactionModel.TransactionDetailResponse findDataById(String id) {
         Transaction data = TreeGetEntity.parsingTransactionByProjection(id, transactionRepository);
 
         List<TransactionModel.TransactionItem> listTransactions = new ArrayList<>();
@@ -74,7 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
             ));
         }
 
-        return new TransactionModel.DetailResponse(
+        return new TransactionModel.TransactionDetailResponse(
                 data.getInvoice(),
                 data.getAmountPayment(),
                 data.getCustomerName(),
@@ -88,7 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionModel.IndexResponse saveData(TransactionModel.CreateUpdateRequest dto) {
+    public TransactionModel.TransactionIndexResponse saveData(TransactionModel.TransactionCreateUpdateRequest dto) {
         Long userId = ContextPrincipal.getId();
         String userSecureId = ContextPrincipal.getSecureUserId();
         Users user = TreeGetEntity.parsingUserByProjection(userSecureId, userRepository);
@@ -133,7 +133,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionModel.IndexResponse updateData(String id, TransactionModel.CreateUpdateRequest dto) {
+    public TransactionModel.TransactionIndexResponse updateData(String id, TransactionModel.TransactionCreateUpdateRequest dto) {
         Long userId = ContextPrincipal.getId();
 
         Transaction data = TreeGetEntity.parsingTransactionByProjection(id, transactionRepository);
@@ -174,7 +174,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionModel.IndexResponse updateStatusToCancel(String id) {
+    public TransactionModel.TransactionIndexResponse updateStatusToCancel(String id) {
         Transaction data = TreeGetEntity.parsingTransactionByProjection(id, transactionRepository);
         List<TransactionProduct> products = transactionProductRepository.findAllByTransaction(data);
 
@@ -189,8 +189,8 @@ public class TransactionServiceImpl implements TransactionService {
         return convertToBackResponse(data);
     }
 
-    private TransactionModel.IndexResponse convertToBackResponse(Transaction c) {
-        TransactionModel.IndexResponse dto = new TransactionModel.IndexResponse();
+    private TransactionModel.TransactionIndexResponse convertToBackResponse(Transaction c) {
+        TransactionModel.TransactionIndexResponse dto = new TransactionModel.TransactionIndexResponse();
         dto.setInvoice(c.getInvoice());
         dto.setTotalPayment(c.totalPayment());
         dto.setAmountPayment(c.getAmountPayment());
@@ -199,6 +199,7 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setCashierName(c.getCashierName());
         dto.setStoreName(c.getStoreName());
         dto.setStatus(c.getStatus().name());
+        dto.setCustomerName(c.getCustomerName());
 
         GlobalConverter.CmsIDTimeStampResponseAndId(dto, c, userRepository);
         return dto;
@@ -217,7 +218,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
-    private void convertTransactionProduct(TransactionModel.CreateUpdateRequest dto, Transaction savedData) {
+    private void convertTransactionProduct(TransactionModel.TransactionCreateUpdateRequest dto, Transaction savedData) {
         // Add products to the transaction
         List<TransactionProduct> transactionProducts = new ArrayList<>();
         for (TransactionModel.TransactionItemRequest item : dto.getItems()) {

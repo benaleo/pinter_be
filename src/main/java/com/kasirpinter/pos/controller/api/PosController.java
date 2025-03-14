@@ -75,10 +75,10 @@ public class PosController {
     // make transaction order
     @Operation(summary = "POST Create Transaction", description = "API for create data transaction")
     @PostMapping("/transaction")
-    public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.CreateUpdateRequest item) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.TransactionCreateUpdateRequest item) {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
-            TransactionModel.IndexResponse response = transactionService.saveData(item);
+            TransactionModel.TransactionIndexResponse response = transactionService.saveData(item);
             return ResponseEntity.created(URI.create(urlRoute))
                     .body(new ApiResponse(true, "Successfully created transaction", response));
         } catch (Exception e) {
@@ -91,10 +91,10 @@ public class PosController {
     // update transaction order
     @Operation(summary = "PUT Update Transaction", description = "API for updating data transaction")
     @PutMapping("/transaction/{transactionId}")
-    public ResponseEntity<ApiResponse> update(@Valid @RequestBody TransactionModel.CreateUpdateRequest item, @PathVariable String transactionId) {
+    public ResponseEntity<ApiResponse> update(@Valid @RequestBody TransactionModel.TransactionCreateUpdateRequest item, @PathVariable String transactionId) {
         log.info("PUT " + urlRoute + " endpoint hit");
         try {
-            TransactionModel.IndexResponse response = transactionService.updateData(transactionId, item);
+            TransactionModel.TransactionIndexResponse response = transactionService.updateData(transactionId, item);
             return ResponseEntity.ok().body(new ApiResponse(true, "Successfully updated transaction", response));
         } catch (Exception e) {
             log.error("Error update transaction : {}", e.getMessage(), e);

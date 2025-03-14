@@ -42,7 +42,7 @@ public class TransactionController {
         log.info("GET " + urlRoute + " endpoint hit");
 
         try {
-            ResultPageResponseDTO<TransactionModel.IndexResponse> response = service.findDataIndex(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<TransactionModel.TransactionIndexResponse> response = service.findDataIndex(pages, limit, sortBy, direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list transaction", response));
         } catch (Exception e) {
             log.error("Error : {}", e.getMessage(), e);
@@ -56,7 +56,7 @@ public class TransactionController {
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
         log.info("GET " + urlRoute + "/{id} endpoint hit");
         try {
-            TransactionModel.DetailResponse item = service.findDataById(id);
+            TransactionModel.TransactionDetailResponse item = service.findDataById(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully found transaction", item));
         } catch (Exception e) {
             log.error("Error get data : {}", e.getMessage(), e);
@@ -67,10 +67,10 @@ public class TransactionController {
     @PreAuthorize("hasAuthority('transaction.create')")
     @Operation(summary = "POST Create Transaction", description = "API for create data transaction")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.CreateUpdateRequest item) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.TransactionCreateUpdateRequest item) {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
-            TransactionModel.IndexResponse response = service.saveData(item);
+            TransactionModel.TransactionIndexResponse response = service.saveData(item);
             return ResponseEntity.created(URI.create(urlRoute))
                     .body(new ApiResponse(true, "Successfully created transaction", response));
         } catch (Exception e) {
@@ -82,10 +82,10 @@ public class TransactionController {
     @PreAuthorize("hasAuthority('transaction.update')")
     @Operation(summary = "PUT Update Transaction", description = "API for update data transaction")
     @PutMapping("{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody TransactionModel.CreateUpdateRequest item) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody TransactionModel.TransactionCreateUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{} endpoint hit", id);
         try {
-            TransactionModel.IndexResponse response = service.updateData(id, item);
+            TransactionModel.TransactionIndexResponse response = service.updateData(id, item);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully updated transaction", response));
         } catch (Exception e) {
             log.error("Error update transaction : {}", e.getMessage(), e);

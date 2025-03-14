@@ -123,7 +123,7 @@ public class PostMenuServiceImpl implements PosService {
     }
 
     @Override
-    public void updateTransaction(TransactionModel.CreateUpdateRequest item) {
+    public void updateTransaction(TransactionModel.TransactionCreateUpdateRequest item) {
 
     }
 

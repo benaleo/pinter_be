@@ -17,5 +17,5 @@ public interface PosService {
 
     List<Map<String, String>> listMenuCategoryIndex();
 
-    void updateTransaction(TransactionModel.CreateUpdateRequest item);
+    void updateTransaction(TransactionModel.TransactionCreateUpdateRequest item);
 }
