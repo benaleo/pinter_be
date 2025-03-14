@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.kasirpinter.pos.model.attribute.AttributeResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kasirpinter.pos.entity.Company;
 import com.kasirpinter.pos.model.CompanyModel;
+import com.kasirpinter.pos.model.attribute.AttributeResponse;
 import com.kasirpinter.pos.model.projection.CompanyIndexProjection;
 import com.kasirpinter.pos.model.search.ListOfFilterPagination;
 import com.kasirpinter.pos.model.search.SavedKeywordAndPageable;
