@@ -38,7 +38,6 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final CustomUserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
     private final JWTTokenFactory jwtTokenFactory;
     private final JWTHeaderTokenExtractor jwtHeaderTokenExtractor;
 
