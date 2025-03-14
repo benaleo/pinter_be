@@ -264,6 +264,11 @@ public class UserServiceImpl implements UserService {
             beforeData.put("phone", Optional.ofNullable(user.getPhone()).orElse(""));
         }
 
+        if (req.address() != null && !req.address().equals(user.getAddress())) {
+            changedData.put("address", req.address());
+            beforeData.put("address", Optional.ofNullable(user.getAddress()).orElse(""));
+        }
+
         List<Map<String, String>> listResponse = new ArrayList<>();
         for (Map.Entry<String, Object> entry : changedData.entrySet()) {
             String key = entry.getKey();

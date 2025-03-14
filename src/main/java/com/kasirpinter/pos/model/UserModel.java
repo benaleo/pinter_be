@@ -66,7 +66,8 @@ public class UserModel {
     public record userUpdateAppRequest(
             String name,
             String email,
-            String phone
+            String phone,
+            String address
     ) {
     }
 
