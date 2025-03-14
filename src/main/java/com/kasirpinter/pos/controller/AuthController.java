@@ -1,5 +1,19 @@
 package com.kasirpinter.pos.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.exception.BadRequestException;
 import com.kasirpinter.pos.model.AuthModel;
@@ -7,22 +21,13 @@ import com.kasirpinter.pos.repository.UserRepository;
 import com.kasirpinter.pos.response.ApiResponse;
 import com.kasirpinter.pos.security.JWTHeaderTokenExtractor;
 import com.kasirpinter.pos.security.JWTTokenFactory;
-import com.kasirpinter.pos.security.JwtUtil;
 import com.kasirpinter.pos.service.AuthService;
 import com.kasirpinter.pos.service.UserService;
 import com.kasirpinter.pos.service.util.CustomUserDetailsService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +48,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthModel.loginRequest request) {
         try {
-            Object response = authService.login(request.getEmail(), request.getPassword());
+            Object response = authService.login(request.getEmail().toLowerCase(), request.getPassword());
 
             // Generate JWT token after successful authentication
             return ResponseEntity.ok().body(new ApiResponse(true, "Auth login successfully", response));
@@ -59,7 +64,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody AuthModel.registerRequest request) {
         try {
             // Check if the email already exists
-            Users existingUser = userRepository.findByEmail(request.getEmail()).orElse(null);
+            Users existingUser = userRepository.findByEmail(request.getEmail().toLowerCase()).orElse(null);
             if (existingUser != null) {
                 throw new BadRequestException("Email already exists");
             }

@@ -156,7 +156,7 @@ public class AuthServiceImpl implements AuthService {
     public void registerUser(registerRequest request) {
         Users newUser = new Users();
         newUser.setName(request.getName());
-        newUser.setEmail(request.getEmail());
+        newUser.setEmail(request.getEmail().toLowerCase());
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setIsActive(true);
         boolean existingPhone = userRepository.existsByPhone(request.getPhone());
