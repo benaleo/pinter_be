@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
             );
             fileManager.setFile(fileBytes);
             fileManager.setFileName(fileName);
-            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserCover(user.getSecureId()) : null);
+            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserAvatar(user.getSecureId()) : null);
             fileManagerRepository.save(fileManager);
         }
     }
@@ -314,7 +314,7 @@ public class UserServiceImpl implements UserService {
             );
             fileManager.setFile(fileBytes);
             fileManager.setFileName(fileName);
-            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserCover(user.getSecureId()) : null);
+            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserAvatar(user.getSecureId()) : null);
             fileManagerRepository.save(fileManager);
             // save to log
             logConverter.sendLogHistoryAvatar(user, "PROFILE", "COVER", "COVER-UPDATED");
