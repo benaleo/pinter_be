@@ -2,6 +2,9 @@ package com.kasirpinter.pos.controller;
 
 import java.util.Optional;
 
+import com.kasirpinter.pos.entity.FileManager;
+import com.kasirpinter.pos.enums.FileEntity;
+import com.kasirpinter.pos.repository.FileManagerRepository;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,19 +34,37 @@ public class ByteDownloaderController {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final FileManagerRepository fileManagerRepository;
 
-    // get stream file user
+    // get stream file user avatar
     @Operation(summary = "Show Image User", description = "Show Image User")
-    @GetMapping("/get/file/user/{id}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String id) {
+    @GetMapping("/get/file/user/{id}/avatar")
+    public ResponseEntity<byte[]> downloadFileAvatar(@PathVariable String id) {
         try {
             Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
-            HttpHeaders headers = UploadStreamHelper.HeaderStreamHelper(user.getAvatarName());
-            return new ResponseEntity<>(user.getAvatar(), headers, HttpStatus.OK);
+            FileManager fileManager = fileManagerRepository.findByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, user.getId());
+            HttpHeaders headers = UploadStreamHelper.HeaderStreamHelper(fileManager.getFileName());
+            return new ResponseEntity<>(fileManager.getFile(), headers, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    // get stream file user cover
+    @Operation(summary = "Show Image User", description = "Show Image User")
+    @GetMapping("/get/file/user/{id}/cover")
+    public ResponseEntity<byte[]> downloadFileCover(@PathVariable String id) {
+        try {
+            Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
+            FileManager fileManager = fileManagerRepository.findByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, user.getId());
+            HttpHeaders headers = UploadStreamHelper.HeaderStreamHelper(fileManager.getFileName());
+            return new ResponseEntity<>(fileManager.getFile(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+
 
     // get stream file
     @Operation(summary = "read product image", description = "API for reading product image")

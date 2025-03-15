@@ -52,13 +52,4 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     List<SavedLongAndStringValue> findUserNameByIdsMaps(List<Long> idsList);
 
     boolean existsByPhone(String phone);
-
-    @Modifying
-    @Transactional
-    @Query("""
-            UPDATE Users u
-            SET u.avatar = null, u.avatarName = null
-            WHERE u.id = :id
-            """)
-    void updateAvatarAndAvatarNameToNull(Long id);
 }

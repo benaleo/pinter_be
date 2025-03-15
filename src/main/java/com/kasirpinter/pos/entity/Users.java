@@ -6,11 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
-import com.kasirpinter.pos.entity.Company;
-import com.kasirpinter.pos.entity.RlUserShift;
-import com.kasirpinter.pos.entity.Roles;
-import com.kasirpinter.pos.entity.Tier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -50,12 +45,6 @@ public class Users extends AbstractEntity implements UserDetails, SecureIdentifi
     public Boolean getIsActive() {
         return super.getIsActive();
     }
-
-    @Column(name = "avatar", columnDefinition = "bytea")
-    private byte[] avatar;
-
-    @Column(name = "avatar_name")
-    private String avatarName;
 
     @Column(name = "name")
     private String name;

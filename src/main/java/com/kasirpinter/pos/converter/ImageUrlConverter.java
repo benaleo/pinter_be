@@ -14,6 +14,11 @@ public class ImageUrlConverter {
     private String baseUrl;
 
     public String getUserAvatar(String userId){
-        return baseUrl + "/get/file/user/" + userId;
+        return baseUrl + "/get/file/user/" + userId + "/avatar";
     }
+
+    public String getUserCover(String userId){
+        return baseUrl + "/get/file/user/" + userId + "/cover";
+    }
+
 }

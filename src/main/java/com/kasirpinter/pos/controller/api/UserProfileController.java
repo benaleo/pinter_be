@@ -130,6 +130,24 @@ public class UserProfileController {
         }
     }
 
+    // Edit user cover
+    @Operation(summary = "Edit cover", description = "Edit cover")
+    @PutMapping(value = "/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMyProfileCover(@RequestPart(required = false) MultipartFile cover, @RequestParam(required = false, defaultValue = "false") Boolean isRemove) {
+        // response true
+        log.info("GET " + urlRoute + "/cover endpoint hit");
+        try {
+            UserModel.UserInfo response = userService.updateMyProfileCover(cover, isRemove);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success edit my profile cover", response));
+        } catch (BadRequestException e) {
+            log.error("Error edit profile cover : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error edit profile cover : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Failed update profile cover", null));
+        }
+    }
+
     // Edit user password
     @Operation(summary = "Edit profile", description = "Edit profile")
     @PutMapping("/password")

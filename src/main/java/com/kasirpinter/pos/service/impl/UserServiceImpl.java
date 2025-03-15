@@ -1,5 +1,6 @@
 package com.kasirpinter.pos.service.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,7 +10,12 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.kasirpinter.pos.converter.ImageUrlConverter;
 import com.kasirpinter.pos.converter.LogGeneralConverter;
+import com.kasirpinter.pos.entity.*;
+import com.kasirpinter.pos.enums.FileEntity;
+import com.kasirpinter.pos.enums.FileType;
 import com.kasirpinter.pos.model.LogGeneralRequest;
+import com.kasirpinter.pos.model.projection.StringProjection;
+import com.kasirpinter.pos.repository.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,29 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kasirpinter.pos.converter.TreeRolePermissionConverter;
-import com.kasirpinter.pos.entity.Company;
-import com.kasirpinter.pos.entity.MsShift;
-import com.kasirpinter.pos.entity.Permissions;
-import com.kasirpinter.pos.entity.RlUserShift;
-import com.kasirpinter.pos.entity.RolePermission;
-import com.kasirpinter.pos.entity.Roles;
-import com.kasirpinter.pos.entity.ShiftRecap;
-import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.enums.InOutType;
 import com.kasirpinter.pos.exception.BadRequestException;
 import com.kasirpinter.pos.model.RolePermissionModel;
 import com.kasirpinter.pos.model.UserModel;
 import com.kasirpinter.pos.model.search.ListOfFilterPagination;
 import com.kasirpinter.pos.model.search.SavedKeywordAndPageable;
-import com.kasirpinter.pos.repository.CompanyRepository;
-import com.kasirpinter.pos.repository.PermissionsRepository;
-import com.kasirpinter.pos.repository.RlUserShiftRepository;
-import com.kasirpinter.pos.repository.RolePermissionRepository;
-import com.kasirpinter.pos.repository.RoleRepository;
-import com.kasirpinter.pos.repository.ShiftRecapRepository;
-import com.kasirpinter.pos.repository.TransactionRepository;
-import com.kasirpinter.pos.repository.UserRepository;
-import com.kasirpinter.pos.repository.UserShiftRepository;
 import com.kasirpinter.pos.response.PageCreateReturn;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.UserService;
@@ -73,6 +62,7 @@ public class UserServiceImpl implements UserService {
     private final ImageUrlConverter urlConverter;
 
     private final LogGeneralConverter logConverter;
+    private final FileManagerRepository fileManagerRepository;
 
     @Value("${app.base.url}")
     private String baseUrl;
@@ -94,9 +84,13 @@ public class UserServiceImpl implements UserService {
         // Map the data to the DTOs
         List<UserModel.userIndexResponse> dtos = pageResult.stream().map((c) -> {
             UserModel.userIndexResponse dto = new UserModel.userIndexResponse();
+            FileManager fileAvatar = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, c.getId())).orElse(null);
+            FileManager fileCover = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, c.getId())).orElse(null);
+
             dto.setName(c.getName());
             dto.setEmail(c.getEmail());
-            dto.setAvatar(c.getAvatar() != null ? baseUrl + "/cms/v1/am/user/" + c.getSecureId() + "/avatar" : null);
+            dto.setAvatar(fileAvatar == null ? null : fileAvatar.getFileUrl());
+            dto.setCover(fileCover == null ? null : fileCover.getFileUrl());
 
             dto.setRoleName(c.getRole().getName());
             dto.setCompanyName(c.getCompany() != null ? c.getCompany().getName() : null);
@@ -115,11 +109,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel.userDetailResponse findDataById(String id) {
         Users data = TreeGetEntity.parsingUserByProjection(id, userRepository);
+        FileManager fileAvatar = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, data.getId())).orElse(null);
+        FileManager fileCover = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, data.getId())).orElse(null);
         return new UserModel.userDetailResponse(
                 data.getName(),
                 data.getEmail(),
-                baseUrl + "/cms/v1/am/user/" + data.getSecureId() + "/avatar",
-                data.getAvatarName(),
+                fileAvatar == null ? null : fileAvatar.getFileUrl(),
+                fileAvatar == null ? null : fileAvatar.getFileName(),
+                fileCover == null ? null : fileCover.getFileUrl(),
+                fileCover == null ? null : fileCover.getFileName(),
                 data.getRole().getSecureId(),
                 data.getRole().getName(),
                 data.getCompany() != null ? data.getCompany().getSecureId() : null,
@@ -167,10 +165,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateAvatar(String id, MultipartFile avatar) throws IOException {
         Users user = TreeGetEntity.parsingUserByProjection(id, userRepository);
-        byte[] fileBytes = avatar.getBytes();
-        user.setAvatar(fileBytes);
-        user.setAvatarName(avatar.getOriginalFilename());
-        userRepository.save(user);
+        if (avatar != null && avatar.getOriginalFilename() != null){
+            byte[] fileBytes = avatar.getBytes();
+            String fileName = avatar.getOriginalFilename();
+            FileManager fileManager = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, user.getId())).orElseGet(
+                    () -> saveFile(user, fileBytes, fileName, "AVATAR")
+            );
+            fileManager.setFile(fileBytes);
+            fileManager.setFileName(fileName);
+            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserCover(user.getSecureId()) : null);
+            fileManagerRepository.save(fileManager);
+        }
     }
 
     @Override
@@ -247,6 +252,7 @@ public class UserServiceImpl implements UserService {
         user.setName(req.name() != null ? req.name() : user.getName());
         user.setEmail(req.email() != null ? req.email() : user.getEmail());
         user.setPhone(req.phone() != null ? req.phone() : user.getPhone());
+        user.setAddress(req.address() != null ? req.address() : user.getAddress());
         userRepository.save(user);
 
         if (req.name() != null && !req.name().equals(user.getName())) {
@@ -293,6 +299,7 @@ public class UserServiceImpl implements UserService {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
 
         if (avatar != null && avatar.getOriginalFilename() != null){
+
             String fileName = avatar.getOriginalFilename();
             String fileExtension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1 ): null;
 
@@ -302,17 +309,68 @@ public class UserServiceImpl implements UserService {
 
             byte[] fileBytes = avatar.getBytes();
 
-            user.setAvatar(fileBytes);
-            user.setAvatarName(fileName);
-            userRepository.save(user);
+            FileManager fileManager = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, user.getId())).orElseGet(
+                    () -> saveFile(user, fileBytes, fileName, "AVATAR")
+            );
+            fileManager.setFile(fileBytes);
+            fileManager.setFileName(fileName);
+            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserCover(user.getSecureId()) : null);
+            fileManagerRepository.save(fileManager);
             // save to log
-            logConverter.sendLogHistoryAvatar(user, "PROFILE", "AVATAR", "AVATAR-UPDATED");
+            logConverter.sendLogHistoryAvatar(user, "PROFILE", "COVER", "COVER-UPDATED");
         }
 
         if (isRemove){
-            userRepository.updateAvatarAndAvatarNameToNull(user.getId());
+            fileManagerRepository.deleteByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, user.getId());
             // save to log
             logConverter.sendLogHistoryAvatar(user, "PROFILE", "AVATAR", "AVATAR-REMOVED");
+        }
+
+        return parseUserInfo(null);
+    }
+
+    @Override
+    @Transactional
+    public UserModel.UserInfo updateMyProfileCover(MultipartFile cover, Boolean isRemove) throws IOException {
+        Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+
+        if (cover != null && cover.getOriginalFilename() != null){
+
+            String fileName = cover.getOriginalFilename();
+            String fileExtension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1 ): null;
+
+            if (!Arrays.asList("jpg", "png", "jpeg").contains(fileExtension)) {
+                throw new BadRequestException("Only allowed .jpg / .png / .jpeg");
+            }
+
+            byte[] fileBytes = cover.getBytes();
+
+            FileManager fileManager = Optional.ofNullable(fileManagerRepository.findByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, user.getId())).orElseGet(
+                    () -> {
+                        FileManager newFileManager = new FileManager(
+                                fileBytes,
+                                fileName,
+                                FileEntity.USER,
+                                FileType.IMAGE,
+                                "COVER",
+                                urlConverter.getUserCover(user.getSecureId()),
+                                user.getId()
+                        );
+                        return fileManagerRepository.save(newFileManager);
+                    }
+            );
+            fileManager.setFile(fileBytes);
+            fileManager.setFileName(fileName);
+            fileManager.setFileUrl(fileManager.getFile() != null ? urlConverter.getUserCover(user.getSecureId()) : null);
+            fileManagerRepository.save(fileManager);
+            // save to log
+            logConverter.sendLogHistoryAvatar(user, "PROFILE", "COVER", "COVER-UPDATED");
+        }
+
+        if (isRemove){
+            fileManagerRepository.deleteByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, user.getId());
+            // save to log
+            logConverter.sendLogHistoryAvatar(user, "PROFILE", "COVER", "COVER-REMOVED");
         }
 
         return parseUserInfo(null);
@@ -372,9 +430,12 @@ public class UserServiceImpl implements UserService {
         RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now())
                 .orElseGet(() -> createRlUserShiftOnNull(user));
         ShiftRecap recap = shiftRecapRepository.findByShift(userShift.getShift());
+        String avatar = fileManagerRepository.findFileUrlByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, user.getId());
+        String cover = fileManagerRepository.findFileUrlByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, user.getId());
         return new UserModel.UserInfo(
                 user.getSecureId(),
-                user.getAvatar() == null ? null : urlConverter.getUserAvatar(user.getSecureId()),
+                avatar,
+                cover,
                 user.getName(),
                 user.getEmail(),
                 user.getPhone(),
@@ -424,5 +485,18 @@ public class UserServiceImpl implements UserService {
                 type != null && type.equals(InOutType.IN) ? user.getNow() : user.userClockIn(),
                 type != null && type.equals(InOutType.OUT) ? user.getNow() : user.userClockOut(),
                 menuNames);
+    }
+
+    private FileManager saveFile(Users user, byte[] fileBytes, String fileName, String fileAs) {
+        FileManager newFileManager = new FileManager(
+                fileBytes,
+                fileName,
+                FileEntity.USER,
+                FileType.IMAGE,
+                fileAs,
+                urlConverter.getUserCover(user.getSecureId()),
+                user.getId()
+        );
+        return fileManagerRepository.save(newFileManager);
     }
 }

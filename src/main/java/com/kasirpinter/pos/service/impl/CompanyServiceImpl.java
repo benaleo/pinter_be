@@ -42,6 +42,8 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> listIndex(Integer pages, Integer limit,
             String sortBy, String direction, String keyword, Boolean isParent) {
+
+                
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
                 filter);
