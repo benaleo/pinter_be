@@ -483,6 +483,8 @@ public class UserServiceImpl implements UserService {
                 user.getEmail(),
                 avatar,
                 cover,
+                user.getPhone(),
+                user.getAddress(),
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,

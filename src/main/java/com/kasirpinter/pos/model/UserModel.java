@@ -94,23 +94,22 @@ public class UserModel {
         private String out_at;
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class UserInfo {
-        private String user_id;
-        private String avatar;
-        private String cover;
-        private String name;
-        private String email;
-        private String phone;
-        private String address;
-        private String role;
-        private String company_id;
-        private String company_name;
-        private Integer company_modal;
-        private String in_at;
-        private String out_at;
-        private List<Map<String, String>> permissions;
+    public record UserInfo(
+            String user_id,
+            String avatar,
+            String cover,
+            String name,
+            String email,
+            String phone,
+            String address,
+            String role,
+            String company_id,
+            String company_name,
+            Integer company_modal,
+            String in_at,
+            String out_at,
+            List<Map<String, String>> permissions
+    ) {
     }
 
     @Data
@@ -119,21 +118,22 @@ public class UserModel {
         private List<String> userIds;
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class AdminInfo {
-        private String user_id;
-        private String name;
-        private String email;
-        private String avatar;
-        private String cover;
-        private String role;
-        private String company_id;
-        private String company_name;
-        private Integer company_modal;
-        private String in_at;
-        private String out_at;
-        private List<RolePermissionModel.ListPermission> permissions;
+    public record AdminInfo(
+            String user_id,
+            String name,
+            String email,
+            String avatar,
+            String cover,
+            String phone,
+            String address,
+            String role,
+            String company_id,
+            String company_name,
+            Integer company_modal,
+            String in_at,
+            String out_at,
+            List<RolePermissionModel.ListPermission> permissions
+    ) {
     }
 
 
