@@ -125,6 +125,8 @@ public class UserModel {
         private String user_id;
         private String name;
         private String email;
+        private String avatar;
+        private String cover;
         private String role;
         private String company_id;
         private String company_name;

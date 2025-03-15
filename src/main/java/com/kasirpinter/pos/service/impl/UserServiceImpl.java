@@ -474,10 +474,15 @@ public class UserServiceImpl implements UserService {
         List<RolePermissionModel.ListPermission> menuNames = converter.convertRolePermissions(roleHasPermissionList,
                 permissionRepository, "info");
 
+        String avatar = fileManagerRepository.findFileUrlByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, user.getId());
+        String cover = fileManagerRepository.findFileUrlByFileAsAndFileEntityAndEntityId("COVER", FileEntity.USER, user.getId());
+
         return new UserModel.AdminInfo(
                 user.getSecureId(),
                 user.getName(),
                 user.getEmail(),
+                avatar,
+                cover,
                 user.getRole().getName(),
                 user.getCompany() != null ? user.getCompany().getSecureId() : null,
                 user.getCompany() != null ? user.getCompany().getName() : null,
