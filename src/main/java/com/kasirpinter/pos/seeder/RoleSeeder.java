@@ -39,6 +39,7 @@ public class RoleSeeder implements CommandLineRunner {
         permissionSeeder.put("companies", List.of("view", "create", "read", "update", "delete"));
         permissionSeeder.put("employees", List.of("view", "create", "read", "update", "delete"));
         permissionSeeder.put("shifts", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("job_positions", List.of("view", "create", "read", "update", "delete"));
         permissionSeeder.put("taxes", List.of("view", "read", "update"));
 
         Set<Permissions> allPermissions = new HashSet<>();

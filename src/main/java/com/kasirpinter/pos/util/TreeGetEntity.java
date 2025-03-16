@@ -124,8 +124,8 @@ public class TreeGetEntity {
                                 "Shift not found");
         }
 
-        public static MsJobPosition MsJobPositionByProjection(String secureId,
-                        MsJobPositionRepository repository) {
+        public static MsJobPosition parseMsJobPositionByProjection(String secureId,
+                                                                   MsJobPositionRepository repository) {
                 return getIdBySecureId(
                                 secureId,
                                 repository::findIdBySecureId,

@@ -29,7 +29,7 @@ public class TransactionController {
 
     private final TransactionService service;
 
-    @PreAuthorize("hasAuthority('transaction.view')")
+    @PreAuthorize("hasAuthority('transactions.view')")
     @Operation(summary = "GET List Transaction", description = "API for get list transaction index with pagination")
     @GetMapping
     public ResponseEntity<?> listDataTransactionIndex(
@@ -50,7 +50,7 @@ public class TransactionController {
         }
     }
 
-    @PreAuthorize("hasAuthority('transaction.read')")
+    @PreAuthorize("hasAuthority('transactions.read')")
     @Operation(summary = "GET Detail Transaction", description = "API for get detail transaction")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -64,7 +64,7 @@ public class TransactionController {
         }
     }
 
-    @PreAuthorize("hasAuthority('transaction.create')")
+    @PreAuthorize("hasAuthority('transactions.create')")
     @Operation(summary = "POST Create Transaction", description = "API for create data transaction")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody TransactionModel.TransactionCreateUpdateRequest item) {
@@ -79,7 +79,7 @@ public class TransactionController {
         }
     }
 
-    @PreAuthorize("hasAuthority('transaction.update')")
+    @PreAuthorize("hasAuthority('transactions.update')")
     @Operation(summary = "PUT Update Transaction", description = "API for update data transaction")
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody TransactionModel.TransactionCreateUpdateRequest item) {
@@ -93,7 +93,7 @@ public class TransactionController {
         }
     }
 
-    @PreAuthorize("hasAuthority('transaction.delete')")
+    @PreAuthorize("hasAuthority('transactions.delete')")
     @Operation(summary = "DELETE Data Transaction", description = "API for delete data transaction")
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {

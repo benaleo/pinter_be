@@ -40,7 +40,7 @@ public class RoleController {
 
     private RoleService service;
 
-    @PreAuthorize("hasAuthority('role.view')")
+    @PreAuthorize("hasAuthority('rroles.view')")
     @Operation(summary = "Get List Role", description = "Get List Role")
     @GetMapping
     public ResponseEntity<?> listFollowUser(
@@ -59,7 +59,7 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('role.read')")
+    @PreAuthorize("hasAuthority('rroles.read')")
     @Operation(summary = "Get detail Role", description = "Get detail Role")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -73,7 +73,7 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('role.create')")
+    @PreAuthorize("hasAuthority('rroles.create')")
     @Operation(summary = "Create Role", description = "Create Role")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody RoleModel.RoleCreateUpdateRequest item) {
@@ -88,7 +88,7 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('role.update')")
+    @PreAuthorize("hasAuthority('rroles.update')")
     @Operation(summary = "Update Role", description = "Update Role")
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody RoleModel.RoleCreateUpdateRequest item) {
@@ -102,7 +102,7 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('role.delete')")
+    @PreAuthorize("hasAuthority('rroles.delete')")
     @Operation(summary = "Delete Role", description = "Delete Role")
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {

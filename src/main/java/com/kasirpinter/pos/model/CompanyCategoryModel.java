@@ -11,6 +11,7 @@ public class CompanyCategoryModel {
     public static class CompanyCategoryIndexResponse extends AdminModelBaseDTOResponse {
         private String name;
         private String category;
+        private Boolean isActive;
     }
 
     @Data

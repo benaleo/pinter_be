@@ -31,7 +31,6 @@ public class UserController {
     private UserService service;
 
 
-
     @Operation(summary = "GET List User", description = "API for get list user index with pagination")
     @GetMapping("/info")
     public ResponseEntity<?> userInfo() {

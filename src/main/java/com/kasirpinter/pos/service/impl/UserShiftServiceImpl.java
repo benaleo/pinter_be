@@ -184,7 +184,7 @@ public class UserShiftServiceImpl implements UserShiftService {
     public void saveDataAssigned(ShiftAssignedRequest item) {
         Users user = TreeGetEntity.parsingUserByProjection(item.userId(), userRepository);
         MsShift shift = TreeGetEntity.parsingUserShiftByProjection(item.shiftId(), userShiftRepository);
-        MsJobPosition position = TreeGetEntity.MsJobPositionByProjection(item.positionId(), msJobPositionRepository);
+        MsJobPosition position = TreeGetEntity.parseMsJobPositionByProjection(item.positionId(), msJobPositionRepository);
 
         RlUserShift newData = new RlUserShift();
         newData.setUser(user);

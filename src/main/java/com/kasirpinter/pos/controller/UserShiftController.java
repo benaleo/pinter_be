@@ -29,7 +29,7 @@ public class UserShiftController {
 
     private UserShiftService service;
 
-    @PreAuthorize("hasAuthority('shift.view')")
+    @PreAuthorize("hasAuthority('shifts.view')")
     @Operation(summary = "Get List Shift", description = "Get List Shift")
     @GetMapping
     public ResponseEntity<?> listIndex(
@@ -50,7 +50,7 @@ public class UserShiftController {
         }
     }
 
-    @PreAuthorize("hasAuthority('shift.read')")
+    @PreAuthorize("hasAuthority('shifts.read')")
     @Operation(summary = "Get detail Shift", description = "Get detail Shift")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -64,7 +64,7 @@ public class UserShiftController {
         }
     }
 
-    @PreAuthorize("hasAuthority('shift.create')")
+    @PreAuthorize("hasAuthority('shifts.create')")
     @Operation(summary = "Create Shift", description = "Create Shift")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody UserShiftModel.ShiftCreateRequest item) {
@@ -79,7 +79,7 @@ public class UserShiftController {
         }
     }
 
-    @PreAuthorize("hasAuthority('shift.update')")
+    @PreAuthorize("hasAuthority('shifts.update')")
     @Operation(summary = "Update Shift", description = "Update Shift")
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id,
@@ -94,7 +94,7 @@ public class UserShiftController {
         }
     }
 
-    @PreAuthorize("hasAuthority('shift.delete')")
+    @PreAuthorize("hasAuthority('shifts.delete')")
     @Operation(summary = "Delete Shift", description = "Delete Shift")
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {
@@ -109,7 +109,7 @@ public class UserShiftController {
     }
 
     // list shift person
-    @PreAuthorize("hasAuthority('shift.view')")
+    @PreAuthorize("hasAuthority('shifts.view')")
     @Operation(summary = "Get List Shift", description = "Get List Shift")
     @GetMapping("{id}/assigned")
     public ResponseEntity<?> listIndexAssigned(
@@ -132,7 +132,7 @@ public class UserShiftController {
         }
     }
 
-    @PreAuthorize("hasAuthority('shift.create')")
+    @PreAuthorize("hasAuthority('shifts.create')")
     @Operation(summary = "Create Shift", description = "Create Shift")
     @PostMapping("{id}/assigned")
     public ResponseEntity<ApiResponse> createAssigned(
@@ -149,7 +149,7 @@ public class UserShiftController {
         }
     }
 
-    @PreAuthorize("hasAuthority('shift.delete')")
+    @PreAuthorize("hasAuthority('shifts.delete')")
     @Operation(summary = "Delete Shift", description = "Delete Shift")
     @DeleteMapping("{id}/assigned")
     public ResponseEntity<ApiResponse> deleteAssigned(

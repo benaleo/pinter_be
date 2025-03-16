@@ -1,5 +1,6 @@
 package com.kasirpinter.pos.repository;
 
+import com.kasirpinter.pos.entity.MsJobPosition;
 import com.kasirpinter.pos.entity.MsShift;
 import com.kasirpinter.pos.entity.RlUserShift;
 import com.kasirpinter.pos.entity.Users;
@@ -48,4 +49,6 @@ public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> 
     Page<RlUserShift> findByUserNameLikeIgnoreCase(String keyword, Pageable pageable);
 
     RlUserShift findByUserAndShift(Users user, MsShift shift);
+
+    boolean existsByPosition(MsJobPosition position);
 }

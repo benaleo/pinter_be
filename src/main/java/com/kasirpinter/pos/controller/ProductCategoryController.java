@@ -30,7 +30,7 @@ public class ProductCategoryController {
 
     private ProductCategoryService service;
 
-    @PreAuthorize("hasAuthority('product_category.view')")
+    @PreAuthorize("hasAuthority('product_categories.view')")
     @Operation(summary = "Get List Product Category", description = "Get List Product Category")
     @GetMapping
     public ResponseEntity<?> listIndex(
@@ -51,7 +51,7 @@ public class ProductCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product_category.read')")
+    @PreAuthorize("hasAuthority('product_categories.read')")
     @Operation(summary = "Get detail Product Category", description = "Get detail Product Category")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -65,7 +65,7 @@ public class ProductCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product_category.create')")
+    @PreAuthorize("hasAuthority('product_categories.create')")
     @Operation(summary = "Create Product Category", description = "Create Product Category")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody ProductCategoryModel.ProductCategoryCreateRequest item) {
@@ -83,7 +83,7 @@ public class ProductCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product_category.update')")
+    @PreAuthorize("hasAuthority('product_categories.update')")
     @Operation(summary = "Update Product Category", description = "Update Product Category")
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody ProductCategoryModel.ProductCategoryUpdateRequest item) {
@@ -97,7 +97,7 @@ public class ProductCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product_category.update')")
+    @PreAuthorize("hasAuthority('product_categories.update')")
     @Operation(summary = "Update Product Category", description = "Update Product Category")
     @PutMapping("{id}/delete")
     public ResponseEntity<ApiResponse> updateSoftDelete(@PathVariable("id") String id) {
@@ -111,7 +111,7 @@ public class ProductCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product_category.delete')")
+    @PreAuthorize("hasAuthority('product_categories.delete')")
     @Operation(summary = "Delete Product Category", description = "Delete Product Category")
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {

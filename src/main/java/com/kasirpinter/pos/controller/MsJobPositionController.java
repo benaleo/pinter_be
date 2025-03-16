@@ -1,48 +1,38 @@
 package com.kasirpinter.pos.controller;
 
-import java.net.URI;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.kasirpinter.pos.model.CompanyCategoryModel;
+import com.kasirpinter.pos.model.JobPositionModel;
 import com.kasirpinter.pos.response.ApiResponse;
 import com.kasirpinter.pos.response.PaginationCmsResponse;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
-import com.kasirpinter.pos.service.CompanyCategoryService;
-
+import com.kasirpinter.pos.service.MsJobPositionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(CompanyCategoryController.urlRoute)
-@Tag(name = "Company Category API")
+@RequestMapping(MsJobPositionController.urlRoute)
+@Tag(name = "[Masterdata] Position API")
 @Slf4j
 @SecurityRequirement(name = "Authorization")
-public class CompanyCategoryController {
+public class MsJobPositionController {
 
-    static final String urlRoute = "/cms/v1/company-category";
+    static final String urlRoute = "/cms/v1/job-position";
 
-    private CompanyCategoryService service;
+    private MsJobPositionService service;
 
-    @PreAuthorize("hasAuthority('company_category.view')")
-    @Operation(summary = "Get List Company Category", description = "Get List Company Category")
+    @PreAuthorize("hasAuthority('job_positions.view')")
+    @Operation(summary = "Get List Job Position", description = "Get List Job Position")
     @GetMapping
-    public ResponseEntity<?> listCompanyCategoryIndex(
+    public ResponseEntity<?> listJobPositionIndex(
             @RequestParam(name = "pages", required = false, defaultValue = "0") Integer pages,
             @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
             @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
@@ -52,7 +42,7 @@ public class CompanyCategoryController {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<CompanyCategoryModel.CompanyCategoryIndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<JobPositionModel.JobPositionIndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list company", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -60,13 +50,13 @@ public class CompanyCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company_category.read')")
-    @Operation(summary = "Get detail Company Category", description = "Get detail Company Category")
+    @PreAuthorize("hasAuthority('job_positions.read')")
+    @Operation(summary = "Get detail Job Position", description = "Get detail Job Position")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
         log.info("GET " + urlRoute + "/{id} endpoint hit");
         try {
-            CompanyCategoryModel.CompanyCategoryDetailResponse item = service.findCompanyCategoryBySecureId(id);
+            JobPositionModel.JobPositionDetailResponse item = service.findJobPositionBySecureId(id);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully found company", item));
         } catch (Exception e) {
             log.error("Error get detail : {}", e.getMessage(), e);
@@ -74,13 +64,13 @@ public class CompanyCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company_category.create')")
-    @Operation(summary = "Create Company Category", description = "Create Company Category")
+    @PreAuthorize("hasAuthority('job_positions.create')")
+    @Operation(summary = "Create Job Position", description = "Create Job Position")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@Valid @RequestBody CompanyCategoryModel.CompanyCategoryCreateRequest item) {
+    public ResponseEntity<ApiResponse> create(@Valid @RequestBody JobPositionModel.JobPositionCreateRequest item) {
         log.info("POST " + urlRoute + " endpoint hit");
         try {
-            CompanyCategoryModel.CompanyCategoryDetailResponse response = service.saveData(item);
+            JobPositionModel.JobPositionDetailResponse response = service.saveData(item);
             return ResponseEntity.created(URI.create("/cms/v1/am/company/"))
                     .body(new ApiResponse(true, "Successfully created company", response));
         } catch (Exception e) {
@@ -89,13 +79,13 @@ public class CompanyCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company_category.update')")
-    @Operation(summary = "Update Company Category", description = "Update Company Category")
+    @PreAuthorize("hasAuthority('job_positions.update')")
+    @Operation(summary = "Update Job Position", description = "Update Job Position")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody CompanyCategoryModel.CompanyCategoryUpdateRequest item) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody JobPositionModel.JobPositionUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{id} endpoint hit");
         try {
-            CompanyCategoryModel.CompanyCategoryDetailResponse response = service.updateData(id, item);
+            JobPositionModel.JobPositionDetailResponse response = service.updateData(id, item);
             return ResponseEntity.ok(new ApiResponse(true, "Successfully updated company", response));
         } catch (Exception e) {
             log.error("Error update company : {}", e.getMessage(), e);
@@ -103,8 +93,8 @@ public class CompanyCategoryController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company_category.delete')")
-    @Operation(summary = "Delete Company Category", description = "Delete Company Category")
+    @PreAuthorize("hasAuthority('job_positions.delete')")
+    @Operation(summary = "Delete Job Position", description = "Delete Job Position")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {
         log.info("DELETE " + urlRoute + "/{id} endpoint hit");

@@ -30,7 +30,7 @@ public class ProductController {
 
     private final ProductService service;
 
-    @PreAuthorize("hasAuthority('product.view')")
+    @PreAuthorize("hasAuthority('products.view')")
     @Operation(summary = "Get List Product", description = "Get List Product")
     @GetMapping
     public ResponseEntity<?> listIndex(
@@ -51,7 +51,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product.read')")
+    @PreAuthorize("hasAuthority('products.read')")
     @Operation(summary = "Get detail Product", description = "Get detail Product")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -65,7 +65,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product.create')")
+    @PreAuthorize("hasAuthority('products.create')")
     @Operation(summary = "Create Product", description = "Create Product")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> create(
@@ -92,7 +92,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product.update')")
+    @PreAuthorize("hasAuthority('products.update')")
     @Operation(summary = "Update Product", description = "Update Product")
     @PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> update(
@@ -118,7 +118,7 @@ public class ProductController {
         }
     }
 
-    @PreAuthorize("hasAuthority('product.delete')")
+    @PreAuthorize("hasAuthority('products.delete')")
     @Operation(summary = "Delete Product", description = "Delete Product")
     @PutMapping("{id}/delete")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {

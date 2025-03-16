@@ -29,7 +29,7 @@ public class CompanyController {
 
     private CompanyService service;
 
-    @PreAuthorize("hasAuthority('company.view')")
+    @PreAuthorize("hasAuthority('companies.view')")
     @Operation(summary = "Get List Company", description = "Get List Company")
     @GetMapping
     public ResponseEntity<?> listIndex(
@@ -50,7 +50,7 @@ public class CompanyController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company.read')")
+    @PreAuthorize("hasAuthority('companies.read')")
     @Operation(summary = "Get detail Company", description = "Get detail Company")
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
@@ -64,7 +64,7 @@ public class CompanyController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company.create')")
+    @PreAuthorize("hasAuthority('companies.create')")
     @Operation(summary = "Create Company", description = "Create Company")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@Valid @RequestBody CompanyModel.CompanyCreateRequest item) {
@@ -79,7 +79,7 @@ public class CompanyController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company.update')")
+    @PreAuthorize("hasAuthority('companies.update')")
     @Operation(summary = "Update Company", description = "Update Company")
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody CompanyModel.CompanyUpdateRequest item) {
@@ -93,7 +93,7 @@ public class CompanyController {
         }
     }
 
-    @PreAuthorize("hasAuthority('company.delete')")
+    @PreAuthorize("hasAuthority('companies.delete')")
     @Operation(summary = "Delete Company", description = "Delete Company")
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") String id) {

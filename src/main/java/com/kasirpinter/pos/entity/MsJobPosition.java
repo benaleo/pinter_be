@@ -2,10 +2,7 @@ package com.kasirpinter.pos.entity;
 
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,10 +23,14 @@ public class MsJobPosition extends AbstractEntity implements SecureIdentifiable 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "category_ids", columnDefinition = "text")
-    private String categoryIds;
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "secure_id")
+    private Company company;
 
     @Column(name = "description", columnDefinition = "text")
     private String description;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = false;
 
 }
