@@ -16,7 +16,17 @@ import java.util.Optional;
 @Repository
 public interface UserShiftRepository extends JpaRepository<MsShift, Long> {
 
-    Page<MsShift> findByNameLikeIgnoreCase(String keyword, Pageable pageable);
+
+        @Query("""
+                SELECT d
+                FROM MsShift d
+                LEFT JOIN d.company c
+                WHERE
+                        (:companyId IS NULL OR c.secureId = :companyId) AND
+                        (LOWER(d.name) LIKE LOWER(:keyword) OR
+                        LOWER(c.name) LIKE LOWER(:keyword))
+                """)
+    Page<MsShift> findByNameLikeIgnoreCase(String keyword, Pageable pageable, String companyId);
 
     @Query("""
             SELECT new com.kasirpinter.pos.model.projection.CastIdSecureIdProjection(d.id, d.secureId)

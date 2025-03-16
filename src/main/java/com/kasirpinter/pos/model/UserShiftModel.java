@@ -14,6 +14,7 @@ public class UserShiftModel {
         private String description;
         private PeriodStartEnd period;
         private String company_name;
+        private Boolean isActive;
     }
 
     @Data
@@ -39,6 +40,7 @@ public class UserShiftModel {
         private String description;
         private String start;
         private String end;
+        private Boolean isActive;
     }
 
     @Data

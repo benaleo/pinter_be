@@ -39,18 +39,22 @@ public class UserShiftServiceImpl implements UserShiftService {
     private final CompanyRepository companyRepository;
 
     @Override
-    public ResultPageResponseDTO<UserShiftModel.ShiftIndexResponse> listIndex(Integer pages, Integer limit, String sortBy, String direction, String keyword) {
+    public ResultPageResponseDTO<UserShiftModel.ShiftIndexResponse> listIndex(Integer pages, Integer limit,
+            String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
+        String companyId = user.getRole().getName().equals("SUPERADMIN") ? null : user.getCompany().getSecureId();
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
-        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword, filter);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
+                filter);
 
         // First page result (get total count)
-        Page<MsShift> firstResult = userShiftRepository.findByNameLikeIgnoreCase(set.keyword(), set.pageable());
+        Page<MsShift> firstResult = userShiftRepository.findByNameLikeIgnoreCase(set.keyword(), set.pageable(),
+                companyId);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<MsShift> pageResult = userShiftRepository.findByNameLikeIgnoreCase(set.keyword(), pageable);
+        Page<MsShift> pageResult = userShiftRepository.findByNameLikeIgnoreCase(set.keyword(), pageable, companyId);
 
         // Map the data to the DTOs
         List<UserShiftModel.ShiftIndexResponse> dtos = pageResult.stream().map((c) -> {
@@ -58,7 +62,8 @@ public class UserShiftServiceImpl implements UserShiftService {
             dto.setName(c.getName());
             dto.setDescription(c.getDescription());
             dto.setPeriod(new UserShiftModel.PeriodStartEnd(c.getStartTime().toString(), c.getEndTime().toString()));
-            dto.setCompany_name(user.getCompany() != null ? user.getCompany().getName() : null);
+            dto.setCompany_name(c.getCompany() != null ? c.getCompany().getName() : null);
+            dto.setIsActive(c.getIsActive());
 
             GlobalConverter.CmsIDTimeStampResponseAndId(dto, c, userRepository);
             return dto;
@@ -66,8 +71,7 @@ public class UserShiftServiceImpl implements UserShiftService {
 
         return PageCreateReturn.create(
                 pageResult,
-                dtos
-        );
+                dtos);
     }
 
     @Override
@@ -88,6 +92,7 @@ public class UserShiftServiceImpl implements UserShiftService {
         newData.setStartTime(Formatter.parseToLocalTime(dto.getStart()));
         newData.setEndTime(Formatter.parseToLocalTime(dto.getEnd()));
         newData.setCompany(company != null ? company : user.getCompany());
+        newData.setIsActive(true);
 
         GlobalConverter.CmsAdminCreateAtBy(newData, user.getId());
         MsShift savedData = userShiftRepository.save(newData);
@@ -95,12 +100,14 @@ public class UserShiftServiceImpl implements UserShiftService {
     }
 
     @Override
+    @Transactional
     public UserShiftModel.ShiftDetailResponse updateData(String id, UserShiftModel.ShiftUpdateRequest dto) {
         MsShift data = TreeGetEntity.parsingUserShiftByProjection(id, userShiftRepository);
         data.setName(dto.getName() != null ? dto.getName() : data.getName());
         data.setDescription(dto.getDescription() != null ? dto.getDescription() : data.getDescription());
         data.setStartTime(dto.getStart() != null ? Formatter.parseToLocalTime(dto.getStart()) : data.getStartTime());
         data.setEndTime(dto.getEnd() != null ? Formatter.parseToLocalTime(dto.getEnd()) : data.getEndTime());
+        data.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : data.getIsActive());
 
         GlobalConverter.CmsAdminUpdateAtBy(data, ContextPrincipal.getId());
         MsShift savedData = userShiftRepository.save(data);
@@ -127,7 +134,6 @@ public class UserShiftServiceImpl implements UserShiftService {
         return new UserShiftModel.ShiftDetailResponse(
                 data.getName(),
                 data.getDescription(),
-                new UserShiftModel.PeriodStartEnd(data.getStartTime().toString(), data.getEndTime().toString())
-        );
+                new UserShiftModel.PeriodStartEnd(data.getStartTime().toString(), data.getEndTime().toString()));
     }
 }
