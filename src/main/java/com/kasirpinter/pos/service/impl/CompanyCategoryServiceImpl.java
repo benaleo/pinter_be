@@ -1,27 +1,31 @@
 package com.kasirpinter.pos.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.kasirpinter.pos.entity.CompanyCategory;
 import com.kasirpinter.pos.model.CompanyCategoryModel;
 import com.kasirpinter.pos.model.projection.CompanyCategoryIndexProjection;
 import com.kasirpinter.pos.model.search.ListOfFilterPagination;
 import com.kasirpinter.pos.model.search.SavedKeywordAndPageable;
 import com.kasirpinter.pos.repository.CompanyCategoryRepository;
+import com.kasirpinter.pos.repository.CompanyRepository;
 import com.kasirpinter.pos.repository.UserRepository;
 import com.kasirpinter.pos.response.PageCreateReturn;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.CompanyCategoryService;
 import com.kasirpinter.pos.service.DataProjectionService;
+import com.kasirpinter.pos.util.ContextPrincipal;
 import com.kasirpinter.pos.util.GlobalConverter;
 import com.kasirpinter.pos.util.TreeGetEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,10 +79,12 @@ public class CompanyCategoryServiceImpl implements CompanyCategoryService {
 
     @Override
     public CompanyCategoryModel.CompanyCategoryDetailResponse saveData(CompanyCategoryModel.CompanyCategoryCreateRequest item) {
+        
         CompanyCategory newData = new CompanyCategory();
         newData.setName(item.name());
         newData.setCategory(item.category());
         newData.setIsActive(item.isActive());
+        GlobalConverter.CmsAdminCreateAtBy(newData, ContextPrincipal.getId());
         newData = categoryRepository.save(newData);
         return toResponse(newData);
     }

@@ -21,6 +21,10 @@ public class CompanyCategory extends AbstractEntity implements SecureIdentifiabl
 
     private String category;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
     @Override
     public Long getId() {
         return super.getId();
