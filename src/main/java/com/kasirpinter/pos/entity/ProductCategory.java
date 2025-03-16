@@ -1,8 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
-import com.kasirpinter.pos.entity.Company;
-import com.kasirpinter.pos.entity.Product;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import com.kasirpinter.pos.enums.ProductCategoryType;
 import jakarta.persistence.*;
@@ -18,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "product_category", indexes = {
+@Table(name = "ms_product_category", indexes = {
         @Index(name = "idx_product_category_secure_id", columnList = "secure_id", unique = true)
 })
 public class ProductCategory extends AbstractEntity implements SecureIdentifiable {

@@ -30,13 +30,16 @@ public class RoleSeeder implements CommandLineRunner {
 
         Map<String, List<String>> permissionSeeder = new LinkedHashMap<>();
 
-        permissionSeeder.put("user", List.of("view", "create", "read", "update", "delete"));
-        permissionSeeder.put("role", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("users", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("roles", List.of("view", "create", "read", "update", "delete"));
 
-        permissionSeeder.put("product", List.of("view", "create", "read", "update", "delete"));
-        permissionSeeder.put("product_category", List.of("view", "create", "read", "update", "delete"));
-        permissionSeeder.put("transaction", List.of("view", "create", "read", "update", "delete"));
-        permissionSeeder.put("company", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("products", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("product_categories", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("transactions", List.of("view", "read"));
+        permissionSeeder.put("companies", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("employees", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("shifts", List.of("view", "create", "read", "update", "delete"));
+        permissionSeeder.put("taxes", List.of("view", "read", "update"));
 
         Set<Permissions> allPermissions = new HashSet<>();
 

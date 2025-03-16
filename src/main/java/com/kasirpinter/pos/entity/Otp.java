@@ -1,6 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.Users;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "otps")
+@Table(name = "s_otps")
 @Data
 public class Otp {
 

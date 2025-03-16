@@ -1,8 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
-import com.kasirpinter.pos.entity.Permissions;
-import com.kasirpinter.pos.entity.RolePermission;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,7 +12,7 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "roles")
+@Table(name = "am_roles")
 @Data
 public class Roles extends AbstractEntity implements SecureIdentifiable {
 
@@ -38,7 +35,7 @@ public class Roles extends AbstractEntity implements SecureIdentifiable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "role_permissions",
+            name = "am_role_permissions",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )

@@ -1,6 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tier", indexes = {
+@Table(name = "ms_tiers", indexes = {
         @Index(name = "idx_tier_secure_id", columnList = "secure_id", unique = true)
 })
 public class Tier extends AbstractEntity implements SecureIdentifiable {

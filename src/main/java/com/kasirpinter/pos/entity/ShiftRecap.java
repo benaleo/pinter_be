@@ -1,7 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
-import com.kasirpinter.pos.entity.MsShift;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "user_shift_recap", indexes = {
+@Table(name = "um_shift_recap", indexes = {
         @Index(name = "idx_user_shift_recap_secure_id", columnList = "secure_id", unique = true)
 })
 @Data

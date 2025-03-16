@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "file_managers")
+@Table(name = "s_file_managers")
 @NoArgsConstructor
 public class FileManager {
     

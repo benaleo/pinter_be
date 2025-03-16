@@ -1,6 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "member", indexes = {
+@Table(name = "um_member", indexes = {
         @Index(name = "idx_member_secure_id", columnList = "secure_id", unique = true)
 })
 public class Member extends AbstractEntity implements SecureIdentifiable {

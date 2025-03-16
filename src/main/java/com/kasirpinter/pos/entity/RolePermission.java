@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "role_permissions")
+@Table(name = "am_role_permissions")
 public class RolePermission {
 
     @EmbeddedId

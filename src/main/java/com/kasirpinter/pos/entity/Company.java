@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "company", indexes = {
+@Table(name = "ms_companies", indexes = {
         @Index(name = "idx_company_secure_id", columnList = "secure_id", unique = true)
 })
 public class Company extends AbstractEntity implements SecureIdentifiable {

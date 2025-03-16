@@ -1,6 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.*;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import com.kasirpinter.pos.enums.TransactionStatus;
 import com.kasirpinter.pos.enums.TransactionType;
@@ -17,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "transaction", indexes = {
+@Table(name = "tx_transactions", indexes = {
         @Index(name = "idx_transaction_secure_id", columnList = "secure_id", unique = true)
 })
 public class Transaction extends AbstractEntity implements SecureIdentifiable {

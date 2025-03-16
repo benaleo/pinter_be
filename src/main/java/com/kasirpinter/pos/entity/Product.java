@@ -1,7 +1,5 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
-import com.kasirpinter.pos.entity.ProductCategory;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "product", indexes = {
+@Table(name = "ms_products", indexes = {
         @Index(name = "idx_product_secure_id", columnList = "secure_id", unique = true)
 })
 public class Product extends AbstractEntity implements SecureIdentifiable {

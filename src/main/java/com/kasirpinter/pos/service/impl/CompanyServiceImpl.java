@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,13 @@ import com.kasirpinter.pos.repository.UserRepository;
 import com.kasirpinter.pos.response.PageCreateReturn;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.CompanyService;
+import com.kasirpinter.pos.util.ContextPrincipal;
 import com.kasirpinter.pos.util.GlobalConverter;
 import com.kasirpinter.pos.util.TreeGetEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.agent.builder.AgentBuilder.CircularityLock.Global;
 
 @Service
 @RequiredArgsConstructor
@@ -43,19 +46,23 @@ public class CompanyServiceImpl implements CompanyService {
     public ResultPageResponseDTO<CompanyModel.CompanyIndexResponse> listIndex(Integer pages, Integer limit,
             String sortBy, String direction, String keyword, Boolean isParent) {
 
-                
+        String roleName = ContextPrincipal.getRoleName();
+        String parentId = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository).getCompany().getParent().getSecureId();
+        log.info("parentId : {}", parentId);
+        String filterParentId = roleName.equals("SUPERADMIN") ? null : parentId;
+
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
                 filter);
 
         // First page result (get total count)
         Page<CompanyIndexProjection> firstResult = companyRepository.findDataByKeyword(set.keyword(), set.pageable(),
-                isParent);
+                isParent, filterParentId);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
         Page<CompanyIndexProjection> pageResult = companyRepository.findDataByKeyword(set.keyword(), pageable,
-                isParent);
+                isParent, filterParentId);
 
         // Map the data to the DTOs
         List<CompanyModel.CompanyIndexResponse> dtos = pageResult.stream().map((c) -> {

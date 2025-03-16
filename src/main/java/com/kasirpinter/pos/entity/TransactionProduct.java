@@ -1,14 +1,11 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.Product;
-import com.kasirpinter.pos.entity.Transaction;
-import com.kasirpinter.pos.entity.TransactionProductId;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "transaction_product")
+@Table(name = "rl_transaction_product")
 public class TransactionProduct {
 
     @EmbeddedId
