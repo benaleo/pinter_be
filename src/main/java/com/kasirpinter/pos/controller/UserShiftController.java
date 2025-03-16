@@ -37,12 +37,12 @@ public class UserShiftController {
             @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
             @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
             @RequestParam(name = "direction", required = false, defaultValue = "asc") String direction,
-            @RequestParam(name = "keyword", required = false) String keyword
-    ) {
+            @RequestParam(name = "keyword", required = false) String keyword) {
         // response true
         log.info("GET " + urlRoute + " endpoint hit");
         try {
-            ResultPageResponseDTO<UserShiftModel.ShiftIndexResponse> response = service.listIndex(pages, limit, sortBy, direction, keyword);
+            ResultPageResponseDTO<UserShiftModel.ShiftIndexResponse> response = service.listIndex(pages, limit, sortBy,
+                    direction, keyword);
             return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list shift", response));
         } catch (Exception e) {
             log.error("Error get index : {}", e.getMessage(), e);
@@ -82,7 +82,8 @@ public class UserShiftController {
     @PreAuthorize("hasAuthority('shift.update')")
     @Operation(summary = "Update Shift", description = "Update Shift")
     @PutMapping("{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id, @Valid @RequestBody UserShiftModel.ShiftUpdateRequest item) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") String id,
+            @Valid @RequestBody UserShiftModel.ShiftUpdateRequest item) {
         log.info("PUT " + urlRoute + "/{id} endpoint hit");
         try {
             UserShiftModel.ShiftDetailResponse response = service.updateData(id, item);
@@ -106,4 +107,62 @@ public class UserShiftController {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
         }
     }
+
+    // list shift person
+    @PreAuthorize("hasAuthority('shift.view')")
+    @Operation(summary = "Get List Shift", description = "Get List Shift")
+    @GetMapping("{id}/assigned")
+    public ResponseEntity<?> listIndexAssigned(
+            @PathVariable("id") String shiftId,
+            @RequestParam(name = "pages", required = false, defaultValue = "0") Integer pages,
+            @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
+            @RequestParam(name = "direction", required = false, defaultValue = "asc") String direction,
+            @RequestParam(name = "keyword", required = false) String keyword) {
+        // response true
+        log.info("GET " + urlRoute + "/{}/assigned endpoint hit", shiftId);
+        try {
+            ResultPageResponseDTO<UserShiftModel.ShiftAssignedResponse> response = service.listIndexAssigned(pages, limit,
+                    sortBy,
+                    direction, keyword, shiftId);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list shift assigned", response));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
+    @PreAuthorize("hasAuthority('shift.create')")
+    @Operation(summary = "Create Shift", description = "Create Shift")
+    @PostMapping("{id}/assigned")
+    public ResponseEntity<ApiResponse> createAssigned(
+        @PathVariable("id") String shiftId,
+        @Valid @RequestBody UserShiftModel.ShiftAssignedRequest item) {
+        log.info("POST " + urlRoute + " endpoint hit");
+        try {
+            service.saveDataAssigned(item);
+            return ResponseEntity.created(URI.create(urlRoute + "/" + shiftId + "/assigned"))
+                    .body(new ApiResponse(true, "Successfully created user in shift", null));
+        } catch (Exception e) {
+            log.error("Error create assigned user in shift : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
+    @PreAuthorize("hasAuthority('shift.delete')")
+    @Operation(summary = "Delete Shift", description = "Delete Shift")
+    @DeleteMapping("{id}/assigned")
+    public ResponseEntity<ApiResponse> deleteAssigned(
+        @PathVariable("id") String shiftId, 
+        @RequestParam String userId) {
+        log.info("DELETE " + urlRoute + "/{id}/assigned?userId={} endpoint hit", userId);
+        try {
+            service.deleteDataAssigned(shiftId, userId);
+            return ResponseEntity.ok(new ApiResponse(true, "Successfully deleted user in shift", null));
+        } catch (Exception e) {
+            log.error("Error delete user in shift : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
 }

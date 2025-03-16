@@ -4,6 +4,9 @@ import com.kasirpinter.pos.entity.MsShift;
 import com.kasirpinter.pos.entity.RlUserShift;
 import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.model.projection.CastIdSecureIdProjection;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -41,4 +44,8 @@ public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> 
     Optional<CastIdSecureIdProjection> findIdBySecureId(String secureId);
 
     boolean existsByUserAndDate(Users user, LocalDate now);
+
+    Page<RlUserShift> findByUserNameLikeIgnoreCase(String keyword, Pageable pageable);
+
+    RlUserShift findByUserAndShift(Users user, MsShift shift);
 }

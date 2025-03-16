@@ -13,4 +13,11 @@ public interface UserShiftService {
     UserShiftModel.ShiftDetailResponse updateData(String id, UserShiftModel.ShiftUpdateRequest item);
 
     void deleteData(String id);
+
+    ResultPageResponseDTO<UserShiftModel.ShiftAssignedResponse> listIndexAssigned(Integer pages, Integer limit, String sortBy,
+            String direction, String keyword, String shiftId);
+
+    void saveDataAssigned(UserShiftModel.ShiftAssignedRequest item);
+
+    void deleteDataAssigned(String shiftId, String userId);
 }

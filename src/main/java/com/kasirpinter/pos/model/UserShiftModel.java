@@ -1,6 +1,5 @@
 package com.kasirpinter.pos.model;
 
-import com.kasirpinter.pos.model.AdminModelBaseDTOResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +15,7 @@ public class UserShiftModel {
         private String company_name;
         private Boolean isActive;
     }
-
+    
     @Data
     @AllArgsConstructor
     public static class ShiftDetailResponse {
@@ -49,4 +48,22 @@ public class UserShiftModel {
         private String start;
         private String end;
     }
+
+    @Data
+    @AllArgsConstructor
+    public static class ShiftAssignedResponse {
+        private String userId;
+        private String name;
+        private String position;
+        private String addedAt;
+        private String inAt;
+        private String outAt;
+    }
+
+    public record ShiftAssignedRequest (
+        String userId,
+        String companyId,
+        String shiftId,
+        String positionId
+    ){}
 }

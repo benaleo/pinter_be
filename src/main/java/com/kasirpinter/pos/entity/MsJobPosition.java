@@ -1,7 +1,7 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
 import com.kasirpinter.pos.entity.impl.SecureIdentifiable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;

@@ -1,16 +1,16 @@
 package com.kasirpinter.pos.entity;
 
-import com.kasirpinter.pos.entity.AbstractEntity;
-import com.kasirpinter.pos.entity.MsJobPosition;
-import com.kasirpinter.pos.entity.MsShift;
-import com.kasirpinter.pos.entity.Users;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
