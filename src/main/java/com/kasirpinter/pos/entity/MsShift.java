@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -40,4 +41,11 @@ public class MsShift extends AbstractEntity implements SecureIdentifiable {
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted;
+
+    @OneToMany(mappedBy = "shift",  fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RlUserShift> userShifts;
+
+    public List<String> getUserShiftSecureIds(){
+        return userShifts.stream().map(RlUserShift::getUser).map(Users::getSecureId).toList();
+    }
 }

@@ -1,16 +1,16 @@
 package com.kasirpinter.pos.repository;
 
 import com.kasirpinter.pos.entity.Company;
+import com.kasirpinter.pos.entity.MsShift;
 import com.kasirpinter.pos.entity.Users;
 import com.kasirpinter.pos.model.dto.SavedLongAndStringValue;
 import com.kasirpinter.pos.model.projection.CastIdSecureIdProjection;
+import com.kasirpinter.pos.model.projection.CastStringAndStringProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
             WHERE d.secureId = :secureId
             """)
     Optional<CastIdSecureIdProjection> findIdBySecureId(String secureId);
-
 
     @Query("""
             SELECT u FROM Users u
@@ -52,4 +51,16 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     List<SavedLongAndStringValue> findUserNameByIdsMaps(List<Long> idsList);
 
     boolean existsByPhone(String phone);
+
+    @Query("""
+            SELECT new com.kasirpinter.pos.model.projection.CastStringAndStringProjection(d.secureId, d.name)
+            FROM Users d
+            JOIN d.company c
+            WHERE(
+                LOWER(d.name) LIKE LOWER(:keyword) OR
+                LOWER(d.email) LIKE LOWER(:keyword)
+            )
+            AND c.secureId = :companyId
+            """)
+    Page<CastStringAndStringProjection> findAllUnassigedShift(String keyword, Pageable pageable, String companyId);
 }

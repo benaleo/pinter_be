@@ -1,21 +1,31 @@
 package com.kasirpinter.pos.controller;
 
+import java.net.URI;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kasirpinter.pos.model.UserShiftModel;
 import com.kasirpinter.pos.response.ApiResponse;
 import com.kasirpinter.pos.response.PaginationCmsResponse;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.UserShiftService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @RestController
 @AllArgsConstructor
@@ -132,15 +142,38 @@ public class UserShiftController {
         }
     }
 
+    @PreAuthorize("hasAuthority('shifts.view')")
+    @Operation(summary = "Get List Shift", description = "Get List Shift")
+    @GetMapping("{id}/not-assign")
+    public ResponseEntity<?> listIndexNotAssign(
+            @PathVariable("id") String shiftId,
+            @RequestParam(name = "pages", required = false, defaultValue = "0") Integer pages,
+            @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
+            @RequestParam(name = "direction", required = false, defaultValue = "asc") String direction,
+            @RequestParam(name = "keyword", required = false) String keyword) {
+        // response true
+        log.info("GET " + urlRoute + "/{}/not-assign endpoint hit", shiftId);
+        try {
+            ResultPageResponseDTO<UserShiftModel.ShiftAssignedResponse> response = service.listIndexNotAssign(pages, limit,
+                    sortBy,
+                    direction, keyword, shiftId);
+            return ResponseEntity.ok().body(new PaginationCmsResponse<>(true, "Success get list shift not assigned", response));
+        } catch (Exception e) {
+            log.error("Error get index : {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage(), null));
+        }
+    }
+
     @PreAuthorize("hasAuthority('shifts.create')")
-    @Operation(summary = "Create Shift", description = "Create Shift")
+    @Operation(summary = "Post user to shift", description = "post user shift")
     @PostMapping("{id}/assigned")
     public ResponseEntity<ApiResponse> createAssigned(
         @PathVariable("id") String shiftId,
         @Valid @RequestBody UserShiftModel.ShiftAssignedRequest item) {
-        log.info("POST " + urlRoute + " endpoint hit");
+        log.info("POST " + urlRoute + "/{}/assigned endpoint hit", shiftId);
         try {
-            service.saveDataAssigned(item);
+            service.saveDataAssigned(item, shiftId);
             return ResponseEntity.created(URI.create(urlRoute + "/" + shiftId + "/assigned"))
                     .body(new ApiResponse(true, "Successfully created user in shift", null));
         } catch (Exception e) {

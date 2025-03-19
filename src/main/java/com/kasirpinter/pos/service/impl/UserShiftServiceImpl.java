@@ -1,29 +1,13 @@
 package com.kasirpinter.pos.service.impl;
 
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.kasirpinter.pos.entity.Company;
-import com.kasirpinter.pos.entity.MsJobPosition;
-import com.kasirpinter.pos.entity.MsShift;
-import com.kasirpinter.pos.entity.RlUserShift;
-import com.kasirpinter.pos.entity.Users;
+import com.kasirpinter.pos.entity.*;
 import com.kasirpinter.pos.model.UserShiftModel;
 import com.kasirpinter.pos.model.UserShiftModel.ShiftAssignedRequest;
 import com.kasirpinter.pos.model.UserShiftModel.ShiftAssignedResponse;
+import com.kasirpinter.pos.model.projection.CastStringAndStringProjection;
 import com.kasirpinter.pos.model.search.ListOfFilterPagination;
 import com.kasirpinter.pos.model.search.SavedKeywordAndPageable;
-import com.kasirpinter.pos.repository.CompanyRepository;
-import com.kasirpinter.pos.repository.MsJobPositionRepository;
-import com.kasirpinter.pos.repository.RlUserShiftRepository;
-import com.kasirpinter.pos.repository.UserRepository;
-import com.kasirpinter.pos.repository.UserShiftRepository;
+import com.kasirpinter.pos.repository.*;
 import com.kasirpinter.pos.response.PageCreateReturn;
 import com.kasirpinter.pos.response.ResultPageResponseDTO;
 import com.kasirpinter.pos.service.UserShiftService;
@@ -31,9 +15,16 @@ import com.kasirpinter.pos.util.ContextPrincipal;
 import com.kasirpinter.pos.util.Formatter;
 import com.kasirpinter.pos.util.GlobalConverter;
 import com.kasirpinter.pos.util.TreeGetEntity;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +40,7 @@ public class UserShiftServiceImpl implements UserShiftService {
 
     @Override
     public ResultPageResponseDTO<UserShiftModel.ShiftIndexResponse> listIndex(Integer pages, Integer limit,
-            String sortBy, String direction, String keyword) {
+                                                                              String sortBy, String direction, String keyword) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
         String companyId = user.getRole().getName().equals("SUPERADMIN") ? null : user.getCompany().getSecureId();
 
@@ -149,29 +140,33 @@ public class UserShiftServiceImpl implements UserShiftService {
     // assigned user in shift
     @Override
     public ResultPageResponseDTO<ShiftAssignedResponse> listIndexAssigned(Integer pages, Integer limit, String sortBy,
-            String direction, String keyword, String shiftId) {
+                                                                          String direction, String keyword, String shiftId) {
+
+        MsShift shift = TreeGetEntity.parsingUserShiftByProjection(shiftId, userShiftRepository);
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
                 filter);
 
         // First page result (get total count)
-        Page<RlUserShift> firstResult = relationUserShiftRepository.findByUserNameLikeIgnoreCase(set.keyword(), set.pageable());
+        Page<RlUserShift> firstResult = relationUserShiftRepository.findByUserNameLikeIgnoreCaseAndShift(set.keyword(),
+                set.pageable(), shift);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<RlUserShift> pageResult = relationUserShiftRepository.findByUserNameLikeIgnoreCase(set.keyword(), pageable);
+        Page<RlUserShift> pageResult = relationUserShiftRepository.findByUserNameLikeIgnoreCaseAndShift(set.keyword(),
+                pageable, shift);
 
         // Map the data to the DTOs
         List<UserShiftModel.ShiftAssignedResponse> dtos = pageResult.stream().map((c) -> {
             UserShiftModel.ShiftAssignedResponse dto = new UserShiftModel.ShiftAssignedResponse(
-                c.getUser().getSecureId(),
-                c.getUser().getName(),
-                c.getPosition().getName(),
-                c.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
-                c.getTsIn().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
-                c.getTsOut().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
-            );
+                    c.getUser() != null ? c.getUser().getSecureId() : null,
+                    c.getUser() != null ? c.getUser().getName() : null,
+                    c.getPosition() != null ? c.getPosition().getName() : null,
+                    c.getCreatedAt() != null ? c.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
+                            : null,
+                    c.getTsIn() != null ? c.getTsIn().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : null,
+                    c.getTsOut() != null ? c.getTsOut().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : null);
             return dto;
         }).collect(Collectors.toList());
 
@@ -181,10 +176,10 @@ public class UserShiftServiceImpl implements UserShiftService {
     }
 
     @Override
-    public void saveDataAssigned(ShiftAssignedRequest item) {
+    public void saveDataAssigned(ShiftAssignedRequest item, String shiftId) {
         Users user = TreeGetEntity.parsingUserByProjection(item.userId(), userRepository);
-        MsShift shift = TreeGetEntity.parsingUserShiftByProjection(item.shiftId(), userShiftRepository);
-        MsJobPosition position = TreeGetEntity.parseMsJobPositionByProjection(item.positionId(), msJobPositionRepository);
+        MsShift shift = TreeGetEntity.parsingUserShiftByProjection(shiftId, userShiftRepository);
+        MsJobPosition position = item.positionId() != null ? TreeGetEntity.parseMsJobPositionByProjection(item.positionId(), msJobPositionRepository) : null;
 
         RlUserShift newData = new RlUserShift();
         newData.setUser(user);
@@ -201,5 +196,35 @@ public class UserShiftServiceImpl implements UserShiftService {
         MsShift shift = TreeGetEntity.parsingUserShiftByProjection(shiftId, userShiftRepository);
         RlUserShift data = relationUserShiftRepository.findByUserAndShift(user, shift);
         relationUserShiftRepository.delete(data);
+    }
+
+    @Override
+    public ResultPageResponseDTO<ShiftAssignedResponse> listIndexNotAssign(Integer pages, Integer limit, String sortBy,
+                                                                           String direction, String keyword, String shiftId) {
+        MsShift shift = TreeGetEntity.parsingUserShiftByProjection(shiftId, userShiftRepository);
+        Company company = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository).getCompany();
+        log.info("assigned user shift: {}", shift.getUserShifts());
+
+        ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
+        SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
+                filter);
+
+        // First page result (get total count)
+        Page<CastStringAndStringProjection> firstResult = userRepository.findAllUnassigedShift( set.keyword(), set.pageable(), company.getSecureId());
+
+        // Use a correct Pageable for fetching the next page
+        Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
+        Page<CastStringAndStringProjection> pageResult = userRepository.findAllUnassigedShift( set.keyword(), pageable, company.getSecureId());
+
+        // Map the data to the DTOs
+        List<CastStringAndStringProjection> dtos = pageResult.stream().map((c) -> {
+            return new CastStringAndStringProjection(
+                    c.getId(),
+                    c.getName());
+        }).collect(Collectors.toList());
+
+        return PageCreateReturn.create(
+                pageResult,
+                dtos);
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -46,9 +47,11 @@ public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> 
 
     boolean existsByUserAndDate(Users user, LocalDate now);
 
-    Page<RlUserShift> findByUserNameLikeIgnoreCase(String keyword, Pageable pageable);
+    Page<RlUserShift> findByUserNameLikeIgnoreCaseAndShift(String keyword, Pageable pageable, MsShift shift);
 
     RlUserShift findByUserAndShift(Users user, MsShift shift);
 
     boolean existsByPosition(MsJobPosition position);
+
+    List<RlUserShift> findAllByShift(MsShift shift);
 }

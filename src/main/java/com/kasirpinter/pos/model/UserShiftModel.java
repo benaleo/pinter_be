@@ -62,8 +62,6 @@ public class UserShiftModel {
 
     public record ShiftAssignedRequest (
         String userId,
-        String companyId,
-        String shiftId,
         String positionId
     ){}
 }
