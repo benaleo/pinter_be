@@ -54,4 +54,9 @@ public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> 
     boolean existsByPosition(MsJobPosition position);
 
     List<RlUserShift> findAllByShift(MsShift shift);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM RlUserShift d WHERE d.secureId = :secureId")
+    void deleteBySecureId(String secureId);
 }

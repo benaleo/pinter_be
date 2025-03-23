@@ -61,6 +61,11 @@ public interface UserRepository extends JpaRepository<Users, Long> {
                 LOWER(d.email) LIKE LOWER(:keyword)
             )
             AND c.secureId = :companyId
+            AND d NOT IN (
+                SELECT rs.user
+                FROM RlUserShift rs
+                WHERE rs.shift = :shift
+            )
             """)
-    Page<CastStringAndStringProjection> findAllUnassigedShift(String keyword, Pageable pageable, String companyId);
+    Page<CastStringAndStringProjection> findAllUnassigedShift(String keyword, Pageable pageable, String companyId, MsShift shift);
 }

@@ -1,6 +1,7 @@
 package com.kasirpinter.pos.service.impl;
 
 import com.kasirpinter.pos.entity.*;
+import com.kasirpinter.pos.exception.BadRequestException;
 import com.kasirpinter.pos.model.UserShiftModel;
 import com.kasirpinter.pos.model.UserShiftModel.ShiftAssignedRequest;
 import com.kasirpinter.pos.model.UserShiftModel.ShiftAssignedResponse;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -187,17 +189,24 @@ public class UserShiftServiceImpl implements UserShiftService {
         newData.setUser(user);
         newData.setShift(shift);
         newData.setPosition(position);
+        newData.setDate(LocalDate.now());
 
         GlobalConverter.CmsAdminCreateAtBy(newData, ContextPrincipal.getId());
         relationUserShiftRepository.save(newData);
     }
 
     @Override
+    @Transactional
     public void deleteDataAssigned(String shiftId, String userId) {
         Users user = TreeGetEntity.parsingUserByProjection(userId, userRepository);
         MsShift shift = TreeGetEntity.parsingUserShiftByProjection(shiftId, userShiftRepository);
+        log.info("user id : {}, in shift id : {}", user.getId(), shift.getId());
         RlUserShift data = relationUserShiftRepository.findByUserAndShift(user, shift);
-        relationUserShiftRepository.delete(data);
+        if (data == null) {
+            throw new BadRequestException("data not found");
+        }
+        log.info("deleted user in shift to hard delete : {}", data.getSecureId());
+        relationUserShiftRepository.deleteBySecureId(data.getSecureId());
     }
 
     @Override
@@ -205,18 +214,19 @@ public class UserShiftServiceImpl implements UserShiftService {
                                                                            String direction, String keyword, String shiftId) {
         MsShift shift = TreeGetEntity.parsingUserShiftByProjection(shiftId, userShiftRepository);
         Company company = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository).getCompany();
-        log.info("assigned user shift: {}", shift.getUserShifts());
+        log.info("assigned user shift: {}", shift.getUserShifts().stream().map(RlUserShift::getUser).map(Users::getSecureId).collect(Collectors.toList()));
+        // List<String> assignedUsers = shift.getUserShifts().stream().map(RlUserShift::getUser).map(Users::getSecureId).collect(Collectors.toList());
 
         ListOfFilterPagination filter = new ListOfFilterPagination(keyword);
         SavedKeywordAndPageable set = GlobalConverter.appsCreatePageable(pages, limit, sortBy, direction, keyword,
                 filter);
 
         // First page result (get total count)
-        Page<CastStringAndStringProjection> firstResult = userRepository.findAllUnassigedShift( set.keyword(), set.pageable(), company.getSecureId());
+        Page<CastStringAndStringProjection> firstResult = userRepository.findAllUnassigedShift( set.keyword(), set.pageable(), company.getSecureId(), shift);
 
         // Use a correct Pageable for fetching the next page
         Pageable pageable = GlobalConverter.oldSetPageable(pages, limit, sortBy, direction, firstResult, null);
-        Page<CastStringAndStringProjection> pageResult = userRepository.findAllUnassigedShift( set.keyword(), pageable, company.getSecureId());
+        Page<CastStringAndStringProjection> pageResult = userRepository.findAllUnassigedShift( set.keyword(), pageable, company.getSecureId(), shift);
 
         // Map the data to the DTOs
         List<CastStringAndStringProjection> dtos = pageResult.stream().map((c) -> {
