@@ -59,4 +59,6 @@ public interface RlUserShiftRepository extends JpaRepository<RlUserShift, Long> 
     @Modifying
     @Query("DELETE FROM RlUserShift d WHERE d.secureId = :secureId")
     void deleteBySecureId(String secureId);
+
+    Optional<RlUserShift> findByUserAndDateAndShiftIsNotNull(Users user, LocalDate date);
 }

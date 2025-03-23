@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,15 +18,15 @@ import java.util.Optional;
 public interface UserShiftRepository extends JpaRepository<MsShift, Long> {
 
 
-        @Query("""
-                SELECT d
-                FROM MsShift d
-                LEFT JOIN d.company c
-                WHERE
-                        (:companyId IS NULL OR c.secureId = :companyId) AND
-                        (LOWER(d.name) LIKE LOWER(:keyword) OR
-                        LOWER(c.name) LIKE LOWER(:keyword))
-                """)
+    @Query("""
+            SELECT d
+            FROM MsShift d
+            LEFT JOIN d.company c
+            WHERE
+                    (:companyId IS NULL OR c.secureId = :companyId) AND
+                    (LOWER(d.name) LIKE LOWER(:keyword) OR
+                    LOWER(c.name) LIKE LOWER(:keyword))
+            """)
     Page<MsShift> findByNameLikeIgnoreCase(String keyword, Pageable pageable, String companyId);
 
     @Query("""
@@ -45,4 +46,18 @@ public interface UserShiftRepository extends JpaRepository<MsShift, Long> {
     void updateByShift(MsShift data);
 
     List<MsShift> findAllByIsActiveTrue();
+
+    @Query("""
+            SELECT d
+            FROM MsShift d
+            WHERE d.startTime <= :now AND d.endTime >= :now
+            """)
+    MsShift findByNowIsBetweenStartAndEnd(LocalTime now);
+
+    @Query("""
+            SELECT d
+            FROM MsShift d
+            WHERE d.startTime <= :now AND d.endTime >= :now
+            """)
+    List<MsShift> findAllByNowIsBetweenStartAndEnd(LocalTime now);
 }

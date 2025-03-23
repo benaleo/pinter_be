@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -427,7 +428,7 @@ public class UserServiceImpl implements UserService {
 
     private UserModel.UserInfo parseUserInfo(InOutType type) {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
-        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now())
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDateAndShiftIsNotNull(user, LocalDate.now())
                 .orElseGet(() -> createRlUserShiftOnNull(user));
         ShiftRecap recap = shiftRecapRepository.findByShift(userShift.getShift());
         String avatar = fileManagerRepository.findFileUrlByFileAsAndFileEntityAndEntityId("AVATAR", FileEntity.USER, user.getId());
@@ -454,16 +455,24 @@ public class UserServiceImpl implements UserService {
     }
 
     private RlUserShift createRlUserShiftOnNull(Users user) {
+
+        List<MsShift> listShift = userShiftRepository.findAllByNowIsBetweenStartAndEnd(LocalTime.now());
+        MsShift shift = null;
+        if (!listShift.isEmpty()) {
+            shift = listShift.getFirst();
+        }
+
         RlUserShift newShift = new RlUserShift();
         newShift.setUser(user);
         newShift.setDate(LocalDate.now());
+        newShift.setShift(shift);
         return relationUserShiftRepository.save(newShift);
     }
 
     @Override
     public UserModel.AdminInfo getAdminInfo() {
         Users user = TreeGetEntity.parsingUserByProjection(ContextPrincipal.getSecureUserId(), userRepository);
-        RlUserShift userShift = relationUserShiftRepository.findByUserAndDate(user, LocalDate.now())
+        RlUserShift userShift = relationUserShiftRepository.findByUserAndDateAndShiftIsNotNull(user, LocalDate.now())
                 .orElseGet(() -> createRlUserShiftOnNull(user));
         ShiftRecap recap = shiftRecapRepository.findByShift(userShift.getShift());
         InOutType type = null;
