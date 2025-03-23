@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "rl_user_shifts", indexes = {
         @Index(name = "idx_user_shift_secure_id", columnList = "secure_id", unique = true),
-        @Index(name = "idx_user_shift_date_user_id", columnList = "date, user_id", unique = true)
+        @Index(name = "idx_user_shift_date_user_id", columnList = "date,shift_id, user_id", unique = true)
 })
 @Data
 public class RlUserShift extends AbstractEntity {
