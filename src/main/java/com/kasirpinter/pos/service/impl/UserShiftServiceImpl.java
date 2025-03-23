@@ -61,7 +61,9 @@ public class UserShiftServiceImpl implements UserShiftService {
             UserShiftModel.ShiftIndexResponse dto = new UserShiftModel.ShiftIndexResponse();
             dto.setName(c.getName());
             dto.setDescription(c.getDescription());
-            dto.setPeriod(new UserShiftModel.PeriodStartEnd(c.getStartTime().toString(), c.getEndTime().toString()));
+            dto.setPeriod(new UserShiftModel.PeriodStartEnd(
+                c.getStartTime() != null ? c.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) : null, 
+                c.getEndTime() != null ? c.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) : null));
             dto.setCompany_name(c.getCompany() != null ? c.getCompany().getName() : null);
             dto.setIsActive(c.getIsActive());
 
